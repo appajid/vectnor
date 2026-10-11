@@ -109,7 +109,7 @@ fn home_texts(app: &mut VectnorApp, ctx: &egui::Context, events: Vec<egui::Event
     texts
 }
 
-/// The Home screen lists the first recent files (#663), each by name and folder; a click opens it,
+/// The Home screen shows the first recent files (#663), each by name and folder; a click opens it,
 /// and one that can't be opened says so. With none, there is no Recent Files section.
 #[test]
 fn home_lists_recent_files_and_a_click_opens_one() {
@@ -132,4 +132,28 @@ fn home_lists_recent_files_and_a_click_opens_one() {
     home_texts(&mut app, &ctx, vec![press(false)]);
     assert!(app.session.documents().is_empty());
     assert!(!app.ui.status.is_empty(), "a file that can't be opened says so");
+}
+
+#[test]
+fn clicking_the_artwork_opens_the_matching_recent_file() {
+    let services = crate::Services {
+        read: Some(Box::new(|_| {
+            Ok(br##"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#0080ff"/></svg>"##
+                .to_vec())
+        })),
+        ..Default::default()
+    };
+    let mut app = VectnorApp::new(vectnor_engine::Session::new(), services);
+    app.ui.recent_files = (0..6).map(|i| format!("/docs/Drawing {i}.svg")).collect();
+    let ctx = egui::Context::default();
+    crate::theme::install_fonts(&ctx);
+    let texts = home_texts(&mut app, &ctx, vec![]);
+    // Hit the artwork above the filename, rather than the filename itself.
+    let at = texts.iter().find(|(name, _)| name == "Drawing 2.svg").unwrap().1.center() - egui::vec2(0.0, 70.0);
+    let press = |pressed| egui::Event::PointerButton { pos: at, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+    home_texts(&mut app, &ctx, vec![egui::Event::PointerMoved(at), press(true)]);
+    home_texts(&mut app, &ctx, vec![press(false)]);
+    assert_eq!(app.session.active().unwrap().path.as_deref(), Some("/docs/Drawing 2.svg"));
+    assert_eq!(app.ui.recent_files.first().map(String::as_str), Some("/docs/Drawing 2.svg"));
+    assert!(!crate::menus::home_showing(&app));
 }

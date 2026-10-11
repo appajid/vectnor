@@ -1838,65 +1838,81 @@ fn home(app: &mut VectnorApp, ui: &mut Ui, rect: egui::Rect) {
     ui.painter().rect_filled(rect, 0.0, t.panel_darker);
     let inner = rect.shrink2(vec2((rect.width() - 820.0).max(40.0) / 2.0, 60.0));
     let mut child = ui.new_child(egui::UiBuilder::new().max_rect(inner).layout(egui::Layout::top_down(egui::Align::Min)));
-    let ui = &mut child;
-    crate::brand::logo(ui);
-    ui.add_space(12.0);
-    ui.label(egui::RichText::new(tl!("Welcome to Vectnor")).font(theme::semibold(26.0)).color(t.text));
-    ui.add_space(4.0);
-    ui.label(egui::RichText::new(tl!("Vector illustration — fast, open, scriptable.")).size(14.0).color(t.text_dim));
-    ui.add_space(22.0);
-    ui.horizontal(|ui| {
-        if widgets::primary_button(ui, tl!("New file")).clicked() {
-            app.run("file.newDialog", json!({})).ok();
-        }
-        ui.add_space(8.0);
-        if widgets::secondary_button(ui, tl!("Open")).clicked() {
-            app.run("file.open", json!({})).ok();
-        }
-    });
-    recent(app, ui);
-    ui.add_space(28.0);
-    ui.label(egui::RichText::new(tl!("Quickly start a new file")).font(theme::semibold(14.0)).color(t.text));
-    ui.add_space(10.0);
-    // A few of New Document's presets (`file.newPresets`), as its cards.
-    let presets = ["Letter", "A4", "Web 1920×1080", "Phone 390×844", "Postcard", "Social Square Post 1080×1080"];
-    ui.horizontal_wrapped(|ui| {
-        ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
-        let cards: Vec<_> = presets.iter().filter_map(|name| vectnor_engine::cmd::newdoc::find(&app.session, name)).collect();
-        for s in cards {
-            if crate::dialogs::preset_card(ui, &s, false).clicked() {
-                app.run("file.new", json!({ "preset": s.name })).ok();
+    egui::ScrollArea::vertical().auto_shrink([false, false]).show(&mut child, |ui| {
+        crate::brand::logo(ui);
+        ui.add_space(12.0);
+        ui.label(egui::RichText::new(tl!("Welcome to Vectnor")).font(theme::semibold(26.0)).color(t.text));
+        ui.add_space(4.0);
+        ui.label(egui::RichText::new(tl!("Vector illustration — fast, open, scriptable.")).size(14.0).color(t.text_dim));
+        ui.add_space(22.0);
+        ui.horizontal(|ui| {
+            if widgets::primary_button(ui, tl!("New file")).clicked() {
+                app.run("file.newDialog", json!({})).ok();
             }
-        }
+            ui.add_space(8.0);
+            if widgets::secondary_button(ui, tl!("Open")).clicked() {
+                app.run("file.open", json!({})).ok();
+            }
+        });
+        recent(app, ui);
+        ui.add_space(28.0);
+        ui.label(egui::RichText::new(tl!("Quickly start a new file")).font(theme::semibold(14.0)).color(t.text));
+        ui.add_space(10.0);
+        // A few of New Document's presets (`file.newPresets`), as its cards.
+        let presets = ["Letter", "A4", "Web 1920×1080", "Phone 390×844", "Postcard", "Social Square Post 1080×1080"];
+        ui.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
+            let cards: Vec<_> = presets.iter().filter_map(|name| vectnor_engine::cmd::newdoc::find(&app.session, name)).collect();
+            for s in cards {
+                if crate::dialogs::preset_card(ui, &s, false).clicked() {
+                    app.run("file.new", json!({ "preset": s.name })).ok();
+                }
+            }
+        });
     });
 }
 
-/// The Home screen's Recent Files (#663): the first of File › Open Recent Files, each its name and
-/// folder; a click opens it. Nothing when there are none.
+/// Recent files as artwork cards; clicking anywhere on a card opens the file.
 fn recent(app: &mut VectnorApp, ui: &mut Ui) {
     const SHOWN: usize = 6;
     let files: Vec<String> = crate::io::recent_files(app).iter().take(SHOWN).cloned().collect();
+    app.recent_thumbnails.retain(&files);
     if files.is_empty() {
         return;
     }
     let t = Tokens::get(ui.ctx());
     ui.add_space(28.0);
     ui.label(egui::RichText::new(tl!("Recent Files")).font(theme::semibold(14.0)).color(t.text));
-    ui.add_space(8.0);
-    for path in files {
-        let p = std::path::Path::new(&path);
-        let name = p.file_name().map_or_else(|| path.clone(), |n| n.to_string_lossy().into_owned());
-        let folder = p.parent().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
-        ui.horizontal(|ui| {
-            crate::icons::icon(ui, "history", 16.0, t.icon);
-            let r = ui.add(egui::Button::new(egui::RichText::new(&name).color(t.accent).size(13.0)).frame(false)).on_hover_text(&path);
-            ui.add(egui::Label::new(egui::RichText::new(&folder).size(12.0).color(t.text_dim)).truncate());
-            if r.clicked() {
-                // A failure is reported to the user there.
+    ui.add_space(10.0);
+    let width = 180.0f32.min(ui.available_width().max(80.0));
+    ui.horizontal_wrapped(|ui| {
+        ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
+        for path in files {
+            let p = std::path::Path::new(&path);
+            let name = p.file_name().map_or_else(|| path.clone(), |n| n.to_string_lossy().into_owned());
+            let folder = p.parent().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
+            let (rect, response) = ui.allocate_exact_size(vec2(width, 168.0), Sense::click());
+            ui.painter().rect_filled(rect, 8.0, if response.hovered() { t.hover } else { t.panel });
+            ui.painter().rect_stroke(rect, 8.0, Stroke::new(1.0, if response.hovered() { t.accent } else { t.border }), StrokeKind::Inside);
+            let preview = egui::Rect::from_min_size(rect.min + vec2(8.0, 8.0), vec2(width - 16.0, 108.0));
+            ui.painter().rect_filled(preview, 4.0, t.pasteboard);
+            if let Some(texture) = app.recent_thumbnails.texture(ui.ctx(), &app.services, &path) {
+                let size = texture.size_vec2();
+                let scale = (preview.width() / size.x).min(preview.height() / size.y);
+                let artwork = egui::Rect::from_center_size(preview.center(), size * scale);
+                ui.painter().image(texture.id(), artwork, egui::Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
+            } else {
+                crate::icons::paint(ui, "image", egui::Rect::from_center_size(preview.center(), vec2(28.0, 28.0)), t.text_dim);
+            }
+            let painter = ui.painter().with_clip_rect(rect.shrink(8.0));
+            painter.text(rect.min + vec2(8.0, 124.0), egui::Align2::LEFT_TOP, name, theme::semibold(13.0), t.text);
+            painter.text(rect.min + vec2(8.0, 146.0), egui::Align2::LEFT_TOP, folder, egui::FontId::proportional(11.0), t.text_dim);
+            if response.on_hover_text(&path).on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                // Open reports failures; a missing preview never prevents trying the file.
                 let _ = crate::io::open_reporting(app, &path);
             }
-        });
-    }
+        }
+    });
 }
 
 fn kurbo_flatten(p: &BezPath, tol: f64, f: &mut impl FnMut(PathEl)) {

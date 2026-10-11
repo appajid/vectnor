@@ -320,6 +320,16 @@ fn services(parent: Parent) -> Services {
         // ones re-enter the window's event handler (#867).
         start_pick: cfg!(unix).then(|| Box::new(move |request: PickRequest| start_pick(request, &p5)) as vectnor_ui_egui::picks::StartPick),
         read: Some(Box::new(|p: &str| std::fs::read(p).map_err(|e| e.to_string()))),
+        read_shared: Some(std::sync::Arc::new(|path, limit| {
+            use std::io::Read;
+            let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
+            let mut bytes = Vec::new();
+            file.take(limit.saturating_add(1)).read_to_end(&mut bytes).map_err(|e| e.to_string())?;
+            if bytes.len() as u64 > limit {
+                return Err("file too large for a recent-file preview".into());
+            }
+            Ok(bytes)
+        })),
         write: Some(Box::new(write_file)),
         // Background Save and Export write from a worker thread.
         write_shared: Some(std::sync::Arc::new(write_file)),

@@ -40,6 +40,7 @@ pub mod picks;
 pub mod place;
 pub mod prefs_dialog;
 pub mod print;
+mod recent_thumbnails;
 pub mod recovery;
 pub mod render_worker;
 mod scrub;
@@ -177,6 +178,8 @@ impl FilePick {
 pub type PickOpen = Box<dyn FnMut(&FilePick) -> Option<String>>;
 pub type PickSave = Box<dyn FnMut(&FilePick) -> Option<String>>;
 pub type ReadFn = Box<dyn Fn(&str) -> Result<Vec<u8>, String>>;
+/// Read at most the given byte limit, on a preview worker.
+pub type SharedReadFn = Arc<dyn Fn(&str, u64) -> Result<Vec<u8>, String> + Send + Sync>;
 pub type WriteFn = Box<dyn FnMut(&str, &[u8]) -> Result<(), String>>;
 pub type Inbox = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
 pub type DownloadFn = Box<dyn FnMut(&str, &[u8])>;
@@ -195,6 +198,7 @@ pub struct Services {
     /// Show a save dialog (suggested name, folder, file types); returns a path.
     pub pick_save: Option<PickSave>,
     pub read: Option<ReadFn>,
+    pub read_shared: Option<SharedReadFn>,
     pub write: Option<WriteFn>,
     /// Files that arrived asynchronously (web open / drops): (name, bytes).
     pub inbox: Option<Inbox>,
@@ -378,6 +382,7 @@ pub struct VectnorApp {
     pub(crate) paste_chord: shortcuts::PasteChord,
     /// Saves and exports running in the background (Preferences → File Handling).
     pub background: background::Background,
+    pub(crate) recent_thumbnails: recent_thumbnails::Thumbnails,
     /// Data Recovery's timer and startup question ([`recovery`]).
     pub recovery: recovery::Timer,
     /// Modifiers the keyboard holds (from the host's input), given back after synthetic input.
@@ -474,6 +479,7 @@ impl VectnorApp {
             font_check: None,
             paste_chord: Default::default(),
             background: Default::default(),
+            recent_thumbnails: Default::default(),
             recovery: Default::default(),
             host_modifiers: Default::default(),
             synthetic_modifiers: false,

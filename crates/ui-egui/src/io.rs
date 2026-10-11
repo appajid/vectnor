@@ -458,6 +458,12 @@ pub const MAX_RECENT_FILES: usize = 30;
 
 /// Put `path` at the top of File → Open Recent Files.
 pub fn note_recent(app: &mut VectnorApp, path: &str) {
+    app.recent_thumbnails.invalidate(path);
+    if app.services.read_shared.is_none()
+        && let Some(st) = app.session.active().filter(|st| st.path.as_deref() == Some(path))
+    {
+        app.recent_thumbnails.remember(path, &st.doc);
+    }
     let r = &mut app.ui.recent_files;
     r.retain(|p| p != path);
     r.insert(0, path.to_string());
