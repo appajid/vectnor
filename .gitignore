@@ -1,0 +1,7 @@
+/target/
+**/target/
+/dist/
+/plan/
+/corpus/
+.DS_Store
+**/__pycache__/

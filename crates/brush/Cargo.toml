@@ -1,0 +1,17 @@
+[package]
+name = "vectnor-brush"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor brushes: calligraphic, scatter, art, pattern and bristle brush definitions and stroke geometry"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+kurbo = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

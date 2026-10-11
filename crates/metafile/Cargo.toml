@@ -1,0 +1,19 @@
+[package]
+name = "vectnor-metafile"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor Windows metafiles: hand-written EMF and WMF writers and readers"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-effects = { workspace = true }
+vectnor-brush = { workspace = true }
+vectnor-text = { workspace = true }
+kurbo = { workspace = true }
+image = { workspace = true }

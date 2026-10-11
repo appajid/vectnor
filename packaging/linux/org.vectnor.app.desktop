@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Vectnor
+GenericName=Vector Graphics Editor
+Comment=Draw and edit vector illustrations, SVG and PDF
+Exec=vectnor %F
+TryExec=vectnor
+Icon=org.vectnor.app
+Terminal=false
+StartupNotify=true
+StartupWMClass=org.vectnor.app
+Categories=Graphics;2DGraphics;VectorGraphics;
+Keywords=vector;illustration;svg;pdf;drawing;bezier;
+MimeType=application/x-vectnor;image/svg+xml;application/pdf;

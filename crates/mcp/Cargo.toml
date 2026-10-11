@@ -1,0 +1,27 @@
+[package]
+name = "vectnor-mcp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor MCP server: JSON-RPC 2.0 over stdio, driving a running app or a headless session"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-engine = { workspace = true }
+vectnor-render = { workspace = true }
+vectnor-svg = { workspace = true }
+vectnor-format = { workspace = true }
+vectnor-tools = { workspace = true }
+vectnor-geom = { workspace = true }
+vectnor-doc = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+
+image = { workspace = true }
+
+[dev-dependencies]
+vectnor-testkit = { workspace = true }
+proptest = { workspace = true }
+socket2 = { workspace = true }

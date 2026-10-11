@@ -1,0 +1,23 @@
+[package]
+name = "vectnor-testkit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor test helpers: fixtures, generators, render comparison, geometry assertions"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-engine = { workspace = true }
+vectnor-render = { workspace = true }
+vectnor-format = { workspace = true }
+vectnor-svg = { workspace = true }
+kurbo = { workspace = true }
+serde_json = { workspace = true }
+proptest = { workspace = true }
+image = { workspace = true }

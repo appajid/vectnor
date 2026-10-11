@@ -1,0 +1,58 @@
+# Flatpak manifest for Vectnor, ready for a Flathub submission.
+#
+# Flatpak builds run offline, so the crate sources must be vendored first. From the repo root:
+#
+#   curl -fsSLO https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/cargo/flatpak-cargo-generator.py
+#   python3 flatpak-cargo-generator.py Cargo.lock -o packaging/linux/flatpak/cargo-sources.json
+#   flatpak-builder --user --install --force-clean build-flatpak packaging/linux/flatpak/org.vectnor.app.yml
+#   flatpak run org.vectnor.app
+#
+# For Flathub, replace the `dir` source with a `git` source pinned to a release tag and commit.
+# Release bundles (.flatpak on GitHub Releases) use org.vectnor.app.bundle.yml instead.
+id: org.vectnor.app
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: vectnor
+finish-args:
+  # Keep identical to org.vectnor.app.bundle.yml (the release bundle); comments there.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Open/Save dialogs use the file-chooser portal (rfd), and drag-and-drop uses the document
+  # portal, so broad filesystem access isn't needed. Pictures is granted for opening files by
+  # path from the command line.
+  - --filesystem=xdg-pictures
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+modules:
+  - name: vectnor
+    buildsystem: simple
+    build-options:
+      env:
+        CARGO_HOME: /run/build/vectnor/cargo
+        CARGO_NET_OFFLINE: 'true'
+    build-commands:
+      - cargo --offline build --release --locked -p vectnor
+      - install -Dm755 target/release/vectnor /app/bin/vectnor
+      - install -Dm644 packaging/linux/org.vectnor.app.desktop /app/share/applications/org.vectnor.app.desktop
+      - install -Dm644 packaging/linux/org.vectnor.app.mime.xml /app/share/mime/packages/org.vectnor.app.xml
+      - mkdir -p /app/share/icons && cp -R assets/app-icon/hicolor /app/share/icons/
+      - >-
+        version=$(awk '/^\[/{p=($0=="[workspace.package]");next} p&&$1=="version"{gsub(/[" ]/,"",$3);print $3;exit}' Cargo.toml);
+        install -d /app/share/metainfo;
+        sed -e "s/@VERSION@/$version/" -e "s/@DATE@/$(date -u +%Y-%m-%d)/"
+        packaging/linux/org.vectnor.app.metainfo.xml.in > /app/share/metainfo/org.vectnor.app.metainfo.xml
+    sources:
+      - type: dir
+        path: ../../..
+        skip:
+          - target
+          - dist
+          - corpus
+          - build-flatpak
+          - .flatpak-builder
+      - cargo-sources.json

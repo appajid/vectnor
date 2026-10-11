@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 5d8468614378ce65e3e2926e6ec7dd83458b44332e72cf0dba1fd74df280455b # shrinks to shapes = [Shape { path: PathData { subpaths: [SubPath { anchors: [Anchor { p: (80.0, 40.0), h_in: (80.0, 40.0), h_out: (80.0, 40.0), kind: Corner }, Anchor { p: (0.0, 50.0), h_in: (0.0, 50.0), h_out: (0.0, 50.0), kind: Corner }], closed: false }] }, rule: NonZero, key: 0 }, Shape { path: PathData { subpaths: [SubPath { anchors: [Anchor { p: (20.0, 70.0), h_in: (20.0, 70.0), h_out: (20.0, 70.0), kind: Corner }, Anchor { p: (80.0, 0.0), h_in: (80.0, 0.0), h_out: (80.0, 0.0), kind: Corner }], closed: false }] }, rule: NonZero, key: 0 }, Shape { path: PathData { subpaths: [SubPath { anchors: [Anchor { p: (50.0, 0.0), h_in: (50.0, 0.0), h_out: (50.0, 0.0), kind: Corner }, Anchor { p: (40.0, 80.0), h_in: (40.0, 80.0), h_out: (40.0, 80.0), kind: Corner }], closed: false }] }, rule: NonZero, key: 0 }]

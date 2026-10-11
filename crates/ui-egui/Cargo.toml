@@ -1,0 +1,41 @@
+[package]
+name = "vectnor-ui-egui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor egui frontend (menus, panels, tools and canvas); swappable — nothing below depends on it"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-brush = { workspace = true }
+vectnor-render = { workspace = true }
+vectnor-text = { workspace = true }
+vectnor-tools = { workspace = true }
+vectnor-engine = { workspace = true }
+vectnor-svg = { workspace = true }
+vectnor-effects = { workspace = true }
+vectnor-three-d = { workspace = true }
+vectnor-plugins = { workspace = true }
+vectnor-pdf = { workspace = true }
+vectnor-cad = { workspace = true }
+vectnor-eps = { workspace = true }
+vectnor-format = { workspace = true }
+egui = { workspace = true }
+egui_extras = { workspace = true }
+image = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+
+[dev-dependencies]
+vectnor-testkit = { workspace = true }
+wat = { workspace = true }
+
+[build-dependencies]
+serde_json = { workspace = true }
+toml = "1"

@@ -1,0 +1,44 @@
+[package]
+name = "vectnor-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor engine: sessions, history, selection, the command registry"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-tools = { workspace = true }
+vectnor-text = { workspace = true }
+vectnor-render = { workspace = true }
+vectnor-pathops = { workspace = true }
+vectnor-brush = { workspace = true }
+vectnor-trace = { workspace = true }
+vectnor-svg = { workspace = true }
+vectnor-format = { workspace = true }
+vectnor-pdf = { workspace = true }
+vectnor-cad = { workspace = true }
+vectnor-eps = { workspace = true }
+vectnor-metafile = { workspace = true }
+vectnor-plugins = { workspace = true }
+vectnor-affinity = { workspace = true }
+image = { workspace = true }
+flate2 = { workspace = true }
+kurbo = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+
+[dev-dependencies]
+vectnor-affinity = { workspace = true, features = ["synth"] }
+crc32fast = { workspace = true }
+vectnor-testkit = { workspace = true }
+proptest = { workspace = true }
+wat = { workspace = true }
+# Zstandard streams for the Illustrator editing data fuzz tests.
+ruzstd = { workspace = true }

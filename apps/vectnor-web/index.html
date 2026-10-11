@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Vectnor</title>
+  <link data-trunk rel="copy-file" href="../../assets/brand/splash.svg" />
+  <link data-trunk rel="copy-file" href="../../assets/brand/app-icon-dark.svg" />
+  <link rel="icon" type="image/svg+xml" href="app-icon-dark.svg" />
+  <link data-trunk rel="rust" data-bin="vectnor-web" data-wasm-opt="z" data-weak-refs />
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #262626; }
+    #vectnor_canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #vectnor_loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #b8b8b8; font: 14px system-ui, sans-serif; pointer-events: none; }
+    #vectnor_loading img { width: min(900px, 100vw); max-height: 100vh; object-fit: contain; }
+  </style>
+</head>
+<body>
+  <canvas id="vectnor_canvas"></canvas>
+  <div id="vectnor_loading"><img src="splash.svg" alt="Vectnor — preparing your canvas" /></div>
+</body>
+</html>

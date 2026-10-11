@@ -1,0 +1,22 @@
+[package]
+name = "vectnor-effects"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor live effects evaluated to geometry"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-three-d = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-pathops = { workspace = true }
+vectnor-text = { workspace = true }
+vectnor-plugins = { workspace = true }
+kurbo = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+vectnor-color = { workspace = true }

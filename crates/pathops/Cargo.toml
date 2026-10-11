@@ -1,0 +1,19 @@
+[package]
+name = "vectnor-pathops"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor path operations: booleans (Pathfinder), shape builder regions, offset, outline stroke, simplify"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+kurbo = { workspace = true }
+thiserror = { workspace = true }
+linesweeper = { workspace = true }
+
+[dev-dependencies]
+vectnor-testkit = { workspace = true }
+proptest = { workspace = true }

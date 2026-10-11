@@ -1,0 +1,23 @@
+[package]
+name = "vectnor-cad"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Vectnor CAD interchange: a hand-written ASCII DXF writer (R12 to 2018)"
+
+[lints]
+workspace = true
+
+[dependencies]
+vectnor-geom = { workspace = true }
+vectnor-color = { workspace = true }
+vectnor-doc = { workspace = true }
+vectnor-effects = { workspace = true }
+vectnor-brush = { workspace = true }
+vectnor-pathops = { workspace = true }
+vectnor-text = { workspace = true }
+kurbo = { workspace = true }
+image = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

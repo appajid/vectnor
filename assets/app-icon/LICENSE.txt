@@ -1,0 +1,6 @@
+Vectnor app icons: original AI-assisted artwork supplied by Appaji Ambarisha
+on 2026-10-12, derived from App-Icon-Dark.svg in "Vectnor logos icons svg/".
+
+Licensed under MIT OR Apache-2.0, at your option.
+See ../brand/LICENSE-MIT and ../brand/LICENSE-APACHE.
+Regenerate platform containers with packaging/icons.sh.
