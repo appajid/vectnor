@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome recent files are artwork thumbnails with background loading and scrolling; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome has recent artwork thumbnails; zoomed canvases have camera scrollbars; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -316,7 +316,7 @@ about 1–1.5 agent-hours each, so the other rows (estimated on the older scale)
 | Export for Screens, Asset Export, slices, Save for Web | 3 | 85% | polish only (all four are done) | 2–4 |
 | Print, colour management, separations, flattener | 3 | 80% | print preview fidelity (flattener presets in PDF and print, overprint in PDF and composite print, Print dialog, presets, PostScript, marks, separations, Print Tiling, print overprint/flattener/bitmap options and printer profile are done) | 1–2 |
 | Automation | 3 | 65% | scripting surface, batch (Variables: text/visibility variables bound to objects, an object may carry several, dataset rows applied in one undo step, panel and Window › Variables with dialogs; image/graph kinds and dataset import/export open) | 6–10 |
-| UI chrome (panels, contextual Properties, workspaces, prefs) | 6 | 80% | Welcome hides editing tools and panels, preserving the saved workspace; recent files have artwork previews; macOS native menu dismissal fixed (M14.8); Variables, Links, Asset Export, CSS Properties, Attributes and the canvas context menu are done; remaining: SVG Interactivity, Properties per context, Consolidate All Windows, floating panels outside the app window and docked into any group, context menus beyond the canvas, about 17 Preferences options stored but not yet acted on (#394: Highlight Alternate Glyphs, Open Documents As Tabs, Real-time Drawing, hyphenation language, Appearance of Black, devices…) | 13–20 |
+| UI chrome (panels, contextual Properties, workspaces, prefs) | 6 | 80% | Welcome hides editing tools and panels, preserving the saved workspace; recent files have artwork previews and zoomed canvases have scrollbars; macOS native menu dismissal fixed (M14.8); Variables, Links, Asset Export, CSS Properties, Attributes and the canvas context menu are done; remaining: SVG Interactivity, Properties per context, Consolidate All Windows, floating panels outside the app window and docked into any group, context menus beyond the canvas, about 17 Preferences options stored but not yet acted on (#394: Highlight Alternate Glyphs, Open Documents As Tabs, Real-time Drawing, hyphenation language, Appearance of Black, devices…) | 13–20 |
 | Libraries, Links, Package | 2 | 82% | the Libraries panel is local only (no cloud by design: libraries are files on this machine) and has no shared libraries, linked graphics or gradients and patterns as items yet; its graphics, colours and text styles (#745) and its search, groups and library export/import as `.vclibrary` files (#926) are done; Links and Package are done; placed Vectnor documents are done (linked by default, vectors in every output, previews, Break Link, Expand, Edit Original, refresh on save) | 2–3 |
 | **Feature parity** | **103** | **~75%** | | **~210–330** |
 | Interaction-fidelity pass (side by side with Illustrator: every tool modifier, cursor, dialog, Properties context) | | | | 60–90 |
@@ -359,6 +359,7 @@ since 2026-10-01.
 
 ## Evidence: what ships today, by area
 
+- **Canvas navigation:** overflowing axes have camera scrollbars with viewport-sized thumbs, drag/click and keyboard panning. Ranges include every artboard and artwork, rotate with the view, and extend for unrestricted Hand/wheel panning. Bounds are cached by document revision; bars are outside the drawing viewport and use `view.setZoom` with a new center (`canvas_scrollbars.rs`).
 - **Recent artwork:** six clickable thumbnail cards use embedded native previews or render the first artboard. One desktop worker loads bounded files; unsupported/missing previews keep a clickable placeholder. Save/Open invalidates stale images; browser sessions remember previews from opened/saved documents (`recent_thumbnails.rs`, `canvas.rs`).
 - **Welcome workspace:** editing toolbars, dock and floating palettes are hidden on Home and restored for documents (`crates/ui-egui/src/lib.rs`, `menus::home_showing`). The app bar, New/Open, recent files and document tabs remain available.
 
@@ -456,6 +457,7 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome hides editing toolbars, docked/floating panels and status controls; opening or choosing a document restores the saved workspace. Parity scores unchanged. |
 | 2026-10-12 | minor | Community links, commands and unused icons removed; About shows Appaji Ambarisha as developer and retains Contributors/Models tabs. Parity scores unchanged. |

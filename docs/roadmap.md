@@ -1,6 +1,6 @@
 # Roadmap: milestones and what's next
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome recent files are artwork thumbnails with background loading and scrolling; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome has recent artwork thumbnails; zoomed canvases have camera scrollbars; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Forward-looking plan. Where Vectnor stands is in [`ROADMAP.md`](../ROADMAP.md) and
 [target-app-parity.md](target-app-parity.md); the ranked work list is [gaps.md](gaps.md). Hours are Opus 5.5
@@ -47,7 +47,7 @@ Checked 2026-10-10 from the code, tests and open issues; no workflow fails, so V
 
 | # | Milestone | Status | Est. remaining, one agent (h) |
 |---|---|---|---|
-| M0 | Skeleton + vertical slice | ✅ done; Welcome hides editing controls, shows recent artwork thumbnails and preserves the document workspace | — |
+| M0 | Skeleton + vertical slice | ✅ done; Welcome hides editing controls, shows recent artwork thumbnails, supports canvas scrollbars and preserves the document workspace | — |
 | M1 | Selection, transform, layers, MCP (common command tools, strict keys, session resources and version-aware result hints) | ✅ mostly done (transform reference point snaps to anchors/centres; rotated objects keep a rotated bounding box and their angle; Free Transform, Scale and Reflect along a rotated box pending) | 4–6 |
 | M2 | Drawing tools + smart guides | ✅ mostly done (Flare, Reshape, Live Corners widget dragging and per-corner radii and kinds landed, on any path's corners; Shaper rough-shape recognition and orientation steps, the remaining Pen modifier nuances; Shaper Groups with editable sources and separate fill/stroke edits landed; construction widget/refinements pending) | 12–18 |
 | M3 | Paint & appearance (swatches, color, gradient, stroke, appearance, transparency, styles) | ✅ done (M3.7–M3.98): swatches, groups, libraries, tints, Lab spots and Registration; Color Picker, Color panel, Color Guide, Color Themes, Edit Colors and Recolor Artwork; gradients that follow every transform, the annotator, linked stops, freeform gradients, focal points, gradients on strokes and Expand; stroke geometry, arrowheads, dashes fitted to corners, stroke on type, width profiles and the Width tool, Scale Strokes and preview bounds; Appearance targeting, container appearance, target circles, Expand Appearance; knockout, isolation, blend accuracy, CMYK blending, overprint, Attributes, masks and clipping, Flatten Transparency; graphic styles, links and libraries. Left: freeform and mixed spot/process gradients export as stops or process colours to SVG/PDF; confirm the Scale Strokes & Effects default | 4–8 |
@@ -79,6 +79,7 @@ After placed documents (File › Place of a `.vcnr` file, linked), M4.14–M4.98
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome hides editing toolbars, docked/floating panels and status controls; opening or choosing a document restores the saved workspace. Parity scores unchanged. |
 | 2026-10-12 | minor | About and Splash artwork explicitly credit Developer: Appaji Ambarisha; Contributors/Models retained. Parity scores unchanged. |

@@ -16,6 +16,7 @@ macro_rules! tl {
 pub mod background;
 mod brand;
 pub mod canvas;
+mod canvas_scrollbars;
 pub mod chrome;
 mod clipboard_probe;
 pub mod control;

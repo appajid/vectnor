@@ -172,6 +172,10 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
     if !fitted {
         fit(app, "view.fitArtboard");
     }
+    let scrollbars = crate::canvas_scrollbars::Scrollbars::layout(app, ui, rect);
+    let rect = scrollbars.canvas;
+    app.canvas_rect = Some(rect);
+    scrollbars.show(app, ui);
     let resp = ui.interact(rect, egui::Id::new("canvas"), Sense::click_and_drag());
     // A press on the canvas while the context menu is open only closes it (a drag too, which egui
     // alone would leave open); the tool doesn't get it.
@@ -184,6 +188,12 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
         handle_input(app, ui, &resp, rect);
     }
     let v = *app.view().unwrap_or(&View::default());
+    crate::canvas_scrollbars::Scrollbars::remember(
+        app,
+        ui,
+        if app.ui.view.rulers && app.ui.screen_mode < 3 { egui::Rect::from_min_max(full.min + vec2(RULER, RULER), full.max) } else { full },
+        rect,
+    );
     let xf = Xf::new(rect, &v);
     if app.ui.view.rulers && app.ui.screen_mode < 3 {
         ruler_guides(app, ui, full, rect, &xf);
@@ -2917,6 +2927,7 @@ mod tests {
         // far the point under `at` moved).
         let turn = |app: &mut VectnorApp, mods: &str| {
             let before = *app.view().unwrap();
+            let before_rect = app.canvas_rect.unwrap();
             if mods == "pinch" {
                 app.synthetic.extend([egui::Event::PointerMoved(at), egui::Event::Zoom(1.25)]);
             } else {
@@ -2931,7 +2942,7 @@ mod tests {
                 run(app);
             }
             let after = *app.view().unwrap();
-            let moved = Xf::new(rect, &after).to_doc(at).distance(Xf::new(rect, &before).to_doc(at));
+            let moved = Xf::new(app.canvas_rect.unwrap(), &after).to_doc(at).distance(Xf::new(before_rect, &before).to_doc(at));
             (after.zoom / before.zoom, (after.center - before.center) * after.zoom, moved)
         };
         let zooms_in = |(zoom, _, moved): (f64, _, f64)| zoom > 1.01 && moved < 1e-6;
@@ -3049,14 +3060,16 @@ mod tests {
         // Press at `at`, move by `by` and hold for `frames` frames (a 60th of a second each), let go.
         let press = |app: &mut VectnorApp, by: egui::Vec2, frames: usize| {
             frame(app, &ctx, vec![Event::PointerMoved(at)]);
+            let zoom_rect = app.canvas_rect.unwrap();
             frame(app, &ctx, vec![button(at, true)]);
             frame(app, &ctx, vec![Event::PointerMoved(at + by)]);
             for _ in 0..frames {
                 frame(app, &ctx, vec![]);
             }
             frame(app, &ctx, vec![button(at + by, false)]);
+            zoom_rect
         };
-        let doc_at = |app: &VectnorApp, p: Pos2| Xf::new(rect, app.view().unwrap()).to_doc(p);
+        let doc_at = |app: &VectnorApp, p: Pos2| Xf::new(app.canvas_rect.unwrap(), app.view().unwrap()).to_doc(p);
         let pinned = doc_at(&app, at);
         let z0 = app.view().unwrap().zoom;
         press(&mut app, vec2(100.0, 0.0), 0);
@@ -3076,9 +3089,9 @@ mod tests {
             app.run("prefs.reset", json!({})).unwrap();
             app.run("prefs.set", json!({"key": key, "value": false})).unwrap();
             app.view_mut().unwrap().zoom = z0;
-            press(&mut app, vec2(100.0, 50.0), 0);
+            let zoom_rect = press(&mut app, vec2(100.0, 50.0), 0);
             let z = app.view().unwrap().zoom;
-            assert!((z - z0 * (rect.width() / 100.0).min(rect.height() / 50.0) as f64).abs() < 1e-6, "{key} off: {z0} → {z}");
+            assert!((z - z0 * (zoom_rect.width() / 100.0).min(zoom_rect.height() / 50.0) as f64).abs() < 1e-6, "{key} off: {z0} → {z}");
         }
     }
 

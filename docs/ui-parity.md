@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome recent files are artwork thumbnails with background loading and scrolling; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome has recent artwork thumbnails; zoomed canvases have camera scrollbars; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -153,6 +153,7 @@ Layers panel.
 | Blend panel (30.7) | missing | Blend Options dialog exists |
 | SVG Interactivity, Retype, Comments, Version History panels | missing | the last two are cloud features (out of scope) |
 | Workspaces (save, reset, switch) | done | Welcome hides editing controls without changing the saved workspace; document tabs and New/Open return to editing. |
+| Canvas scrollbars when zoomed in (project owner requirement) | done | Overflowing axes get draggable scrollbars; ranges follow rotated artboards/artwork and free panning. Fit, Welcome and Presentation hide them. |
 | Welcome page without editing tools or panels (project owner requirement) | done | `lib.rs` gates the editor workspace while `menus::home_showing` is true. Recent files are artwork thumbnail cards; the page scrolls in short windows. |
 | Preferences: every option acts | partial | ~17 stored but unused (#394) |
 
@@ -167,6 +168,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome hides editing toolbars, docked/floating panels and status controls; opening or choosing a document restores the saved workspace. Parity scores unchanged. |
 | 2026-10-12 | minor | Community links, commands and unused icons removed; About shows Appaji Ambarisha as developer and retains Contributors/Models tabs. Parity scores unchanged. |
