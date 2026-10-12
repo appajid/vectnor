@@ -10,6 +10,8 @@
 <h1 align="center">Vectnor</h1>
 
 **Developer and maintainer:** Appaji Ambarisha (`@appajid`), from 2026-10-12.
+**Upstream and structure:** [source provenance](VECTNOR_UPSTREAM.md), [reviewed adaptations](docs/vectnor/UPSTREAM_AUDIT.md), and [shared conventions with Pagenor](docs/vectnor/STRUCTURE.md).
+
 **Repository policy:** keep [appajid/vectnor](https://github.com/appajid/vectnor) private.
 
 <p align="center">
@@ -154,7 +156,7 @@ For the experimental, unsupported 64-bit Windows 7 build, see [Windows 7 instruc
 
 ## Status
 
-The initial Vectnor import retains a known geometry test failure: `planar::tests::pieces_cut_out_of_their_inputs`. Formatting, workspace lint and the latest UI/WASM checks pass; full CI remains blocked by this recorded regression ([G11](docs/gaps.md#g11-correctness-bugs-in-core-tools)).
+Reviewed upstream fixes resolve the initial planar-cutting regression. All seven local CI gates pass: formatting, workspace lint, tests, assets, branding, layering and WASM. [Pinned adaptations and verification](docs/vectnor/UPSTREAM_AUDIT.md) retain the remaining correctness and platform limits.
 
 Renamed to **Vectnor** on 2026-10-12. Native documents use `.vcnr`.
 

@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome has recent artwork thumbnails; zoomed canvases have camera scrollbars; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -69,7 +69,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 |---|---:|---:|---|---:|---|
 | Selection, transform & align tools | 6 | 85% | Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances | 4–6 | estimated |
 | Drawing tools (Pen, Curvature, Pencil, shapes, Shaper) | 7 | 85% | Shaper construction widget, Pencil/Pen nuances, Blob Brush options, Touch Type, Dimension tool, Live Corners on curved corners; see [ui-parity.md](ui-parity.md) | 8–13 | estimated |
-| Path operations, Pathfinder, Shape Builder, Live Paint | 5 | 80% | Shape Builder misses planar regions in real files (#937, #893), its gap detection and options; Live Paint Gap Options | 4–8 | estimated (lowered from 86%: open issues) |
+| Path operations, Pathfinder, Shape Builder, Live Paint | 5 | 80% | Shape Builder still misses some planar regions (#937); line-grid seams (#893) and persisted cutting regression fixed; gap detection/options and Live Paint Gap Options remain | 4–8 | estimated (lowered from 86%: open issues) |
 | Colour, swatches, gradients, patterns, mesh, recolor | 7 | 92% | 30.0's gradient dither, perceptual blending and gradient presets; freeform and mixed spot/process gradients in SVG/PDF | 4–7 | estimated (lowered from 96%: target moved) |
 | Strokes, brushes, width profiles | 5 | 88% | Art brush Overlap, Pattern brush auto corners, brush libraries, pen pressure on macOS, tilt/bearing/rotation | 8–15 | estimated |
 | Appearance, transparency, graphic styles, masks | 5 | 97% | raster effect reach in preview bounds | 1–2 | estimated |
@@ -81,7 +81,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 | Symbols, blends, envelopes, Repeat, perspective | 5 | 85% | 30.7's Blend panel with ease in/out, dynamic symbols, symbol libraries, Start Global Edit, envelope Anti-Alias/Preserve Shape | 6–10 | estimated (lowered from 88%: target moved) |
 | Image Trace, graphs, image tools | 3 | 75% | graph Design/Column/Marker, Image Trace Create Strokes depth (Create Object Mosaic is done) | 5–8 | estimated (raised from 72%) |
 | Layers, artboards, document setup | 5 | 78% | 30.0's artboard locking and colours and managing artboards from the canvas, Layers panel row context menus and Collect for Export | 5–8 | estimated (lowered from 82%: target moved) |
-| View & navigation | 3 | 70% | New View/Edit Views, multiple windows and Arrange, Snap to Glyph | 9–14 | estimated |
+| View & navigation | 3 | 70% | saved-view input validates before mutation; multiple windows and Arrange, Snap to Glyph remain | 9–14 | estimated |
 | Guides, grids, smart guides, snapping, rulers | 3 | 80% | 30.0's tangent and perpendicular snapping and its snapping panel, "intersect" smart guides, global/video rulers, distance readouts while drawing | 4–7 | estimated (lowered from 85%: target moved) |
 | File formats | 6 | 75% | `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
 | Export for Screens, Asset Export, slices, Save for Web | 3 | 85% | anti-aliasing ghost borders (#983), TIFF in Export for Screens (30.2) | 2–4 | estimated |
@@ -191,7 +191,7 @@ Depth here is "does the basic use work", not the area's full score.
 | Type: point and area text, font, size | 8 | 88% | font menu with previews; hyphenation options missing (rarely touched) |
 | Align, group, arrange | 6 | 95% | |
 | Layers, basic | 4 | 85% | Layers panel rework; no row context menus |
-| Shape Builder | 5 | 70% | beginners lean on it; region detection fails in some files (#937, #893) |
+| Shape Builder | 5 | 70% | beginners lean on it; region detection still fails in some files (#937); line-grid seams (#893) fixed |
 | Pathfinder | 4 | 95% | exact booleans |
 | Place images, Image Trace | 4 | 85% | 13 trace presets |
 | Export PNG/JPG/SVG/PDF, print | 8 | 88% | ghost borders in some Asset Export output (#983) |
@@ -359,6 +359,7 @@ since 2026-10-01.
 
 ## Evidence: what ships today, by area
 
+- **Reviewed upstream correctness/stability:** line-grid Shape Builder outlines share edges and planar loose pieces cut correctly; huge EPS angles normalize without turn loops; extreme device geometry is excluded from rasterization; saved views validate exact finite coordinates/rotation. Agent replies lost in flight are never replayed. Unpainted zero-width strokes become 1 pt when colored; closed DXF splines export their closed flag. See [pinned source and verification](vectnor/UPSTREAM_AUDIT.md). Scores and remaining-area estimates are unchanged.
 - **Canvas navigation:** overflowing axes have camera scrollbars with viewport-sized thumbs, drag/click and keyboard panning. Ranges include every artboard and artwork, rotate with the view, and extend for unrestricted Hand/wheel panning. Bounds are cached by document revision; bars are outside the drawing viewport and use `view.setZoom` with a new center (`canvas_scrollbars.rs`).
 - **Recent artwork:** six clickable thumbnail cards use embedded native previews or render the first artboard. One desktop worker loads bounded files; unsupported/missing previews keep a clickable placeholder. Save/Open invalidates stale images; browser sessions remember previews from opened/saved documents (`recent_thumbnails.rs`, `canvas.rs`).
 - **Welcome workspace:** editing toolbars, dock and floating palettes are hidden on Home and restored for documents (`crates/ui-egui/src/lib.rs`, `menus::home_showing`). The app bar, New/Open, recent files and document tabs remain available.
@@ -457,6 +458,7 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome hides editing toolbars, docked/floating panels and status controls; opening or choosing a document restores the saved workspace. Parity scores unchanged. |

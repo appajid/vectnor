@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** major (moved from the ROADMAP's "Where we're lacking", re-ranked, added file-format, stability, hardware, localization, ecosystem and AI gaps) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -86,9 +86,9 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G11 Correctness bugs in core tools
 
-- **Missing:** Shape Builder misses planar regions and targets whole shapes (#937, #893); Transform effect dialog's invisible checkboxes and missing options (#885);
+- **Missing:** Shape Builder still misses some planar regions and targets whole shapes (#937); merged line-grid seams (#893) and the recorded loose-end cutting regression are fixed; Transform effect dialog's invisible checkboxes and missing options (#885);
   PDF text boxes moving on open (#722); SVG units reverting to points (#864); bezier drag preview freezing (#834).
-- **Observed regression (2026-10-12):** `planar::tests::pieces_cut_out_of_their_inputs` fails on three crossing open lines: cutting a piece loses the wrong length. Reproduction seed is retained in `crates/pathops/proptest-regressions/planar.txt`; this unchanged geometry code prevents a fully passing CI run.
+- **Resolved regression (2026-10-12):** reviewed upstream #1081/#1230 join shared planar edges and close the persisted `pieces_cut_out_of_their_inputs` failure. The retained seed and original loose-end/grid tests pass with 2,000 property cases. Some near-horizontal loose-end cases remain, as documented in [the upstream audit](vectnor/UPSTREAM_AUDIT.md).
 - **Impact:** wrong output in everyday work.
 - **Estimate:** 8–15 h.
 
@@ -201,6 +201,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | G11: recorded reproducible planar open-line cutting property failure discovered during branding validation |
 | 2026-10-11 | minor | G9: legacy `.ai` without the prolog opens with its layers (#1027) |
 | 2026-10-11 | minor | G9: `.ai` pattern fills and global colours read from the editing data (#1025) |

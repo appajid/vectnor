@@ -1,12 +1,14 @@
 # Architecture
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** major (first version, written from the workspace as it is on origin/main `01e165af`) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor is built today. The design rationale lives in the local, gitignored `plan/architecture.md`;
 this file describes what is committed. Day-to-day rules (clean-room, never crash, quality gates) are in
 [`AGENTS.md`](../AGENTS.md) and [development.md](development.md).
 
 ## Shape
+
+Vectnor follows the same workspace/command/host structure as Pagenor, with application-specific document and rendering crates. Repository metadata is inherited centrally. [Shared structure](vectnor/STRUCTURE.md), [upstream provenance](../VECTNOR_UPSTREAM.md) and [version policy](vectnor/VERSIONING.md) define the integration boundaries.
 
 A Cargo workspace of 23 library crates under `crates/`, three apps under `apps/` and `xtask`, ~354k lines of Rust,
 pure Rust (no handwritten JS/TS). The same engine runs the desktop app, the browser build (WASM), the headless
@@ -69,6 +71,7 @@ saves copies in the background. See [development.md](development.md#robustness-v
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Native document extension changed to `.vcnr`; save/open filters, file associations, recovery, examples and documentation agree. Stable `vectnor` format header and parity scores unchanged. |
 | 2026-10-10 | minor | Added the `three-d` crate |
 | 2026-10-10 | major | First version, from the workspace, the layering table and the existing docs |

@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** major (first checklist, from the `FORMATS` table and Illustrator 2026's documented formats) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -76,10 +76,15 @@ the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPri
 | Affinity `.af`, `.afdesign`, `.afpub` | no | yes (beyond Illustrator) | no (#665) | 51 pinned files, [affinity-validation.md](affinity-validation.md) |
 | Clipboard: PDF, SVG, PNG, EMF, text | yes | yes | yes | copied files paste as art |
 
+## Reviewed upstream hardening
+
+EPS `arc`/`arcn` normalize huge angles in constant time, preserving bounded sweeps and current-point behavior. Closed DXF SPLINE exports carry the closed bit as well as the planar bit. Original synthetic tests cover both; circle/arc fitting and other listed format gaps remain. [Audit](vectnor/UPSTREAM_AUDIT.md).
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Native document extension changed to `.vcnr`; save/open filters, file associations, recovery, examples and documentation agree. Stable `vectnor` format header and parity scores unchanged. |
 | 2026-10-11 | minor | `.ai` in PostScript form opens through its layers, also without its prolog (#1027) |
 | 2026-10-11 | minor | `.ai` editing data: global process colours and pattern fills read, so they no longer drop sublayers (#1025) |

@@ -2,6 +2,7 @@
 name = "vectnor-web"
 description = "Vectnor in the browser (eframe web runner, WebGPU with WebGL2 fallback)"
 version.workspace = true
+repository.workspace = true
 edition.workspace = true
 license.workspace = true
 publish = false

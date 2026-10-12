@@ -1,6 +1,7 @@
 [package]
 name = "vectnor-format"
 version.workspace = true
+repository.workspace = true
 edition.workspace = true
 license.workspace = true
 description = "Vectnor native .vcnr format (versioned JSON, embedded images)"

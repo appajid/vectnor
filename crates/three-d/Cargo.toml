@@ -1,6 +1,7 @@
 [package]
 name = "vectnor-three-d"
 version.workspace = true
+repository.workspace = true
 edition.workspace = true
 license.workspace = true
 description = "Portable surface-of-revolution geometry and projected vector shading"

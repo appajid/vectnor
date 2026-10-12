@@ -1,5 +1,7 @@
 # Vectnor MCP server
 
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (lost remote replies report uncertainty and never replay edits)
+
 `vectnor-cli mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server on stdio
 (newline-delimited JSON-RPC 2.0; see [Protocol](#protocol) for version negotiation). Agents use it to
 draw, inspect and look at Vectnor documents.
@@ -308,7 +310,12 @@ stroke instead of the whole object: `run_command effect.apply {"effect": "path.o
 `apply_effect` uses the active item. `effect.list` reports each object's item effects under `applied[].items`.
 
 Errors (unknown tool, bad arguments, a disabled or failing command) come back as a normal result with
-`isError: true` and a message. The model can read the message and retry.
+`isError: true` and a message. Read the reason and correct invalid arguments before retrying.
+
+If a remote request loses its reply, the operation may already have completed. The backend drops
+the connection and reports that uncertainty; it never automatically sends the request again. The
+next explicit call reconnects. Use `inspect_document` to check the actual state before deciding
+whether to repeat an edit, so a successful edit with a lost reply cannot be duplicated.
 
 Swatches go through `run_command`: `swatch.list` lists every swatch with its colour group, kind and colour;
 `swatch.edit {name, newName?, color?, mode?, global?, spot?}` edits one (fills, strokes and text linked to a
@@ -3075,3 +3082,9 @@ Envelope Options.
 {"name":"run_command","arguments":{"command":"object.envelope.editContents","params":{"editing":true}}}
 {"name":"run_command","arguments":{"command":"object.mesh.movePoint","params":{"id":12,"index":4,"x":220,"y":140,"handle":0}}}
 ```
+
+## Revision history
+
+| Date | Change | Summary |
+|---|---|---|
+| 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |

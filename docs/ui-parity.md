@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Welcome has recent artwork thumbnails; zoomed canvases have camera scrollbars; parity scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -157,6 +157,12 @@ Layers panel.
 | Welcome page without editing tools or panels (project owner requirement) | done | `lib.rs` gates the editor workspace while `menus::home_showing` is true. Recent files are artwork thumbnail cards; the page scrolls in short windows. |
 | Preferences: every option acts | partial | ~17 stored but unused (#394) |
 
+## Reviewed correctness fixes
+
+- Shape Builder line grids merge through shared edges; persisted loose-piece cutting regression fixed. Other region cases remain.
+- Paint/Appearance restore a visible 1 pt stroke when adding color to an unpainted zero-width stroke; explicit painted zero widths and other appearance items remain.
+- Saved views reject malformed coordinates and rotation before changing document/history.
+
 ## Look and feel
 
 Medium Dark theme and four brightness levels, the categorized and Advanced toolbars, 35 pt document tabs,
@@ -168,6 +174,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome hides editing toolbars, docked/floating panels and status controls; opening or choosing a document restores the saved workspace. Parity scores unchanged. |

@@ -1,5 +1,7 @@
 # Control protocol
 
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (lost-reply recovery preserves uncertain document edits)
+
 `vectnor --control <port>` listens on `127.0.0.1:<port>` (loopback only). One JSON request per line:
 `{"id": 1, "method": "ui.inspect", "params": {}}` → `{"id": 1, "ok": true, "result": {...}}` or `{"id":1,"ok":false,"error":"..."}`.
 
@@ -12,6 +14,11 @@ web page's cross-origin `fetch` to `127.0.0.1:<port>`) therefore can't smuggle a
 its request line is rejected first. At most 16 connections are served at once; further ones get an error
 line and are closed. Clients that get an error reply should reconnect. The port has no authentication,
 so only enable it while you use it. Transport: `apps/vectnor/src/control_server.rs`.
+
+If the connection fails after a request was sent, its operation may have completed even though no
+reply arrived. Reconnect and inspect the current state before reissuing an edit. Vectnor's remote
+MCP adapter follows this rule: it reports uncertain completion, does not replay the failed request,
+and reconnects for the next explicit call.
 
 ## Confining file access
 
@@ -697,3 +704,9 @@ drags its points (a press on a point focuses it, and a press on one of the focus
 handle); a Mesh tool click inside a mesh envelope adds a row and a column. While an envelope or its content is
 selected the Control bar shows its controls (Edit Envelope / Edit Contents, warp style, orientation, bend and
 distortions or mesh rows and columns, Reset, Envelope Options); each runs an `object.envelope.*` command.
+
+## Revision history
+
+| Date | Change | Summary |
+|---|---|---|
+| 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |
