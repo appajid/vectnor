@@ -488,6 +488,91 @@ fn smooth_tool_reduces_jagged_path() {
 }
 
 #[test]
+fn alt_smooth_borrows_the_saved_smooth_tool_and_restores_freehand() {
+    for tool in ["pencil", "paintbrush"] {
+        let mut s = session();
+        let anchors: Vec<_> = (0..=40).map(|i| json!({"x":100.0 + i as f64 * 5.0,"y":200.0 + if i % 2 == 0 {0.0} else {1.5}})).collect();
+        let id = NodeId(s.execute("path.create", &json!({"anchors":anchors})).unwrap()["id"].as_u64().unwrap());
+        let before = path(&s, id);
+        s.set_tool_option_cmd(&json!({"tool":"smooth","key":"fidelity","value":4.0})).unwrap();
+        s.set_tool_option_cmd(&json!({"tool":tool,"values":{"fidelity":0.5,"keepSelected":false,"altToSmooth":true}})).unwrap();
+        s.select_tool(tool, view()).unwrap();
+        let n = undo_steps(&s);
+        let alt = Mods { alt: true, ..Default::default() };
+        s.pointer(&PointerEvent::new(PointerKind::Down, 90.0, 200.0).with_mods(alt), view()).unwrap();
+        assert_eq!(s.tool_id(), "smooth");
+        assert_eq!(s.tool_options()["fidelity"], json!(4.0), "Smooth uses its own saved fidelity");
+        // Releasing Alt mid-drag leaves this gesture owned by Smooth until mouse-up.
+        s.pointer(&PointerEvent::new(PointerKind::Drag, 200.0, 200.0), view()).unwrap();
+        s.pointer(&PointerEvent::new(PointerKind::Up, 310.0, 200.0), view()).unwrap();
+        assert_eq!(s.tool_id(), tool);
+        assert_eq!(s.tool_options()["fidelity"], json!(0.5));
+        assert_eq!(s.tool_options()["keepSelected"], json!(false));
+        assert_eq!(paths(&s).len(), 1, "smooths existing art instead of drawing a stroke");
+        assert!(path(&s, id).anchor_count() < 20);
+        assert_eq!(s.doc().unwrap().selection.objects, [id]);
+        assert_eq!(undo_steps(&s), n + 1);
+        assert_eq!(s.journal.last().unwrap().0, "path.smoothRegion");
+        let after = path(&s, id);
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert_eq!(path(&s, id), before);
+        s.execute("edit.redo", &json!({})).unwrap();
+        assert_eq!(path(&s, id), after);
+        // The next ordinary drag draws again, applying the retained Keep selected setting.
+        gesture(&mut s, &[(400.0, 300.0), (450.0, 310.0), (500.0, 300.0)], Mods::default());
+        assert_eq!(paths(&s).len(), 2);
+        assert!(s.doc().unwrap().selection.is_empty());
+    }
+}
+
+#[test]
+fn alt_smooth_cancel_empty_selection_and_switch_leave_art_unchanged() {
+    let mut s = session();
+    let id = line(&mut s, 100.0, 200.0, 300.0, 200.0);
+    s.select_tool("pencil", view()).unwrap();
+    s.set_tool_option("altToSmooth", &json!(true));
+    let before = s.doc().unwrap().doc.clone();
+    let n = undo_steps(&s);
+    let start = |s: &mut Session| {
+        s.pointer(&PointerEvent::new(PointerKind::Down, 100.0, 200.0).with_mods(Mods { alt: true, ..Default::default() }), view()).unwrap();
+        s.pointer(&PointerEvent::new(PointerKind::Drag, 200.0, 200.0), view()).unwrap();
+    };
+    start(&mut s);
+    s.tool_key(ToolKey::Escape, Mods::default(), view()).unwrap();
+    assert_eq!(s.tool_id(), "pencil");
+    assert!(!s.tool_busy());
+    assert_eq!(s.doc().unwrap().doc, before);
+    assert_eq!(s.doc().unwrap().selection.objects, [id]);
+    assert_eq!(undo_steps(&s), n);
+    start(&mut s);
+    s.select_tool("rectangle", view()).unwrap();
+    assert_eq!(s.tool_id(), "rectangle");
+    assert_eq!(s.doc().unwrap().doc, before);
+    s.execute("select.none", &json!({})).unwrap();
+    s.select_tool("pencil", view()).unwrap();
+    gesture(&mut s, &[(400.0, 300.0), (450.0, 310.0)], Mods { alt: true, ..Default::default() });
+    assert_eq!(s.doc().unwrap().doc, before, "Alt with no selected path draws nothing");
+    assert_eq!(undo_steps(&s), n);
+    assert_eq!(s.tool_id(), "pencil");
+}
+
+#[test]
+fn alt_smooth_keeps_cmd_selection_priority_and_does_not_close_a_normal_drag() {
+    let mut s = session();
+    let id = line(&mut s, 100.0, 200.0, 300.0, 200.0);
+    s.select_tool("pencil", view()).unwrap();
+    s.set_tool_option("altToSmooth", &json!(true));
+    s.pointer(&PointerEvent::new(PointerKind::Down, 100.0, 200.0).with_mods(Mods { cmd: true, alt: true, ..Default::default() }), view()).unwrap();
+    assert_eq!(s.tool_id(), "selection");
+    s.pointer(&PointerEvent::new(PointerKind::Up, 100.0, 200.0), view()).unwrap();
+    assert_eq!(s.tool_id(), "pencil");
+    assert_eq!(path(&s, id).anchor_count(), 2);
+    drag(&mut s, "pencil", &[(400.0, 300.0), (450.0, 320.0), (500.0, 300.0)], Mods { alt: true, ..Default::default() });
+    assert_eq!(paths(&s).len(), 2);
+    assert!(!paths(&s).last().unwrap().1.is_closed(), "Alt acquired after the press does not close this normal drawing gesture");
+}
+
+#[test]
 fn join_tool_joins_two_lines() {
     let mut s = session();
     let a = line(&mut s, 100.0, 100.0, 200.0, 100.0);

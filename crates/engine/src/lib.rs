@@ -813,7 +813,7 @@ pub struct Session {
     /// Executed commands (for actions and debugging).
     pub journal: Vec<(String, Value)>,
     pub(crate) tool: Box<dyn Tool>,
-    /// While Cmd lends `tool` (a selection tool) for a drag: the tool it was lent to, which comes
+    /// While a modifier lends `tool` (selection or Smooth) for a drag: the original tool, which comes
     /// back as it was at the release ([`Session::pointer`]).
     pub(crate) lender: Option<Box<dyn Tool>>,
     /// The selection tool chosen last (Selection, Direct Selection or Group Selection): the one Cmd

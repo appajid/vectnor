@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Pencil/Paintbrush Keep selected option implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -53,7 +53,7 @@ tools, never checked side by side) isn't captured row by row.
 | Each anchor snaps to Smart Guides and construction angles | done | `DrawSnap` |
 | Curvature tool: click/drag points, double-click or Alt-click for a corner, temporary Direct Selection, point conversion | partial | modifiers requested in #975 |
 | Add/Delete/Anchor Point tools; Anchor Point tool drags segments to reshape | done | |
-| Pencil: Fidelity, Keep selected, Alt to Smooth, edit selected paths, close by proximity | partial | Keep selected is configurable and saved separately for Pencil/Paintbrush; final and continued strokes follow it. Alt to Smooth remains missing. [Pencil options reference](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/draw-shapes/pencil-tool-options.html). |
+| Pencil: Fidelity, Keep selected, Alt to Smooth, edit selected paths, close by proximity | partial | Keep selected is saved per tool. Optional Alt/Option smoothing is shared by Pencil/Paintbrush and borrows Smooth with its own saved fidelity; release/Escape restore the drawing tool. Open-end continuation works; interior path redrawing and unchecked Alt straight-line drawing remain gaps. [Pencil options reference](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/draw-shapes/pencil-tool-options.html). |
 | Join tool scrubbing, Average, Join with corner/smooth choice | done | |
 | Simplify (slider, auto, corner angle threshold) | done | |
 
@@ -174,6 +174,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |

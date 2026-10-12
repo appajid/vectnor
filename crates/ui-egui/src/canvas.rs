@@ -2185,6 +2185,43 @@ mod tests {
         out.textures_delta.clear();
     }
 
+    #[test]
+    fn alt_smooth_on_the_canvas_returns_to_the_freehand_tool() {
+        for tool in ["pencil", "paintbrush"] {
+            let mut app = VectnorApp::new(Session::new(), Default::default());
+            app.run("file.new", json!({"width":400,"height":300})).unwrap();
+            let anchors: Vec<_> = (0..=40).map(|i| json!({"x":40.0+i as f64*7.5,"y":150.0+if i%2==0 {0.0} else {1.5}})).collect();
+            let id = vectnor_doc::NodeId(app.run("path.create", json!({"anchors":anchors})).unwrap()["id"].as_u64().unwrap());
+            app.run("tool.setOption", json!({"tool":tool,"values":{"altToSmooth":true,"keepSelected":false}})).unwrap();
+            app.select_tool(tool);
+            let ctx = egui::Context::default();
+            frame(&mut app, &ctx, vec![]);
+            let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+            let (from, to) = (xf.to_screen(Point::new(30.0, 150.0)), xf.to_screen(Point::new(350.0, 150.0)));
+            let alt = egui::Modifiers { alt: true, ..Default::default() };
+            frame(&mut app, &ctx, vec![egui::Event::ModifiersChanged(alt), egui::Event::PointerMoved(from)]);
+            frame(
+                &mut app,
+                &ctx,
+                vec![egui::Event::PointerButton { pos: from, button: egui::PointerButton::Primary, pressed: true, modifiers: alt }],
+            );
+            assert_eq!(app.session.tool_id(), "smooth");
+            // The same gesture continues smoothing after Alt is released.
+            frame(&mut app, &ctx, vec![egui::Event::ModifiersChanged(egui::Modifiers::NONE), egui::Event::PointerMoved(to)]);
+            frame(
+                &mut app,
+                &ctx,
+                vec![egui::Event::PointerButton { pos: to, button: egui::PointerButton::Primary, pressed: false, modifiers: egui::Modifiers::NONE }],
+            );
+            assert_eq!(app.session.tool_id(), tool);
+            let st = app.session.active().unwrap();
+            assert_eq!(st.doc.node_count(), 2, "only the layer and the original path remain");
+            assert!(st.doc.node(id).unwrap().path_data().unwrap().anchor_count() < 20);
+            assert_eq!(st.selection.objects, [id]);
+            assert_eq!(st.history.undo.last().unwrap().label, "Smooth");
+        }
+    }
+
     /// A click with the Selection tool inside an artboard makes it the active one, and Paste in
     /// Place then pastes onto it, where the objects were on their own artboard (#693).
     #[test]

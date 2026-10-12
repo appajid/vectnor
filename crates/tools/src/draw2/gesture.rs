@@ -35,6 +35,8 @@ pub struct GestureTool {
     pub fill: bool,
     /// Keep a completed Pencil/Paintbrush stroke selected.
     pub keep_selected: bool,
+    /// Alt/Option borrows Smooth instead of closing a freehand stroke.
+    pub alt_to_smooth: bool,
     /// "Edit selected paths within N pixels".
     pub edit_within: f64,
     /// "Close paths when ends are within N pixels".
@@ -67,6 +69,7 @@ impl GestureTool {
             size: 10.0,
             fill: false,
             keep_selected: true,
+            alt_to_smooth: false,
             edit_within: 12.0,
             close_within: 15.0,
             snap: DrawSnap::default(),
@@ -165,7 +168,7 @@ impl GestureTool {
                     return vec![];
                 }
                 let near = pts.len() > 2 && pts[0].distance(pts[pts.len() - 1]) <= cx.tol(self.close_within);
-                let closed = m.alt || (self.extend.is_none() && near);
+                let closed = (m.alt && !self.alt_to_smooth) || (self.extend.is_none() && near);
                 vec![Action::Preview("path.freehand".into(), self.freehand_params(closed)), Action::Commit]
             }
             "blobBrush" => vec![Action::Exec("path.blob".into(), json!({"points": points_json(pts), "size": self.size}))],
@@ -314,7 +317,7 @@ impl Tool for GestureTool {
     fn options(&self) -> Value {
         match self.id {
             "pencil" | "paintbrush" => {
-                json!({"fidelity": self.fidelity, "fill": self.fill, "keepSelected": self.keep_selected, "editWithin": self.edit_within, "closeWithin": self.close_within})
+                json!({"fidelity": self.fidelity, "fill": self.fill, "keepSelected": self.keep_selected, "altToSmooth": self.alt_to_smooth, "editWithin": self.edit_within, "closeWithin": self.close_within})
             }
             "smooth" => json!({"fidelity": self.fidelity}),
             "blobBrush" | "eraser" => json!({"size": self.size}),
@@ -327,6 +330,7 @@ impl Tool for GestureTool {
             "size" => self.size = v.as_f64().unwrap_or(self.size).clamp(0.1, 1000.0),
             "fill" => self.fill = v.as_bool().unwrap_or(self.fill),
             "keepSelected" => self.keep_selected = v.as_bool().unwrap_or(self.keep_selected),
+            "altToSmooth" => self.alt_to_smooth = v.as_bool().unwrap_or(self.alt_to_smooth),
             "editWithin" => self.edit_within = v.as_f64().unwrap_or(self.edit_within).clamp(0.0, 100.0),
             "closeWithin" => self.close_within = v.as_f64().unwrap_or(self.close_within).clamp(0.0, 100.0),
             _ => {}

@@ -76,6 +76,25 @@ fn a_gesture_keeps_what_it_changed_and_a_document_switch_keeps_options() {
 }
 
 #[test]
+fn alt_smooth_setting_is_shared_by_freehand_tools_and_saved() {
+    let mut s = session();
+    select(&mut s, "paintbrush");
+    assert_eq!(s.tool_options()["altToSmooth"], json!(false));
+    s.set_tool_option_cmd(&json!({"tool":"pencil","key":"altToSmooth","value":true})).unwrap();
+    assert_eq!(s.tool_options()["altToSmooth"], json!(true), "setting Pencil also updates active Paintbrush");
+    select(&mut s, "pencil");
+    assert_eq!(s.tool_options()["altToSmooth"], json!(true));
+    let saved = serde_json::to_string(&s.prefs).unwrap();
+    let mut next = session();
+    next.apply_prefs(serde_json::from_str(&saved).unwrap());
+    assert_eq!(next.tool_options_of("pencil")["altToSmooth"], json!(true));
+    assert_eq!(next.tool_options_of("paintbrush")["altToSmooth"], json!(true));
+    select(&mut next, "paintbrush");
+    next.set_tool_option("altToSmooth", &json!(false));
+    assert_eq!(next.tool_options_of("pencil")["altToSmooth"], json!(false));
+}
+
+#[test]
 fn keep_selected_is_saved_separately_for_pencil_and_paintbrush() {
     let mut s = session();
     select(&mut s, "pencil");

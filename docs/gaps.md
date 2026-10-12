@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Pencil/Paintbrush Keep selected option implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -43,7 +43,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G1 Interaction fidelity
 
-- **Completed locally (2026-10-12):** Pencil/Paintbrush Keep selected is configurable and saved separately for each tool. Preview selection, finished/continued strokes, cancellation, tool-switch completion and undo/redo follow the setting. Alt-to-Smooth remains a separate gap.
+- **Completed locally (2026-10-12):** optional Alt/Option smoothing from Pencil/Paintbrush borrows the real Smooth tool with saved fidelity. One undo step, no extra path, original tool restored on release/Escape; Cmd/Ctrl selection keeps priority. Interior Pencil path redrawing and unchecked Alt straight-line drawing remain.
+- **Completed locally (2026-10-12):** Pencil/Paintbrush Keep selected is configurable and saved separately for each tool. Preview selection, finished/continued strokes, cancellation, tool-switch completion and undo/redo follow the setting.
 - **Completed locally (2026-10-12):** Alt/Option swaps a new ruler guide's orientation, preview and snapping while dragging from either ruler; release creates one guide in one undo step. Existing-guide Alt-drag retains copying.
 - **Missing:** a tool-by-tool, panel-by-panel pass over modifiers, cursors, the Properties panel per context,
   isolation mode and small behaviours, against the public tool and shortcut documentation. Itemized in
@@ -203,6 +204,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |

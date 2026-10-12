@@ -107,20 +107,29 @@ impl Session {
         Some(self.last_selection_tool.unwrap_or(if edits_anchors(id) { "directSelection" } else { "selection" }))
     }
 
-    /// A press with Cmd held (Ctrl elsewhere) and any other tool than a selection tool: the
-    /// selection tool [`Self::lent_tool`] takes the gesture, pressing without Cmd (a plain click,
-    /// not Select Behind). The tool lent to stays as it was, unaware, until the release.
-    fn lend_selection_tool(&mut self, ev: &PointerEvent) -> PointerEvent {
-        if ev.kind != PointerKind::Down || !ev.mods.cmd || self.lender.is_some() {
+    /// A temporary tool for a press/hover: Cmd lends selection first; otherwise enabled
+    /// Alt/Option from Pencil/Paintbrush lends Smooth with its own saved options.
+    fn temporary_tool(&self, mods: Mods) -> Option<&'static str> {
+        if mods.cmd {
+            return self.lent_tool(self.tool.id());
+        }
+        (mods.alt && matches!(self.tool.id(), "pencil" | "paintbrush") && self.tool.options()["altToSmooth"].as_bool().unwrap_or(false))
+            .then_some("smooth")
+    }
+
+    /// A modifier-held press lends a tool for the whole gesture. The original tool stays as it
+    /// was until release; the borrowed selection tool presses without Cmd (not Select Behind).
+    fn lend_tool(&mut self, ev: &PointerEvent) -> PointerEvent {
+        if ev.kind != PointerKind::Down || self.lender.is_some() {
             return *ev;
         }
-        let Some(id) = self.lent_tool(self.tool.id()) else { return *ev };
+        let Some(id) = self.temporary_tool(ev.mods) else { return *ev };
         let lent = self.make_tool(id);
         self.lender = Some(std::mem::replace(&mut self.tool, lent));
         PointerEvent { mods: Mods { cmd: false, ..ev.mods }, ..*ev }
     }
 
-    /// The lent selection tool's gesture is over: the tool it was lent to is back as it was (the
+    /// The lent tool's gesture is over: the tool it was lent to is back as it was (the
     /// Pen goes on drawing its path).
     pub(crate) fn give_back_tool(&mut self, view: ViewInfo) -> Result<()> {
         let Some(lender) = self.lender.take() else { return Ok(()) };
@@ -259,7 +268,7 @@ impl Session {
         if let Some(r) = self.plane_widget_pointer(ev, view) {
             return r;
         }
-        let ev = &self.lend_selection_tool(ev);
+        let ev = &self.lend_tool(ev);
         let acts = self.with_tool_cx(view, |t, cx| t.pointer(cx, ev));
         let r = self.take_tool_panic().and_then(|()| {
             // A gesture may change options (Alt-drag sizes a Liquify brush): keep them.
@@ -316,6 +325,7 @@ impl Session {
     }
 
     pub fn tool_key(&mut self, key: ToolKey, mods: Mods, view: ViewInfo) -> Result<Vec<UiRequest>> {
+        let cancel_smooth = key == ToolKey::Escape && self.tool.id() == "smooth" && self.lender.is_some();
         // 1–4 pick the active perspective plane while the grid is shown.
         if let Some(plane) = self.plane_key(key) {
             self.execute("perspective.plane.set", &serde_json::json!({ "plane": plane.id() }))?;
@@ -323,7 +333,11 @@ impl Session {
         }
         let acts = self.with_tool_cx(view, |t, cx| t.key(cx, key, mods));
         self.take_tool_panic()?;
-        self.apply_actions(acts)
+        let r = self.apply_actions(acts);
+        if cancel_smooth {
+            self.give_back_tool(view)?;
+        }
+        r
     }
 
     /// Typed text for the active tool (Type tool).
@@ -384,10 +398,10 @@ impl Session {
     }
 
     /// The pointer the active tool shows at `p` (General › Use Precise Cursors makes the drawing
-    /// tools' a crosshair, [`Cursor::precise`]). With Cmd held, the pointer of the selection tool a
-    /// press would borrow ([`Self::lend_selection_tool`]).
+    /// tools' a crosshair, [`Cursor::precise`]). Modifier hovers use the pointer of the tool a
+    /// press would borrow ([`Self::lend_tool`]).
     pub fn cursor(&mut self, p: Point, mods: Mods, view: ViewInfo) -> Cursor {
-        let lent = if mods.cmd && self.lender.is_none() { self.lent_tool(self.tool.id()) } else { None };
+        let lent = if self.lender.is_none() { self.temporary_tool(mods) } else { None };
         let c = match lent {
             Some(id) => {
                 let lent = self.make_tool(id);

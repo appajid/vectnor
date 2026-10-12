@@ -30,6 +30,7 @@ const ROWS: &[Row] = &[
     (&["rectangularGrid"], None, &["rows", "columns"]),
     (&["polarGrid"], None, &["concentric", "radial"]),
     (&["pencil", "paintbrush"], None, &["fidelity", "fill", "keepSelected", "editWithin", "closeWithin"]),
+    (&["pencil", "paintbrush"], Some("freehand"), &["altToSmooth"]),
     (&["smooth"], None, &["fidelity"]),
     (&["blobBrush", "eraser"], None, &["size"]),
     (&["polygon"], None, &["sides"]),
