@@ -1,6 +1,6 @@
 # Control protocol
 
-> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (lost-reply recovery preserves uncertain document edits)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (new ruler-guide orientation modifier documented)
 
 `vectnor --control <port>` listens on `127.0.0.1:<port>` (loopback only). One JSON request per line:
 `{"id": 1, "method": "ui.inspect", "params": {}}` → `{"id": 1, "ok": true, "result": {...}}` or `{"id":1,"ok":false,"error":"..."}`.
@@ -262,6 +262,8 @@ options, as `tool.setOption {key: "mode", value: "free"|"perspective"|"distort"}
 Constrain acts as Shift held (proportional scaling, moves and rotations by 45°) and does nothing in the distort modes,
 where it is greyed. The modifier keys still work while dragging (Cmd on a corner distorts it freely, Cmd+Alt+Shift in
 perspective, Cmd on a side shears).
+
+Dragging a new guide from either ruler with Alt/Option swaps its orientation; modifier changes update the preview even without pointer movement. Shift snaps the effective axis to ruler ticks. Releasing off the canvas cancels; releasing on the canvas adds one guide in one undo step. Alt-dragging an existing guide still copies it.
 
 Ruler guides are layer objects: `guide.add` puts a guide on the current layer (or `layer`), where it shows, hides,
 locks and is deleted with its layer and is listed in the Layers panel (a click on its row selects it, a drag onto
@@ -709,4 +711,5 @@ distortions or mesh rows and columns, Reset, Envelope Options); each runs an `ob
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | New-guide Alt/Option switches preview and snapping orientation; existing-guide Alt-drag copying preserved. |
 | 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |

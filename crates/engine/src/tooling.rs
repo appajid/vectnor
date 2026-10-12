@@ -279,7 +279,8 @@ impl Session {
     /// release), over the canvas or not (`on_canvas`). The guide shows where the pointer is over
     /// the canvas, snapped as a moved guide is, and is made where the button is released over it
     /// (one undo step); released anywhere else, none is. With the Artboard tool it is an artboard
-    /// guide of the active artboard.
+    /// guide of the active artboard. Alt swaps the new guide's orientation, including its preview
+    /// and snapping, until released.
     pub fn ruler_guide(&mut self, vertical: bool, ev: &PointerEvent, on_canvas: bool, view: ViewInfo) -> Result<()> {
         let g = match self.ruler_guide.take() {
             Some(g) => Some(g),

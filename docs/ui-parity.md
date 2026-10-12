@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option switches new ruler-guide orientation, preview and snapping; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -91,7 +91,7 @@ tools, never checked side by side) isn't captured row by row.
 | Customisable rotation snap angle (#973) | missing | Illustrator: Constrain Angle and construction angles only |
 | Ruler guides: drag out, select, move, delete, lock, Make/Release Guides | done | #414, #451 |
 | Ruler guides as Layers rows: shown, hidden, locked and deleted with their layer; rows dragged to another layer | done | `guide.setLayer`; guides from older files go on a layer |
-| Alt swaps a ruler guide's orientation while dragging | missing | |
+| Alt/Option swaps a new ruler guide's orientation while dragging from a ruler | done | Press/release updates the preview without pointer movement; snapping follows the effective axis. Existing-guide Alt-drag still copies. [Public shortcut reference](https://helpx.adobe.com/illustrator/using/default-keyboard-shortcuts.html). |
 | Global and video rulers | missing | menu stubs |
 
 ## Transform handles, bounding box, Free Transform
@@ -174,6 +174,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |

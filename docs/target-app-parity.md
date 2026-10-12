@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (reviewed upstream correctness and stability fixes; shared Pagenor structure documented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option switches new ruler-guide orientation, preview and snapping; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -82,7 +82,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 | Image Trace, graphs, image tools | 3 | 75% | graph Design/Column/Marker, Image Trace Create Strokes depth (Create Object Mosaic is done) | 5–8 | estimated (raised from 72%) |
 | Layers, artboards, document setup | 5 | 78% | 30.0's artboard locking and colours and managing artboards from the canvas, Layers panel row context menus and Collect for Export | 5–8 | estimated (lowered from 82%: target moved) |
 | View & navigation | 3 | 70% | saved-view input validates before mutation; multiple windows and Arrange, Snap to Glyph remain | 9–14 | estimated |
-| Guides, grids, smart guides, snapping, rulers | 3 | 80% | 30.0's tangent and perpendicular snapping and its snapping panel, "intersect" smart guides, global/video rulers, distance readouts while drawing | 4–7 | estimated (lowered from 85%: target moved) |
+| Guides, grids, smart guides, snapping, rulers | 3 | 80% | new-guide Alt/Option orientation switching done; 30.0's tangent and perpendicular snapping and its snapping panel, "intersect" smart guides, global/video rulers, distance readouts while drawing | 4–7 | estimated (lowered from 85%: target moved) |
 | File formats | 6 | 75% | `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
 | Export for Screens, Asset Export, slices, Save for Web | 3 | 85% | anti-aliasing ghost borders (#983), TIFF in Export for Screens (30.2) | 2–4 | estimated |
 | Print, colour management, separations, flattener | 3 | 80% | print preview fidelity | 2–4 | estimated |
@@ -359,6 +359,7 @@ since 2026-10-01.
 
 ## Evidence: what ships today, by area
 
+- **Ruler-guide orientation:** `crates/tools/src/rulerguide.rs` uses Alt/Option to swap the source ruler's orientation for preview, snapping and release. Synthetic tool, engine and egui tests cover both source axes, equal coordinate values, modifier changes without pointer movement, release, artboard scope and undo/redo. Existing-guide copying is preserved. Behaviour reference: [public shortcuts](https://helpx.adobe.com/illustrator/using/default-keyboard-shortcuts.html). Native control verification confirms a vertical guide at x = 123 pt from the top ruler, a horizontal guide at y = 213 pt from the left, cancellation outside the canvas, undo/redo and `.vcnr` save/reopen. All seven CI gates pass (5,147 tests passed; four existing ignored).
 - **Reviewed upstream correctness/stability:** line-grid Shape Builder outlines share edges and planar loose pieces cut correctly; huge EPS angles normalize without turn loops; extreme device geometry is excluded from rasterization; saved views validate exact finite coordinates/rotation. Agent replies lost in flight are never replayed. Unpainted zero-width strokes become 1 pt when colored; closed DXF splines export their closed flag. See [pinned source and verification](vectnor/UPSTREAM_AUDIT.md). Scores and remaining-area estimates are unchanged.
 - **Canvas navigation:** overflowing axes have camera scrollbars with viewport-sized thumbs, drag/click and keyboard panning. Ranges include every artboard and artwork, rotate with the view, and extend for unrestricted Hand/wheel panning. Bounds are cached by document revision; bars are outside the drawing viewport and use `view.setZoom` with a new center (`canvas_scrollbars.rs`).
 - **Recent artwork:** six clickable thumbnail cards use embedded native previews or render the first artboard. One desktop worker loads bounded files; unsupported/missing previews keep a clickable placeholder. Save/Open invalidates stale images; browser sessions remember previews from opened/saved documents (`recent_thumbnails.rs`, `canvas.rs`).
@@ -458,6 +459,7 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |
 | 2026-10-12 | minor | Welcome recent files are clickable artwork thumbnails with names/folders, bounded background preview loading, and scrolling on small windows. Parity scores unchanged. |

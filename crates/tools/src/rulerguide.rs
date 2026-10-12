@@ -1,5 +1,5 @@
 //! Ruler guides on the canvas. Dragged out of a ruler with any tool ([`NewGuide`]), a guide is
-//! made where it is released over the canvas: with the Artboard tool, an artboard guide of the
+//! made where it is released over the canvas (Alt swaps its orientation): with the Artboard tool, an artboard guide of the
 //! active artboard. For the selection tools ([`GuideEdit`]), a press on a guide selects it (Shift
 //! adds it to the selected guides or, released without a drag, takes it out); dragging moves the
 //! selected guides (Alt copies them). A dragged guide snaps ([`GuideSnap`]): with Shift to the
@@ -109,8 +109,11 @@ impl GuideSnap {
 
 /// A guide dragged out of a ruler (a vertical one out of the left ruler), with any tool: it shows
 /// where the pointer is, snapped as a moved guide is, and is made where the button is released
-/// over the canvas (`guide.add`, previewed as it goes); taken off the canvas, it goes again.
+/// over the canvas (`guide.add`, previewed as it goes). Alt swaps its orientation until released;
+/// taken off the canvas, it goes again.
 pub struct NewGuide {
+    /// Orientation of the source ruler; Alt temporarily swaps it.
+    source_vertical: bool,
     vertical: bool,
     /// The artboard (index) it belongs to: an artboard guide.
     artboard: Option<usize>,
@@ -124,7 +127,7 @@ impl NewGuide {
     /// A vertical guide out of the left ruler, else a horizontal one out of the top ruler; an
     /// artboard guide of `artboard`, if any.
     pub fn new(cx: &ToolContext, vertical: bool, artboard: Option<usize>) -> Self {
-        Self { vertical, artboard, snap: GuideSnap::new(cx), at: None, pointer: Point::ZERO }
+        Self { source_vertical: vertical, vertical, artboard, snap: GuideSnap::new(cx), at: None, pointer: Point::ZERO }
     }
 
     /// The pointer at `ev`, over the canvas or not (`on_canvas`): the actions that show the guide
@@ -133,17 +136,19 @@ impl NewGuide {
         let mut out = vec![];
         self.pointer = ev.pos;
         if on_canvas {
-            let at = self.snap.snap(cx, self.vertical, if self.vertical { ev.pos.x } else { ev.pos.y }, ev.mods.shift);
+            let vertical = self.source_vertical ^ ev.mods.alt;
+            let at = self.snap.snap(cx, vertical, if vertical { ev.pos.x } else { ev.pos.y }, ev.mods.shift);
             if self.at.is_none() {
                 out.push(Action::Begin("New Guide".into()));
             }
-            if self.at != Some(at) {
-                let mut p = json!({ "vertical": self.vertical, "pos": at });
+            if self.at != Some(at) || self.vertical != vertical {
+                let mut p = json!({ "vertical": vertical, "pos": at });
                 if let Some(ab) = self.artboard {
                     p["artboard"] = json!(ab);
                 }
                 out.push(Action::Preview("guide.add".into(), p));
             }
+            self.vertical = vertical;
             self.at = Some(at);
         } else if self.at.take().is_some() {
             self.snap.snapped.clear();
@@ -379,6 +384,10 @@ mod tests {
         assert_eq!(drag(true, 497.0), (500.0, Some("artboard".into())), "the artboard's right edge");
         assert_eq!(drag(false, 248.0), (250.0, Some("center".into())), "the artboard's centre");
         assert_eq!(drag(true, 320.0), (320.0, None), "nothing within reach");
+        // Alt out of the top ruler snaps across to the artboard's right edge, using x.
+        let mut g = NewGuide::new(&c, false, None);
+        let a = g.pointer(&c, &ev(PointerKind::Drag, 497.0, 320.0, Mods { alt: true, ..m }), true);
+        assert_eq!(a.last(), Some(&Action::Preview("guide.add".into(), json!({"vertical": true, "pos": 500.0}))));
     }
 
     /// Preferences › Smart Guides (#394) reach a guide dragged out of a ruler: Snapping
@@ -398,6 +407,35 @@ mod tests {
         assert_eq!((at, ov.len()), (497.0, 1), "3 px off is beyond 2: only the readout {ov:?}");
         let (at, ov) = drag(&ToolContext { anchor_path_labels: false, measurement_labels: false, ..cx(&d, &s, &p) });
         assert_eq!((at, ov), (500.0, vec![]), "onto the artboard's edge, nothing said");
+    }
+
+    #[test]
+    fn alt_swaps_new_guide_orientation_even_at_equal_coordinates() {
+        let (d, _) = doc_with_rect();
+        let (s, p) = (Selection::default(), paint());
+        let c = ToolContext { smart_guides: false, snap_to_point: false, ..cx(&d, &s, &p) };
+        for source_vertical in [false, true] {
+            let mut g = NewGuide::new(&c, source_vertical, Some(0));
+            let preview = |vertical| Action::Preview("guide.add".into(), json!({"vertical": vertical, "pos": 63.0, "artboard": 0}));
+            let m = Mods::default();
+            assert_eq!(g.pointer(&c, &ev(PointerKind::Drag, 63.0, 63.0, m), true), vec![Action::Begin("New Guide".into()), preview(source_vertical)]);
+            assert_eq!(g.pointer(&c, &ev(PointerKind::Drag, 63.0, 63.0, Mods { alt: true, ..m }), true), vec![preview(!source_vertical)]);
+            let axis = if source_vertical { "Y" } else { "X" };
+            assert!(matches!(g.overlays(&c).last(), Some(Overlay::Measure { text, .. }) if text == &format!("{axis}: 63.00 pt")));
+            // Releasing Alt restores the source orientation; Shift snaps the effective axis.
+            assert_eq!(g.pointer(&c, &ev(PointerKind::Drag, 63.0, 63.0, m), true), vec![preview(source_vertical)]);
+            let a = g.pointer(&c, &ev(PointerKind::Up, 62.0, 73.0, Mods { alt: true, shift: true, ..m }), true);
+            assert_eq!(
+                a,
+                vec![
+                    Action::Preview(
+                        "guide.add".into(),
+                        json!({"vertical": !source_vertical, "pos": if source_vertical { 75.0 } else { 60.0 }, "artboard": 0})
+                    ),
+                    Action::Commit
+                ]
+            );
+        }
     }
 
     #[test]

@@ -966,6 +966,26 @@ fn guides_dragged_out_of_a_ruler_snap_and_take_the_artboard_tool_s_artboard() {
     );
 }
 
+#[test]
+fn alt_swapped_ruler_guide_preview_commits_once_and_undoes() {
+    use vectnor_tools::{Mods, PointerEvent, PointerKind};
+    let mut s = session();
+    let v = ViewInfo::default();
+    let n = undo_len(&s);
+    let ev = |kind, alt| PointerEvent::new(kind, 123.0, 213.0).with_mods(Mods { alt, ..Default::default() });
+    s.ruler_guide(false, &ev(PointerKind::Drag, false), true, v).unwrap();
+    assert_eq!(guides(&s), [(false, 213.0)]);
+    s.ruler_guide(false, &ev(PointerKind::Drag, true), true, v).unwrap();
+    assert_eq!(guides(&s).len(), 1, "preview replaces the original orientation");
+    assert_eq!(guides(&s), [(true, 123.0)]);
+    s.ruler_guide(false, &ev(PointerKind::Up, true), true, v).unwrap();
+    assert_eq!(undo_len(&s), n + 1);
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert!(guides(&s).is_empty());
+    s.execute("edit.redo", &json!({})).unwrap();
+    assert_eq!(guides(&s), [(true, 123.0)]);
+}
+
 /// Guides saved before guides had layers are put on a layer when the document opens.
 #[test]
 fn guides_from_older_files_are_put_on_a_layer() {

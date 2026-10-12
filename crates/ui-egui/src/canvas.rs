@@ -1071,7 +1071,7 @@ fn ruler_rects(full: egui::Rect) -> [egui::Rect; 3] {
 
 /// A drag from a ruler onto the canvas makes a guide where the button is released (the engine's
 /// `Session::ruler_guide`): a horizontal one from the top ruler, a vertical one from the left
-/// ruler, snapped as a moved guide is (with Shift to the ruler's ticks). Released anywhere else,
+/// ruler (Alt/Option swaps orientation), snapped as a moved guide is (with Shift to the ruler's ticks). Released anywhere else,
 /// it makes none.
 fn ruler_guides(app: &mut VectnorApp, ui: &Ui, full: egui::Rect, canvas: egui::Rect, xf: &Xf) {
     let [top, left, corner] = ruler_rects(full);
@@ -2353,6 +2353,47 @@ mod tests {
         drag(&mut app, pos2(rect.center().x, rect.top() - RULER / 2.0), pos2(rect.center().x + 40.0, rect.top() - 4.0));
         assert_eq!(guides(&app).len(), 2);
         assert_eq!(app.session.active().unwrap().doc.art_bounds(), None, "the tool drew nothing");
+    }
+
+    #[test]
+    fn alt_changes_the_ruler_guide_preview_without_pointer_movement() {
+        let mut app = VectnorApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        app.ui.view.rulers = true;
+        app.ui.view.smart_guides = false;
+        app.select_tool("rectangle");
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let rect = app.canvas_rect.unwrap();
+        let xf = Xf::new(rect, app.view().unwrap());
+        let from = pos2(rect.center().x, rect.top() - RULER / 2.0);
+        let to = xf.to_screen(Point::new(123.0, 213.0));
+        let run = |app: &mut VectnorApp, events, alt| {
+            let events = std::iter::once(egui::Event::ModifiersChanged(egui::Modifiers { alt, ..Default::default() })).chain(events).collect();
+            let raw = egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0))), events, ..Default::default() };
+            let mut out = ctx.run_ui(raw, |ui| show(app, ui));
+            out.textures_delta.clear();
+        };
+        let button = |pos, pressed, alt| egui::Event::PointerButton {
+            pos,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers { alt, ..Default::default() },
+        };
+        run(&mut app, vec![egui::Event::PointerMoved(from)], false);
+        run(&mut app, vec![button(from, true, false)], false);
+        run(&mut app, vec![egui::Event::PointerMoved(to)], false);
+        assert!(!app.session.active().unwrap().doc.guides[0].vertical);
+        run(&mut app, vec![], true);
+        assert!(app.session.active().unwrap().doc.guides[0].vertical);
+        run(&mut app, vec![], false);
+        assert!(!app.session.active().unwrap().doc.guides[0].vertical);
+        run(&mut app, vec![button(to, false, true)], true);
+        let st = app.session.active().unwrap();
+        assert_eq!(st.doc.guides.len(), 1);
+        assert!(st.doc.guides[0].vertical);
+        assert!((st.doc.guides[0].pos - 123.0).abs() < 0.001);
+        assert_eq!(st.doc.art_bounds(), None, "ruler drag must not draw a rectangle");
     }
 
     /// #451: a guide dragged out of a ruler lands on the art's side midpoints (halving an
