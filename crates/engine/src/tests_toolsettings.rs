@@ -76,6 +76,23 @@ fn a_gesture_keeps_what_it_changed_and_a_document_switch_keeps_options() {
 }
 
 #[test]
+fn keep_selected_is_saved_separately_for_pencil_and_paintbrush() {
+    let mut s = session();
+    select(&mut s, "pencil");
+    assert_eq!(s.tool_options()["keepSelected"], json!(true));
+    s.set_tool_option("keepSelected", &json!(false));
+    select(&mut s, "paintbrush");
+    assert_eq!(s.tool_options()["keepSelected"], json!(true));
+    select(&mut s, "pencil");
+    assert_eq!(s.tool_options()["keepSelected"], json!(false));
+    let saved = serde_json::to_string(&s.prefs).unwrap();
+    let mut next = session();
+    next.apply_prefs(serde_json::from_str(&saved).unwrap());
+    assert_eq!(next.tool_options_of("pencil")["keepSelected"], json!(false));
+    assert_eq!(next.tool_options_of("paintbrush")["keepSelected"], json!(true));
+}
+
+#[test]
 fn options_are_saved_with_the_preferences() {
     let mut s = session();
     select(&mut s, "polygon");

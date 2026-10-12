@@ -1,6 +1,6 @@
 # Control protocol
 
-> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (new ruler-guide orientation modifier documented)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (freehand Keep selected option documented)
 
 `vectnor --control <port>` listens on `127.0.0.1:<port>` (loopback only). One JSON request per line:
 `{"id": 1, "method": "ui.inspect", "params": {}}` → `{"id": 1, "ok": true, "result": {...}}` or `{"id":1,"ok":false,"error":"..."}`.
@@ -659,9 +659,9 @@ events take `pressure` (0..1, default 1): it is the Liquify intensity while Use 
 
 Freehand Tool Options: double-clicking the Pencil, Paintbrush, Smooth, Blob Brush or Eraser tool
 (`tool.options {tool: "pencil"}`) opens a `freehandOptions` dialog. Its fields are `tool` and the options the tool
-keeps: `fidelity` (pt; Pencil, Paintbrush, Smooth), `fill` (Pencil, Paintbrush), `closeWithin` and `editWithin` (screen
+keeps: `fidelity` (pt; Pencil, Paintbrush, Smooth), `fill` and `keepSelected` (Pencil, Paintbrush), `closeWithin` and `editWithin` (screen
 pixels, 0 turns it off; Pencil, Paintbrush) and `size` (pt; Blob Brush, Eraser). `ui.dialog.confirm` runs
-`tool.setOption {tool, values}`.
+`tool.setOption {tool, values}`. Keep selected defaults to true and is saved separately for Pencil and Paintbrush. With false, the finished or continued stroke is deselected; its live preview stays selected. The final `path.freehand` command records `keepSelected` for replay; undo/redo keep the same selection choice.
 
 `ui.pointer` events also take `holdMs` (0..60000): the pointer then holds still that long, button down, before the
 next event. Twirl, Pucker and Bloat keep applying while held (a repeat of the last point every 0.1 s), exactly as
@@ -711,5 +711,6 @@ distortions or mesh rows and columns, Reset, Envelope Options); each runs an `ob
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Freehand Tool Options and path.freehand record the per-tool Keep selected choice for finished/continued strokes. |
 | 2026-10-12 | minor | New-guide Alt/Option switches preview and snapping orientation; existing-guide Alt-drag copying preserved. |
 | 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |

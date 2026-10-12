@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option switches new ruler-guide orientation, preview and snapping; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Pencil/Paintbrush Keep selected option implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -53,7 +53,7 @@ tools, never checked side by side) isn't captured row by row.
 | Each anchor snaps to Smart Guides and construction angles | done | `DrawSnap` |
 | Curvature tool: click/drag points, double-click or Alt-click for a corner, temporary Direct Selection, point conversion | partial | modifiers requested in #975 |
 | Add/Delete/Anchor Point tools; Anchor Point tool drags segments to reshape | done | |
-| Pencil: Fidelity, Keep selected, Alt to Smooth, edit selected paths, close by proximity | partial | Keep selected and Alt to Smooth are missing |
+| Pencil: Fidelity, Keep selected, Alt to Smooth, edit selected paths, close by proximity | partial | Keep selected is configurable and saved separately for Pencil/Paintbrush; final and continued strokes follow it. Alt to Smooth remains missing. [Pencil options reference](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/draw-shapes/pencil-tool-options.html). |
 | Join tool scrubbing, Average, Join with corner/smooth choice | done | |
 | Simplify (slider, auto, corner angle threshold) | done | |
 
@@ -174,6 +174,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |

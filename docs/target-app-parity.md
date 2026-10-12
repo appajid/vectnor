@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option switches new ruler-guide orientation, preview and snapping; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Pencil/Paintbrush Keep selected option implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x; public release notes through 30.7, August 2026)
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -68,7 +68,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 | Area | Weight | Done | Main gaps | One agent (h) | Kind |
 |---|---:|---:|---|---:|---|
 | Selection, transform & align tools | 6 | 85% | Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances | 4–6 | estimated |
-| Drawing tools (Pen, Curvature, Pencil, shapes, Shaper) | 7 | 85% | Shaper construction widget, Pencil/Pen nuances, Blob Brush options, Touch Type, Dimension tool, Live Corners on curved corners; see [ui-parity.md](ui-parity.md) | 8–13 | estimated |
+| Drawing tools (Pen, Curvature, Pencil, shapes, Shaper) | 7 | 85% | Keep selected done for Pencil/Paintbrush; Shaper construction widget, Alt-to-Smooth and other Pencil/Pen nuances, Blob Brush options, Touch Type, Dimension tool, Live Corners on curved corners; see [ui-parity.md](ui-parity.md) | 8–13 | estimated |
 | Path operations, Pathfinder, Shape Builder, Live Paint | 5 | 80% | Shape Builder still misses some planar regions (#937); line-grid seams (#893) and persisted cutting regression fixed; gap detection/options and Live Paint Gap Options remain | 4–8 | estimated (lowered from 86%: open issues) |
 | Colour, swatches, gradients, patterns, mesh, recolor | 7 | 92% | 30.0's gradient dither, perceptual blending and gradient presets; freeform and mixed spot/process gradients in SVG/PDF | 4–7 | estimated (lowered from 96%: target moved) |
 | Strokes, brushes, width profiles | 5 | 88% | Art brush Overlap, Pattern brush auto corners, brush libraries, pen pressure on macOS, tilt/bearing/rotation | 8–15 | estimated |
@@ -359,6 +359,7 @@ since 2026-10-01.
 
 ## Evidence: what ships today, by area
 
+- **Freehand selection:** Pencil and Paintbrush expose Keep selected (default true) in their options dialog, saved separately via `tool.setOption` and preferences. `path.freehand {keepSelected}` applies the choice to new and continued paths; the gesture keeps its live preview selected and applies the final choice on release or tool-switch completion. Original tests cover selection/history, cancellation and per-tool preference persistence. Native control verification clicks the checkbox off, verifies Pencil off/Paintbrush default on/off, undo/redo and unchanged artwork after `.vcnr` save/reopen. All seven CI gates pass (5,151 tests passed; four existing ignored). Public references: [Pencil options](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/draw-shapes/pencil-tool-options.html), [Paintbrush options](https://helpx.adobe.com/illustrator/desktop/paint-and-fill/apply-and-edit-strokes/paintbrush-tool-options.html).
 - **Ruler-guide orientation:** `crates/tools/src/rulerguide.rs` uses Alt/Option to swap the source ruler's orientation for preview, snapping and release. Synthetic tool, engine and egui tests cover both source axes, equal coordinate values, modifier changes without pointer movement, release, artboard scope and undo/redo. Existing-guide copying is preserved. Behaviour reference: [public shortcuts](https://helpx.adobe.com/illustrator/using/default-keyboard-shortcuts.html). Native control verification confirms a vertical guide at x = 123 pt from the top ruler, a horizontal guide at y = 213 pt from the left, cancellation outside the canvas, undo/redo and `.vcnr` save/reopen. All seven CI gates pass (5,147 tests passed; four existing ignored).
 - **Reviewed upstream correctness/stability:** line-grid Shape Builder outlines share edges and planar loose pieces cut correctly; huge EPS angles normalize without turn loops; extreme device geometry is excluded from rasterization; saved views validate exact finite coordinates/rotation. Agent replies lost in flight are never replayed. Unpainted zero-width strokes become 1 pt when colored; closed DXF splines export their closed flag. See [pinned source and verification](vectnor/UPSTREAM_AUDIT.md). Scores and remaining-area estimates are unchanged.
 - **Canvas navigation:** overflowing axes have camera scrollbars with viewport-sized thumbs, drag/click and keyboard panning. Ranges include every artboard and artwork, rotate with the view, and extend for unrestricted Hand/wheel panning. Bounds are cached by document revision; bars are outside the drawing viewport and use `view.setZoom` with a new center (`canvas_scrollbars.rs`).
@@ -459,6 +460,7 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Horizontal/vertical canvas scrollbars follow zoom, rotation and Hand/wheel panning; dragging pans without editing artwork. Hidden when the document fits, on Welcome and in Presentation. Parity scores unchanged. |

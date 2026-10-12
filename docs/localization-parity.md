@@ -1,6 +1,6 @@
 # Localization parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-10 · **Change:** major (first per-language table, measured from the catalogs) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Keep selected label translated in every existing catalog) · **Target:** Adobe Illustrator 2026 (30.x)
 
 Per-language status of Vectnor's interface. How the catalogs work and how to add a language:
 [`development.md` › Localisation](development.md#localisation). Part of
@@ -63,4 +63,5 @@ font for the web build.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | minor | Pencil/Paintbrush Keep selected label added to all eleven existing non-English catalogs; complete-language coverage remains enforced. Baseline scores unchanged; these labels have not had native-speaker review. |
 | 2026-10-10 | major | First per-language table, measured from the catalog row counts against the complete French catalog |

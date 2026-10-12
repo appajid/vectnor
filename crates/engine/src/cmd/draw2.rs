@@ -23,7 +23,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Pencil",
             [],
             None,
-            "{points: [[x,y]…] or [[x,y,pressure]…] (pen pressure 0..1: the stroke keeps it, for Calligraphic brushes with Pressure variation; a point without one presses fully), fidelity?: pt (1.5), closed?, style?: \"pencil\"|\"brush\", fill?: bool, extend?: {id, end: \"start\"|\"end\"}} fit a freehand stroke → {id}",
+            "{points: [[x,y]…] or [[x,y,pressure]…] (pen pressure 0..1: the stroke keeps it, for Calligraphic brushes with Pressure variation; a point without one presses fully), fidelity?: pt (1.5), closed?, style?: \"pencil\"|\"brush\", fill?: bool, keepSelected?: bool (true; false deselects the finished path), extend?: {id, end: \"start\"|\"end\"}} fit a freehand stroke → {id}",
             has_doc,
             freehand
         ),
@@ -538,6 +538,7 @@ fn freehand(s: &mut Session, p: &Value) -> Result<Value> {
     let tol = f64_or(p, "fidelity", 1.5).clamp(0.05, 100.0);
     let closed = bool_or(p, "closed", false);
     let brush = str_param(p, "style") == Some("brush");
+    let keep_selected = bool_or(p, "keepSelected", true);
     if let Some(ext) = p.get("extend").filter(|v| !v.is_null()) {
         let id = id_param(ext, "id").ok_or_else(|| bad(C, "extend needs id"))?;
         let at_start = str_param(ext, "end") == Some("start");
@@ -599,7 +600,11 @@ fn freehand(s: &mut Session, p: &Value) -> Result<Value> {
             {
                 st.pressure = if reverse { joined.map(|p| p.reversed()) } else { joined };
             }
-            sel.set([id]);
+            if keep_selected {
+                sel.set([id]);
+            } else {
+                sel.clear();
+            }
             Ok(())
         })?;
         return Ok(json!({ "id": id.0 }));
@@ -613,7 +618,11 @@ fn freehand(s: &mut Session, p: &Value) -> Result<Value> {
     if let Some(st) = look.appearance.stroke_mut() {
         st.pressure = pressure;
     }
-    add_look(s, if brush { "Paintbrush" } else { "Pencil" }, path_kind(PathData::single(sp)), look, None)
+    let result = add_look(s, if brush { "Paintbrush" } else { "Pencil" }, path_kind(PathData::single(sp)), look, None)?;
+    if !keep_selected {
+        s.select(|_, sel| sel.clear())?;
+    }
+    Ok(result)
 }
 
 // ---------- Curvature ----------

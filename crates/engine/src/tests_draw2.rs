@@ -106,6 +106,81 @@ fn pencil_fits_freehand_stroke_as_one_undo_step() {
 }
 
 #[test]
+fn keep_selected_controls_finished_freehand_strokes_and_history() {
+    for tool in ["pencil", "paintbrush"] {
+        for keep in [true, false] {
+            let mut s = session();
+            let old = rect(&mut s, 600.0, 400.0, 20.0, 20.0);
+            s.set_tool_option_cmd(&json!({"tool": tool, "key": "keepSelected", "value": keep})).unwrap();
+            let before_doc = s.doc().unwrap().doc.clone();
+            let n = undo_steps(&s);
+            s.select_tool(tool, view()).unwrap();
+            s.pointer(&PointerEvent::new(PointerKind::Down, 100.0, 150.0), view()).unwrap();
+            s.pointer(&PointerEvent::new(PointerKind::Drag, 140.0, 180.0), view()).unwrap();
+            assert!(!s.doc().unwrap().selection.is_empty(), "live preview stays selected");
+            s.pointer(&PointerEvent::new(PointerKind::Up, 200.0, 150.0), view()).unwrap();
+            assert_eq!(s.doc().unwrap().selection.is_empty(), !keep, "{tool}, keep={keep}");
+            assert_eq!(paths(&s).len(), 2, "both the old object and the new stroke remain");
+            assert_eq!(undo_steps(&s), n + 1);
+            assert_eq!(s.journal.last().unwrap().1["keepSelected"], json!(keep));
+            let after_doc = s.doc().unwrap().doc.clone();
+            let after_sel = s.doc().unwrap().selection.clone();
+            s.execute("edit.undo", &json!({})).unwrap();
+            assert_eq!(s.doc().unwrap().doc, before_doc);
+            assert_eq!(s.doc().unwrap().selection.objects, [old]);
+            s.execute("edit.redo", &json!({})).unwrap();
+            assert_eq!(s.doc().unwrap().doc, after_doc);
+            assert_eq!(s.doc().unwrap().selection, after_sel);
+        }
+    }
+}
+
+#[test]
+fn keep_selected_off_also_deselects_a_continued_path() {
+    for tool in ["pencil", "paintbrush"] {
+        let mut s = session();
+        let id = line(&mut s, 100.0, 100.0, 200.0, 100.0);
+        let before = path(&s, id);
+        s.set_tool_option_cmd(&json!({"tool": tool, "key": "keepSelected", "value": false})).unwrap();
+        let n = undo_steps(&s);
+        drag(&mut s, tool, &[(200.0, 100.0), (230.0, 120.0), (300.0, 160.0)], Mods::default());
+        assert_eq!(paths(&s).len(), 1, "the original path was continued");
+        assert!(s.doc().unwrap().selection.is_empty());
+        assert_eq!(undo_steps(&s), n + 1);
+        assert_ne!(path(&s, id), before);
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert_eq!(path(&s, id), before);
+        assert_eq!(s.doc().unwrap().selection.objects, [id]);
+        s.execute("edit.redo", &json!({})).unwrap();
+        assert!(s.doc().unwrap().selection.is_empty());
+    }
+}
+
+#[test]
+fn keep_selected_off_cancellation_restores_selection_and_tool_switch_finishes() {
+    let mut s = session();
+    let old = rect(&mut s, 600.0, 400.0, 20.0, 20.0);
+    s.select_tool("pencil", view()).unwrap();
+    s.set_tool_option("keepSelected", &json!(false));
+    let before_doc = s.doc().unwrap().doc.clone();
+    let n = undo_steps(&s);
+    let start = |s: &mut Session| {
+        s.pointer(&PointerEvent::new(PointerKind::Down, 100.0, 150.0), view()).unwrap();
+        s.pointer(&PointerEvent::new(PointerKind::Drag, 200.0, 180.0), view()).unwrap();
+    };
+    start(&mut s);
+    s.tool_key(ToolKey::Escape, Mods::default(), view()).unwrap();
+    assert_eq!(s.doc().unwrap().doc, before_doc);
+    assert_eq!(s.doc().unwrap().selection.objects, [old]);
+    assert_eq!(undo_steps(&s), n);
+    start(&mut s);
+    s.select_tool("selection", view()).unwrap();
+    assert_eq!(paths(&s).len(), 2);
+    assert!(s.doc().unwrap().selection.is_empty());
+    assert_eq!(undo_steps(&s), n + 1);
+}
+
+#[test]
 fn pencil_alt_closes_path() {
     let mut s = session();
     let mut pts: Vec<(f64, f64)> =

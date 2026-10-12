@@ -33,6 +33,8 @@ pub struct GestureTool {
     pub size: f64,
     /// Fill new pencil/brush strokes.
     pub fill: bool,
+    /// Keep a completed Pencil/Paintbrush stroke selected.
+    pub keep_selected: bool,
     /// "Edit selected paths within N pixels".
     pub edit_within: f64,
     /// "Close paths when ends are within N pixels".
@@ -64,6 +66,7 @@ impl GestureTool {
             fidelity,
             size: 10.0,
             fill: false,
+            keep_selected: true,
             edit_within: 12.0,
             close_within: 15.0,
             snap: DrawSnap::default(),
@@ -144,6 +147,7 @@ impl GestureTool {
             "closed": closed,
             "style": if self.id == "paintbrush" { "brush" } else { "pencil" },
             "fill": self.fill,
+            "keepSelected": self.keep_selected,
         });
         if let Some((id, start)) = self.extend {
             v["extend"] = json!({"id": id.0, "end": if start { "start" } else { "end" }});
@@ -221,7 +225,10 @@ impl Tool for GestureTool {
                     self.began = true;
                     out.push(Action::Begin(self.label().into()));
                 }
-                out.push(Action::Preview("path.freehand".into(), self.freehand_params(false)));
+                let mut params = self.freehand_params(false);
+                // Keep the live preview selected; the final command applies Keep selected.
+                params["keepSelected"] = json!(true);
+                out.push(Action::Preview("path.freehand".into(), params));
                 out
             }
             PointerKind::Up => {
@@ -272,11 +279,21 @@ impl Tool for GestureTool {
     }
     fn deactivate(&mut self, _cx: &ToolContext) -> Vec<Action> {
         let began = self.began;
+        let out = if began {
+            let mut out = vec![];
+            if !self.keep_selected {
+                out.push(Action::Preview("path.freehand".into(), self.freehand_params(false)));
+            }
+            out.push(Action::Commit);
+            out
+        } else {
+            vec![]
+        };
         self.snap.clear();
         self.active = false;
         self.began = false;
         self.clear();
-        if began { vec![Action::Commit] } else { vec![] }
+        out
     }
     fn overlays(&self, cx: &ToolContext) -> Vec<Overlay> {
         let mut o = self.snap.guides().to_vec();
@@ -297,7 +314,7 @@ impl Tool for GestureTool {
     fn options(&self) -> Value {
         match self.id {
             "pencil" | "paintbrush" => {
-                json!({"fidelity": self.fidelity, "fill": self.fill, "editWithin": self.edit_within, "closeWithin": self.close_within})
+                json!({"fidelity": self.fidelity, "fill": self.fill, "keepSelected": self.keep_selected, "editWithin": self.edit_within, "closeWithin": self.close_within})
             }
             "smooth" => json!({"fidelity": self.fidelity}),
             "blobBrush" | "eraser" => json!({"size": self.size}),
@@ -309,6 +326,7 @@ impl Tool for GestureTool {
             "fidelity" => self.fidelity = v.as_f64().unwrap_or(self.fidelity).clamp(0.05, 100.0),
             "size" => self.size = v.as_f64().unwrap_or(self.size).clamp(0.1, 1000.0),
             "fill" => self.fill = v.as_bool().unwrap_or(self.fill),
+            "keepSelected" => self.keep_selected = v.as_bool().unwrap_or(self.keep_selected),
             "editWithin" => self.edit_within = v.as_f64().unwrap_or(self.edit_within).clamp(0.0, 100.0),
             "closeWithin" => self.close_within = v.as_f64().unwrap_or(self.close_within).clamp(0.0, 100.0),
             _ => {}
