@@ -5,10 +5,10 @@
 //! Pure and platform-free, so it is tested everywhere and builds for the web; only the backend
 //! touches AppKit. What the layout does ([`mac_layout`], Illustrator on the Mac as the reference):
 //! - an **app menu** named Vectnor: About; Settings, a submenu with one item per Preferences
-//!   page (General… ⌘K first); Language; Appearance (the UI brightness); Services; Hide Vectnor
+//!   page (General… ⌘K first); Appearance (the UI brightness); Services; Hide Vectnor
 //!   ⌃⌘H (⌘H stays View › Hide Edges), Hide Others ⌥⌘H, Show All; and Quit ⌘Q, still the app's own
-//!   `app.quit`, so documents with unsaved changes are asked about. Language and Appearance have
-//!   no in-window menu (as in PhotoCraft) and are synthesized here; Quit is File › Exit in the
+//!   `app.quit`, so documents with unsaved changes are asked about. Appearance has
+//!   no in-window menu (as in PhotoCraft) and is synthesized here; Quit is File › Exit in the
 //!   window and reads as Quit in the App menu. These leave the other menus (Edit › Preferences…,
 //!   Help › About);
 //! - **Window** gets Minimize ⌃⌘M, Zoom and Bring All to Front, and **Help** the system's search
@@ -25,7 +25,7 @@
 //!
 //! **Updates are cheap.** The rows are read again only when something they show may have changed
 //! ([`sync`]); labels, enabled and checked are then updated in place, and the menus are rebuilt
-//! only when their structure changes ([`structure_key`]: a recent file added, the language or a
+//! only when their structure changes ([`structure_key`]: a recent file added, a
 //! shortcut changed).
 
 use std::hash::{DefaultHasher, Hash, Hasher};
@@ -295,7 +295,7 @@ pub struct Layout {
 }
 
 /// The Mac menu bar of `bar` (the in-window menus, [`from_tree`]): see the module docs.
-/// Language and Appearance have no in-window menu (as in PhotoCraft); when the tree doesn't
+/// Appearance has no in-window menu (as in PhotoCraft); when the tree doesn't
 /// carry them they are synthesized below, so the App menu keeps them.
 pub fn mac_layout(app: &VectnorApp, bar: &MenuBar, lang: Lang) -> Layout {
     let mut bar = bar.clone();
@@ -321,9 +321,6 @@ pub fn mac_layout(app: &VectnorApp, bar: &MenuBar, lang: Lang) -> Layout {
     let about = take_items(&mut bar, "help.about").into_iter().next();
     let settings = take_items(&mut bar, "edit.preferences").into_iter().next();
     let quit = take_items(&mut bar, "app.quit").into_iter().next();
-    // Language and UI Brightness live only in the App menu: taken from the tree when it carries
-    // them, else synthesized here (the in-window bar has neither).
-    let language = take_submenu(&mut bar, "app.language").or_else(|| Some(language_node(app, lang)));
     let appearance = take_submenu(&mut bar, "window.brightness").or_else(|| Some(appearance_node(app, lang)));
     // Other menus retain their own commands.
     bar.menus.retain(|m| m.role != MenuRole::App);
@@ -332,7 +329,6 @@ pub fn mac_layout(app: &VectnorApp, bar: &MenuBar, lang: Lang) -> Layout {
     app.extend(about.map(Node::Item));
     app.push(Node::Separator);
     app.extend(settings.map(|s| Node::Submenu { label: tr(lang, "Settings").into(), children: settings_pages(&s, lang) }));
-    app.extend(language);
     app.extend(appearance.map(|n| match n {
         // The theme, as Mac apps call it.
         Node::Submenu { children, .. } => Node::Submenu { label: tr_ctx(lang, "theme", "Appearance").into(), children },
@@ -359,14 +355,6 @@ pub fn mac_layout(app: &VectnorApp, bar: &MenuBar, lang: Lang) -> Layout {
     // A menu the moves emptied goes away (Help stays: it has the search field).
     bar.menus.retain(|m| !m.children.is_empty() || m.role == MenuRole::Help);
     Layout { bar, clashes }
-}
-
-/// Language in the app menu, after Settings: Automatic, then every UI language in its own name,
-/// with the `interfaceLanguage` preference checked.
-fn language_node(app: &VectnorApp, lang: Lang) -> Node {
-    let mut children = vec![Node::Item(native_item(app, "Automatic", "app.language", json!({"lang": "auto"}))), Node::Separator];
-    children.extend(Lang::all().map(|l| Node::Item(native_item(app, l.name(), "app.language", json!({"lang": l.code()})))));
-    Node::Submenu { label: tr(lang, "Language").into(), children }
 }
 
 /// Appearance in the app menu (the UI-brightness theme, as Mac apps call it).

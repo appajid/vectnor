@@ -60,15 +60,6 @@ pub fn restore(app: &mut VectnorApp) {
         // Older preference files: keep the saved brightness.
         p.ui_brightness = app.ui.brightness.id().into();
     }
-    // Older preference files kept the interface language with the UI state; English was the
-    // default there, so only another language is carried over (onto an unset preference).
-    if let Some(code) = app.ui.legacy_language.take()
-        && p.interface_language == "auto"
-        && code != "en"
-        && crate::i18n::Lang::from_code(&code).is_some()
-    {
-        p.interface_language = code;
-    }
     // 0.5.0 saved its default, `powerSaving`, which Automatic replaced (#502): any value this
     // version doesn't offer reads as the default, as the desktop app reads it at startup.
     if !GPU_PREFERENCES.iter().any(|(v, _)| *v == p.gpu_preference) {
@@ -329,20 +320,6 @@ fn category_fields(ui: &mut egui::Ui, d: &mut Dialog, cat: &str) {
                         d.fields.insert(sp.key.into(), json!(format!("#{:02x}{:02x}{:02x}", rgb[0], rgb[1], rgb[2])));
                     }
                     ui.label(egui::RichText::new(hex).color(t.text_dim).size(11.0));
-                });
-            }
-            PrefKind::Text if sp.key == "interfaceLanguage" => {
-                // `auto` plus every registered language, by its own name.
-                labeled(ui, sp.label, |ui| {
-                    let cur = v.as_str().unwrap_or("auto");
-                    let codes: Vec<&str> = std::iter::once("auto").chain(crate::i18n::Lang::all().map(|l| l.code())).collect();
-                    let labels: Vec<&str> = std::iter::once(tl!("Auto")).chain(crate::i18n::Lang::all().map(|l| l.name())).collect();
-                    let cur_label = codes.iter().position(|c| c.eq_ignore_ascii_case(cur)).and_then(|i| labels.get(i).copied()).unwrap_or(cur);
-                    if let Some(i) = widgets::dropdown(ui, sp.key, cur_label, &labels, 260.0)
-                        && let Some(code) = codes.get(i)
-                    {
-                        d.fields.insert(sp.key.into(), json!(code));
-                    }
                 });
             }
             PrefKind::Text => {

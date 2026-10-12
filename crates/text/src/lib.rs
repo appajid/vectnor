@@ -511,6 +511,8 @@ mod tests_embed;
 #[cfg(test)]
 mod tests_fit;
 #[cfg(test)]
+mod tests_indic;
+#[cfg(test)]
 mod tests_inline;
 #[cfg(test)]
 mod tests_scripts;

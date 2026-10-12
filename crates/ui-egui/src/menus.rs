@@ -53,12 +53,6 @@ use Item::Sep;
 /// UI-level commands: (id, label, shortcut, params doc).
 pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
     (
-        "app.language",
-        "Interface Language",
-        "",
-        "{lang: auto|<code>} the interface language, persisted as the `interfaceLanguage` preference (`auto` follows the system locale; codes: prefs.list › interfaceLanguage, e.g. en, ja, cs, es, zh-hant)",
-    ),
-    (
         "file.open",
         "Open…",
         "Cmd+O",
@@ -838,18 +832,6 @@ pub(crate) fn opt_bool(p: &Value, key: &str) -> Result<Option<bool>, String> {
 
 /// Handle a UI command. `None` = not a UI command (the engine handles it).
 pub fn run_ui_command(app: &mut VectnorApp, id: &str, p: &Value) -> Option<Result<Value, String>> {
-    if id == "app.language" {
-        let lang = p.get("lang").and_then(Value::as_str).unwrap_or("");
-        let value = if lang.eq_ignore_ascii_case("auto") {
-            "auto".to_string()
-        } else if let Some(l) = crate::i18n::Lang::from_code(lang) {
-            l.code().to_string()
-        } else {
-            let codes: Vec<&str> = std::iter::once("auto").chain(crate::i18n::Lang::all().map(|l| l.code())).collect();
-            return Some(Err(format!("lang must be one of {}", codes.join(", "))));
-        };
-        return Some(app.run("prefs.set", json!({"key": "interfaceLanguage", "value": value})).map(|_| json!(value)));
-    }
     if let Some(r) = crate::panels::character::intercept_text_command(app, id) {
         return Some(r);
     }
@@ -1392,15 +1374,6 @@ fn go_to_artboard(app: &mut VectnorApp, p: &Value) -> Result<Value, String> {
 
 /// Checked state for toggle items.
 pub fn checked(app: &VectnorApp, id: &str, p: &Value) -> Option<bool> {
-    if id == "app.language" {
-        let lang = p.get("lang").and_then(Value::as_str).unwrap_or("");
-        let pref = app.session.prefs.interface_language.as_str();
-        return Some(if lang.eq_ignore_ascii_case("auto") {
-            crate::i18n::Lang::from_code(pref).is_none()
-        } else {
-            crate::i18n::Lang::from_code(pref).is_some_and(|l| l.code().eq_ignore_ascii_case(lang))
-        });
-    }
     let v = &app.ui.view;
     // An item that can be on or off is `Some` whatever the document and selection (off with none):
     // the macOS menu bar can't change an item's kind without rebuilding.
@@ -1934,7 +1907,7 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
             // The application menu: About. The in-window bar never shows it (File
             // is first there, as in Illustrator); on macOS `native_menu::mac_layout` composes the
             // App menu from this entry and the other menus (About from Help, Settings from Edit,
-            // Quit from File, Language and Appearance synthesized). It stays first: `from_tree`
+            // Quit from File, Appearance synthesized). It stays first: `from_tree`
             // gives the first menu the App role.
             "Vectnor",
             vec![c("About Vectnor", "help.about")],
@@ -3378,8 +3351,7 @@ pub fn item_shortcut(id: &str, p: &Value) -> Option<&'static str> {
     }
 }
 
-/// Labels only the canvas context menu ([`context_items`]) shows, so the catalog tests can insist
-/// every one of them is translated (a test checks the list against the menu).
+/// English labels unique to the canvas context menu ([`context_items`]); tests check this list.
 pub const CONTEXT_LABELS: &[&str] = &[
     "Isolate Selected Group",
     "Exit Isolation Mode",
@@ -3391,7 +3363,7 @@ pub const CONTEXT_LABELS: &[&str] = &[
 ];
 
 /// The labels [`dynamic_label`] can show in place of an item's own (Show/Hide pairs and the like),
-/// so the catalog tests can insist every one of them is translated.
+/// retained in the shared menu label inventory.
 pub const DYNAMIC_LABELS: &[&str] = &[
     "Preview",
     "Outline",
@@ -3444,9 +3416,7 @@ pub fn menu_strings() -> std::collections::BTreeSet<String> {
             match it {
                 Item::Cmd(l, id, _) => {
                     let size = l.strip_suffix(" pt").is_some_and(|n| n.chars().all(|c| c.is_ascii_digit()));
-                    // Vectnor › Language lists each language by its own name.
-                    let language_name = *id == "app.language" && crate::i18n::Lang::all().any(|lang| lang.name() == *l);
-                    if !user_data(id) && !size && !language_name && *l != "—" {
+                    if !user_data(id) && !size && *l != "—" {
                         out.insert(l.to_string());
                     }
                 }

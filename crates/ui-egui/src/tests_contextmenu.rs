@@ -177,7 +177,7 @@ fn the_menu_follows_the_selection() {
     assert!(items.windows(2).all(|w| !matches!(w, [Item::Sep, Item::Sep])));
 }
 
-/// Every label the context menu can show is a menu string, so complete catalogs must translate it.
+/// Every context-menu label is included in the shared English menu string inventory.
 #[test]
 fn every_context_label_is_a_menu_string() {
     let strings = menus::menu_strings();

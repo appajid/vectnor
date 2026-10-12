@@ -524,9 +524,6 @@ pub struct Prefs {
     pub large_tabs: bool,
     pub ui_scaling: f64,
     pub scale_cursor_with_ui: bool,
-    /// UI language: `auto` (follow the system locale) or a language code such as `en`, `zh-hant`.
-    /// The list of languages belongs to the shell (`ui-egui` i18n); an unknown code reads as `auto`.
-    pub interface_language: String,
     /// Windows and Linux: use the system's title bar and window buttons instead of the app bar
     /// acting as the title bar (tiling window managers, desktops that draw their own decorations).
     /// Read when the app starts. macOS always uses the system's.
@@ -744,7 +741,6 @@ impl Default for Prefs {
             large_tabs: false,
             ui_scaling: 1.0,
             scale_cursor_with_ui: false,
-            interface_language: s("auto"),
             system_title_bar: false,
             gpu_performance: true,
             animated_zoom: true,
@@ -857,10 +853,6 @@ pub struct Session {
     pub libraries: cmd::library::Libraries,
     /// URLs recently given in the Attributes panel (`attributes.set {url}`), newest first; not saved.
     pub recent_urls: Vec<String>,
-    /// The language the UI is drawn in (a language code, never `auto`), set by the UI each frame;
-    /// `None` without one (headless), where an explicit `interfaceLanguage` preference counts.
-    /// Japanese gives new type the Japanese defaults ([`Session::japanese_interface`]).
-    pub ui_language: Option<String>,
     /// Parameters the running top-level command resolved from the preferences or the clock, added
     /// to its journal entry so a replay does the same ([`Session::note_journal`]).
     journal_note: serde_json::Map<String, Value>,
@@ -941,7 +933,6 @@ impl Session {
             style_libraries: Default::default(),
             libraries: Default::default(),
             recent_urls: vec![],
-            ui_language: None,
             journal_note: Default::default(),
             note_depth: 1,
             batch_stash: None,
@@ -1127,12 +1118,6 @@ impl Session {
             self.after_command();
         }
         Ok(r)
-    }
-
-    /// Is the interface in Japanese? Then new type starts with em box top-to-top leading and em
-    /// box centre character alignment (#432).
-    pub fn japanese_interface(&self) -> bool {
-        self.ui_language.as_deref().unwrap_or(&self.prefs.interface_language).eq_ignore_ascii_case("ja")
     }
 
     /// Record `key: value` in the running top-level command's journal entry (or its interaction's

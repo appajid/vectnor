@@ -1139,11 +1139,10 @@ mod tests {
         out.shapes.iter().filter(|c| matches!(&c.shape, egui::Shape::Circle(cs) if cs.radius == 3.2 && cs.fill != Color32::TRANSPARENT)).count()
     }
 
-    /// A generated `<Kind>` name is translated where painted; an unnamed text object's text never
-    /// is, even when it reads like one.
+    /// Generated English names and unnamed text contents are preserved when painted.
     #[test]
-    fn only_generated_names_are_translated() {
-        let zh = crate::i18n::Lang::from_code("zh-hant").unwrap();
+    fn text_and_generated_names_are_preserved() {
+        let lang = crate::i18n::Lang::EN;
         let mut app = VectnorApp::new(Session::new(), Default::default());
         let run = |app: &mut VectnorApp, id: &str, p: serde_json::Value| app.session.execute(id, &p).unwrap();
         run(&mut app, "file.new", json!({"width": 100, "height": 100}));
@@ -1152,13 +1151,13 @@ mod tests {
         let doc = &app.session.active().unwrap().doc;
         let names = |id: u64| {
             let n = doc.node(NodeId(id)).unwrap();
-            (n.display_name(), painted_name(n, &n.display_name(), zh))
+            (n.display_name(), painted_name(n, &n.display_name(), lang))
         };
         assert_eq!(names(text), ("<Path>".to_string(), "<Path>".to_string()));
         let (stored, painted) = names(rect);
         let inner = stored.trim_start_matches('<').trim_end_matches('>');
-        assert_eq!(painted, format!("<{}>", crate::i18n::tr(zh, inner)));
-        assert_ne!(painted, stored, "translated");
+        assert_eq!(painted, format!("<{}>", crate::i18n::tr(lang, inner)));
+        assert_eq!(painted, stored, "English generated name preserved");
     }
 
     #[test]

@@ -361,18 +361,13 @@ fn menu_parameter_dialogs_are_compact() {
     }
 }
 
-/// A list mixing built-in labels with names translates only the built-in entries: names that
-/// happen to be catalog keys ("Black", "Regular") are shown as they are.
+/// Lists preserve English built-in labels and user-provided names.
 #[test]
-fn mixed_lists_translate_only_their_built_in_entries() {
-    use crate::i18n::{Lang, tr};
-    let zh = Lang::from_code("zh-hant").unwrap();
-    for key in ["None", "Black", "Regular", "Default"] {
-        assert_ne!(tr(zh, key), key, "{key} must be a catalog key for this test");
-    }
+fn mixed_lists_preserve_names_and_english_built_in_entries() {
+    use crate::i18n::Lang;
     let names = ["None", "Black", "Regular", "Default"];
-    assert_eq!(shown_names(zh, &names, |k| k == 0 || k == 3), [tr(zh, "None"), "Black", "Regular", tr(zh, "Default")]);
-    assert_eq!(shown_names(zh, &names, |_| false), names);
+    assert_eq!(shown_names(Lang::EN, &names, |k| k == 0 || k == 3), names);
+    assert_eq!(shown_names(Lang::EN, &names, |_| false), names);
     assert_eq!(shown_names(Lang::EN, &names, |_| true), names);
 }
 

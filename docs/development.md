@@ -90,8 +90,8 @@ By default Vectnor's own crates log at `info` and everything else at `warn`. `RU
 
 On macOS the menus live in the system menu bar, not in the window's app bar (which keeps the brand mark, Home, the search icon and the workspace switcher next to the traffic lights, centred on the bar by `apps/vectnor/src/mac_window.rs`). `--in-window-menus` or `VECTNOR_IN_WINDOW_MENUS=1` keeps them in the window, as on Windows, Linux and the web; so does a menu bar AppKit refuses to build (logged). `ui.inspect` says which with `nativeMenuBar`.
 
-- **One menu model.** `crates/ui-egui/src/native_menu.rs` (platform-free, tested on every platform) builds the menu bar from the in-window menus (`menus::menu_tree`, each item through `menus::entry`, which the in-window menus draw too) and lays it out the Mac way: the Vectnor menu holds About, Settings ▸ (one item per Preferences page, General… ⌘K), Language ▸, Appearance ▸ (UI brightness), Services, Hide Vectnor ⌃⌘H (⌘H stays View › Hide Edges), Hide Others ⌥⌘H, Show All and Quit ⌘Q (the app's own `app.quit`, so unsaved documents are asked about); those leave Edit and Help. The in-window bar itself never shows the Vectnor menu (it starts at File, as in Illustrator, on every platform): Language and Appearance have no in-window menu and are synthesized in `mac_layout`, and Quit is File › Exit in the window, relabelled to Quit in the App menu. Window starts with Minimize ⌃⌘M and Zoom and ends with Bring All to Front, and Help is the system's Help menu (its search field). A system key a command (or a user's shortcut) already has stays the command's, and the log says so.
-- **The native side** is `apps/vectnor/src/mac_menu.rs`: muda (`=0.21.1`, default features off, macOS only, no `unsafe`) builds the `NSMenu`s. Labels, enabled and checked are updated in place when anything they show may have changed (a command ran, the document, its history or selection changed, a click or a key press); a change of structure (a recent file, the language, a shortcut) rebuilds the menus.
+- **One menu model.** `crates/ui-egui/src/native_menu.rs` (platform-free, tested on every platform) builds the menu bar from the in-window menus (`menus::menu_tree`, each item through `menus::entry`, which the in-window menus draw too) and lays it out the Mac way: the Vectnor menu holds About, Settings ▸ (one item per Preferences page, General… ⌘K), Language ▸, Appearance ▸ (UI brightness), Services, Hide Vectnor ⌃⌘H (⌘H stays View › Hide Edges), Hide Others ⌥⌘H, Show All and Quit ⌘Q (the app's own `app.quit`, so unsaved documents are asked about); those leave Edit and Help. The in-window bar itself never shows the Vectnor menu (it starts at File, as in Illustrator, on every platform): Appearance has no in-window menu and are synthesized in `mac_layout`, and Quit is File › Exit in the window, relabelled to Quit in the App menu. Window starts with Minimize ⌃⌘M and Zoom and ends with Bring All to Front, and Help is the system's Help menu (its search field). A system key a command (or a user's shortcut) already has stays the command's, and the log says so.
+- **The native side** is `apps/vectnor/src/mac_menu.rs`: muda (`=0.21.1`, default features off, macOS only, no `unsafe`) builds the `NSMenu`s. Labels, enabled and checked are updated in place when anything they show may have changed (a command ran, the document, its history or selection changed, a click or a key press); a change of structure (a recent file, a shortcut) rebuilds the menus.
 - **Keys stay with egui.** AppKit runs a menu's key equivalents before the window sees the key, so the item's key goes back to egui as the key press it was (⌘X/⌘C/⌘V as egui's Cut/Copy/Paste events), through `raw_input_hook`: `shortcuts::handle` runs it once, user shortcuts apply, and a focused text field keeps ⌘A, ⌘C, ⌘V and ⌘Z. A click runs the item like an in-window click. Bare keys and ⌥/⇧ chords are never key equivalents (they type).
 - Built and clippy-checked for `aarch64-apple-darwin` and `x86_64-apple-darwin` from any host: `cargo clippy -p vectnor --target aarch64-apple-darwin --all-targets -- -D warnings`.
 
@@ -160,60 +160,18 @@ another craft-fonts face on the web, add a line to `web-fonts.txt`.
 
 ## Localisation
 
-Strings in code stay English and are the default lookup keys. `crates/ui-egui/src/i18n` maps them to display
-text at render time from one catalog per language (`i18n/<code>.tsv`; the format is documented in the header of
-`zh-hant.tsv`). Command ids, menu paths used for logic, `ui.menu.list`, the control channel, the CLI and MCP
-always use the English ids and labels, so agents and scripts never see translated text.
+Vectnor's interface is English-only by the owner's instruction (2026-10-12). Do not add translation
+catalogs, language switches or system/browser locale detection. `tl!`, `i18n::t`, `tr`, `tr_ctx` and
+`tr_id` retain their shared widget signatures and return English source labels unchanged. `tn`/`trn`
+select English singular/plural forms and `fmt` fills named placeholders. Status/error messages remain
+English both in the UI and in automation responses. Legacy saved interface-language fields are ignored.
 
-Languages shipped: English (`en`, the source), Traditional Chinese (`zh-hant`, complete, in the vocabulary used
-in Taiwan; `zh-TW`, `zh-HK`, `zh-MO` and `zh-Hant-*` locales all resolve to it), Simplified Chinese (`zh-hans`,
-complete, in the vocabulary used in mainland China; `zh-CN`, `zh-SG`, `zh-Hans-*` and a bare `zh` resolve to it,
-so the two scripts never mix), Japanese (`ja`, complete), German (`de`, complete; `de-DE`, `de-AT`, `de-CH` and every
-other `de-*` locale resolve to it), Spanish (`es`, complete, in neutral
-international Spanish; every `es-*` locale such as `es-ES`, `es-MX`, `es-AR` or `es-419` resolves to it), French (`fr`,
-complete; `fr-FR`, `fr-BE`, `fr-CA`, `fr-CH` and every other `fr-*` locale resolve to it), Italian (`it`,
-complete; `it-IT`, `it-CH` and every other `it-*` locale resolve to it), Russian (`ru`, complete; every `ru-*`
-locale such as `ru-RU`, `ru-BY` or `ru-KZ` resolves to it), Ukrainian (`uk`, complete; `uk-UA`,
-`uk_UA.UTF-8` and every other `uk-*` locale resolve to it; integer plurals use one/few/many), Czech (`cs`, every menu label) and Brazilian Portuguese
-(`pt-br`, every menu label and every `tl!` literal). Untranslated text falls back to English until its rows are added.
-
-- `tl!("…")` translates a literal into the language the UI is drawn in; `i18n::t(s)` is the same for a
-  `&str`. `tr(lang, s)` takes the language; `tr_ctx` when one English word needs different translations;
-  `tr_id(lang, command_id, label)` for menu items (keyed by command id, English label as the fallback);
-  `tn` / `trn(lang, n, one, other)` for plurals; `fmt` fills `{name}` placeholders, which a translation may
-  reorder.
-- The shared widgets (`widgets::check`, `dropdown`, `menu_item`, the buttons, `label_row`, tooltips of
-  `icon_button`…), the menus, the dock, the toolbar, the dialog frame and `panels::empty_state` translate
-  the text they are given, so a panel mostly needs its literals wrapped in `tl!` to be covered by the tests.
-- The language is Edit › Preferences › User Interface › Language or, on macOS, Vectnor › Language (the
-  `app.language` UI command, `{lang: auto|<code>}`); both set the `interfaceLanguage` preference (`auto` or a language
-  code; `auto` follows the system locale: `VECTNOR_LOCALE`, then `LC_ALL`/`LC_MESSAGES`/`LANG`/`LANGUAGE`,
-  the macOS preferred languages, the Windows user locale; on the web, `?lang=<code>` in the address, then
-  the browser's `navigator.languages`). The Preferences dialog previews the chosen language before OK.
-- To add a language: add `<code>.tsv` and one row in `i18n::LANGUAGES` (code, native name, catalog, plural
-  rule). The Language menu, the dropdown, locale matching and the catalog tests (well-formed, no duplicates,
-  placeholders and ellipses agree, command ids exist, every row of a partial catalog is a string the UI
-  shows, the UI fonts have every glyph, no Simplified characters in `zh-hant`) pick it up. Set `complete_menus`
-  once every menu string and `tl!` literal is translated; `i18n::tests` then enforce it
-  (`VECTNOR_I18N_DUMP=strings.txt cargo test -p vectnor-ui-egui dump_source_strings` lists them).
-- Translations are clean-room: written from the meaning of the English text in ordinary vocabulary, never
-  from another product's localisation resources. Product and technology names stay in Latin letters.
-- Status-bar messages and errors stay English where they are made (`app.ui.status`, `EngineError`: the
-  control channel, MCP and tests read them) and are translated only where the status bar draws them
-  (`i18n::msg`). `@msg` catalog rows hold a whole message or a template such as
-  `Couldn't open {name}: {e}`; `{_1}`, `{_2}` … stand for the format string's `{}`, and the values in the
-  placeholders are translated in turn (the reason after `: {e}` is often a message too). Spanish, French, Italian, Japanese, Russian and Ukrainian cover every
-  message literal the test scan finds (`complete_languages_translate_every_message`, languages listed in
-  `COMPLETE_MESSAGES`): a new `Err("…")`, `Other(…)`, `#[error(…)]` or `status(…)` message needs an `es.tsv`,
-  a `fr.tsv`, an `it.tsv`, a `ja.tsv`, a `ru.tsv` and a `uk.tsv` row (`VECTNOR_I18N_DUMP_MESSAGES=messages.txt cargo test -p vectnor-ui-egui
-  complete_languages_translate_every_message` lists them all). Other languages show messages in English
-  until they add `@msg` rows.
-- Not translated on purpose: names that are user data (layers, swatches, fonts, documents), the tab
-  title's colour mode, command ids and parameter names inside messages. Not done yet: locale-aware number
-  and date formats, right-to-left layout. Chinese and Japanese UI text
-  is drawn with craft-fonts' BIZ UDPGothic when the build embeds it (see Fonts above), else with an installed
-  system font; the glyph test checks Latin and Cyrillic catalogs always and the CJK ones only with craft-fonts.
-  A Traditional Chinese UI font is still to be added to craft-fonts for the web build.
+**Indic text in documents remains required.** Keep Unicode input, font lookup/fallback, HarfRust shaping,
+text editing and serialization independent of UI labels. Preserve user-provided Unicode names and text.
+`crates/text/src/tests_indic.rs` checks nine scripts with suitable installed/craft-fonts fonts and reports
+missing-font skips; `typecmd.rs` checks Indic edit/undo/redo/native round trips without requiring a font.
+Use `CRAFT_FONTS_DIR` or installed fonts for coverage; do not commit additional font binaries. Web builds
+also need suitable fonts loaded for document text. See [language scope](localization-parity.md).
 
 ## Vendor names gate
 

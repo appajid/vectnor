@@ -170,21 +170,6 @@ fn form_dialog_axes_are_dropdowns() {
     }
 }
 
-/// The axis choices are translated in the "axis" context: in Japanese the plain Horizontal and
-/// Vertical are the type orientations (horizontal and vertical writing).
-#[test]
-fn axis_choices_read_as_axes_in_every_complete_language() {
-    use crate::i18n::{LANGUAGES, Lang, tr, tr_ctx};
-    let ja = Lang::from_code("ja").unwrap();
-    assert_eq!(tr_ctx(ja, "axis", "Horizontal"), "水平方向");
-    assert_ne!(tr_ctx(ja, "axis", "Horizontal"), tr(ja, "Horizontal"));
-    for l in LANGUAGES.iter().filter(|l| l.complete_menus) {
-        for s in ["Horizontal", "Vertical", "Both"] {
-            assert!(l.source.lines().any(|line| line.starts_with(&format!("axis\t{s}\t"))), "{}: no axis row for {s}", l.code);
-        }
-    }
-}
-
 /// Offset Path previews on the canvas; Cancel rolls the preview back.
 #[test]
 fn offset_path_previews() {

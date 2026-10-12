@@ -177,9 +177,9 @@ import warning; a file whose native data can't be read opens as its embedded pre
 doesn't write Affinity files. Current `.af` validation includes 33 pinned files, native save/reload
 and every-board SVG/PDF/PSD export, with fixes for Affinity 3 artboards, source-backed JPEGs and text runs.
 [Scope and limits](crates/affinity/README.md); [source audit and remaining gaps](docs/affinity-validation.md).
-The interface
-speaks English, German, Japanese, Traditional and Simplified Chinese, Spanish, French, Italian, Russian and Ukrainian (and Czech and Brazilian Portuguese in the menus);
-[localization-parity.md](docs/localization-parity.md) has the details.
+The interface is **English only**. Indic document text remains supported independently of the interface:
+Unicode entry, shaping with suitable installed or craft-fonts fonts, editing and native save/reopen.
+See [language scope](docs/localization-parity.md) and [type coverage](docs/type-parity.md).
 The scores are self-assessed from our code against Illustrator's public documentation;
 [target-app-parity.md](docs/target-app-parity.md#how-this-was-measured-2026-10-10) explains how far to trust them.
 

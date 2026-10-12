@@ -2,7 +2,7 @@
 
 **Stage: alpha** · next: beta, ~13 points (ready for real work ~62% → ~75%, and reliable `.ai` exchange) and ~170–270 h away
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
 
 Vectnor is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
 on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
@@ -31,7 +31,7 @@ blocking it ([Alpha gate](docs/roadmap.md#alpha-gate)).
 
 | Audience | Ready % | Opus 5.5 agent hours to ~95% (one agent) | With 4–6 agents | Work that dominates |
 |---|---:|---:|---:|---|
-| **Full Illustrator** (ready for real work; decides the stage) | **~62%** (57–67%) | **~340–560 h** | ~95–160 h | the mainstream work below, plus 3D (50–85 h), raster effects (24–40 h), advanced type (20–28 h), generative AI (30–60 h), localization (70–110 h) and ecosystem |
+| **Full Illustrator** (ready for real work; decides the stage) | **~62%** (57–67%) | **~340–560 h** | ~95–160 h | the mainstream work below, plus 3D (50–85 h), raster effects (24–40 h), advanced type (20–28 h), generative AI (30–60 h), ecosystem (historical estimate included 70–110 h of interface localization; scope reassessment pending) |
 | **Mainstream illustrator** | **~65%** (60–70%) | **~230–380 h** | ~65–110 h | the interaction-fidelity pass (60–90 h), hardening and QA (30–50 h), stability (20–35 h), performance budgets (15–25 h), `.ai` exchange (10–20 h), the remaining depth of the everyday areas |
 | **Essentials user** | **~75%** (70–80%) | **~60–105 h** | ~25–45 h | launch and stability on Windows (20–35 h), in-app help and onboarding (8–15 h), basic QA (10–15 h), Shape Builder regions (4–8 h), UI polish |
 
@@ -48,7 +48,7 @@ everything is measured from our code against Illustrator's public documentation.
 | UI/UX fidelity | 55% | 70–110 | [ui-parity.md](docs/ui-parity.md) |
 | File formats | 75% | 15–30 | [file-format-parity.md](docs/file-format-parity.md) |
 | Hardware (GPU, pen, touch, displays) | 35% | 25–45 | [hardware-parity.md](docs/hardware-parity.md) |
-| Localization (12 key languages) | 54% (measured) | 70–110 | [localization-parity.md](docs/localization-parity.md) |
+| Interface localization | out of scope (English only) | — | [localization-parity.md](docs/localization-parity.md) |
 | Performance | ~60% | 15–25 | [gaps.md › G15](docs/gaps.md#g15-performance-budgets-and-a-gpu-renderer) |
 | Stability | ~60% | 30–50 | [gaps.md › G10](docs/gaps.md#g10-launch-and-stability-on-real-machines) |
 | Platforms | 80% | 15–25 | [gaps.md › G8](docs/gaps.md#g8-hardening-at-scale) |
@@ -88,25 +88,16 @@ The dimension hours overlap (feature rows hold some UI, format and AI work), so 
 
 Weights, evidence and the missing items per area: [target-app-parity.md](docs/target-app-parity.md#feature-areas).
 
-## Languages
+## Interface and document languages
 
-| Language | Code | Status | Translated |
-|---|---|---|---:|
-| English | `en` | full | 100% |
-| Simplified Chinese | `zh-hans` | partial (messages in English) | 85% |
-| Spanish | `es` | full | 100% |
-| Hindi | `hi` | none | 0% |
-| Arabic | `ar` | none (no right-to-left interface) | 0% |
-| French | `fr` | full | 100% |
-| Portuguese (Brazil) | `pt-br` | partial | 68% |
-| Indonesian | `id` | none | 0% |
-| Japanese | `ja` | full | 100% |
-| German | `de` | full | 98% |
-| Korean | `ko` | none | 0% |
-| Vietnamese | `vi` | none | 0% |
-
-Also shipped: Traditional Chinese (partial, 80%), Italian, Russian and Ukrainian (full), Czech (menus only).
-No catalog has had a native speaker's review. Details: [localization-parity.md](docs/localization-parity.md).
+Vectnor ships an **English-only interface**, as requested by Appaji Ambarisha on 2026-10-12.
+International interface versions, translation catalogs and language selectors are outside the current scope.
+**Indic document text remains in scope**: Unicode text, font selection, script shaping, editing and `.vcnr`
+save/reopen are independent of the interface language. Devanagari, Telugu, Bengali, Tamil, Kannada,
+Malayalam, Gujarati, Gurmukhi and Odia shaping requires a suitable installed or craft-fonts font.
+No additional font binaries are bundled. See [language scope](docs/localization-parity.md) and
+[type coverage](docs/type-parity.md). Existing headline readiness numbers are the historical 2026-10-10
+assessment; removing translations does not raise those scores and a revised scope assessment is pending.
 
 ## Upcoming
 
@@ -123,6 +114,7 @@ Ranked; detail in [docs/roadmap.md](docs/roadmap.md) and [docs/gaps.md](docs/gap
 
 | Date | What landed |
 |---|---|
+| 2026-10-12 | Owner scope: English-only interface; removed translated UI variants and selectors while retaining Indic document text. Nine-script shaping and edit/undo/redo/native round-trip checks added. |
 | 2026-10-12 | G1: Alt/Option smoothing from Pencil/Paintbrush is optional and saved; it edits the selected path through Smooth and restores the drawing tool, with one-step undo. |
 | 2026-10-12 | G1: Pencil and Paintbrush have a saved Keep selected option; live preview stays selected, finished and continued strokes follow the choice with one-step undo. |
 | 2026-10-12 | G1: Alt/Option switches new ruler-guide orientation during a drag; live preview and snapping follow the effective axis. Existing guide copying preserved. |
@@ -144,6 +136,7 @@ The full pre-standard record of what landed is kept in [docs/roadmap.md](docs/ro
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |

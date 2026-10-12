@@ -467,12 +467,11 @@ pub(crate) fn new_type_para() -> vectnor_doc::ParaStyle {
 }
 
 /// The leading model and character alignment new type starts with (`t`'s paragraph and runs):
-/// `leadingModel` and `charAlign` from `p`, else em box top to top and em box centre while the
-/// interface is in Japanese (#432), else the Roman baseline for both. Noted in the journal, so a
-/// replay sets the same whatever the interface.
+/// `leadingModel` and `charAlign` from `p`, otherwise the Roman baseline for both. Explicit
+/// East Asian alignment remains available independently of the English interface. Defaults are
+/// noted in the journal so replay sets the same values.
 pub(crate) fn new_type_alignment(s: &mut Session, p: &Value, cmd: &str, t: &mut TextObject) -> Result<()> {
     use vectnor_doc::{CharAlign, LeadingModel};
-    let japanese = s.japanese_interface();
     let leading = match p.get("leadingModel").filter(|v| !v.is_null()) {
         Some(v) => match v.as_str() {
             Some("romanBaseline") => LeadingModel::RomanBaseline,
@@ -480,7 +479,7 @@ pub(crate) fn new_type_alignment(s: &mut Session, p: &Value, cmd: &str, t: &mut 
             _ => return Err(bad(cmd, "`leadingModel` must be \"romanBaseline\" or \"emBoxTop\"")),
         },
         None => {
-            let l = if japanese { LeadingModel::EmBoxTop } else { LeadingModel::RomanBaseline };
+            let l = LeadingModel::RomanBaseline;
             s.note_journal("leadingModel", json!(l));
             l
         }
@@ -488,7 +487,7 @@ pub(crate) fn new_type_alignment(s: &mut Session, p: &Value, cmd: &str, t: &mut 
     let align = match super::textedit::char_align_param(p, cmd)? {
         Some(a) => a,
         None => {
-            let a = if japanese { CharAlign::EmBoxCenter } else { CharAlign::RomanBaseline };
+            let a = CharAlign::RomanBaseline;
             s.note_journal("charAlign", json!(a));
             a
         }

@@ -711,12 +711,10 @@ mod area_tests {
         assert_eq!(old.burasagari, Burasagari::None);
     }
 
-    /// #432: while the interface is in Japanese, new type (text.create, text.createInPath) starts
-    /// with em box top-to-top leading and em box centre alignment, and new styles made from nothing
-    /// carry them; params override; the values are journaled; imported text keeps the Roman
-    /// baseline.
+    /// English UI defaults are stable; explicit East Asian alignment remains available,
+    /// is journaled for replay, and imported text retains its source defaults.
     #[test]
-    fn new_type_takes_the_japanese_defaults_while_the_interface_is_japanese() {
+    fn new_type_uses_roman_defaults_and_keeps_explicit_east_asian_alignment() {
         use vectnor_doc::{CharAlign, LeadingModel};
         let mut s = Session::new();
         s.execute("file.new", &json!({"width": 400, "height": 400})).unwrap();
@@ -730,11 +728,16 @@ mod area_tests {
         let roman = (LeadingModel::RomanBaseline, CharAlign::RomanBaseline);
         let japanese = (LeadingModel::EmBoxTop, CharAlign::EmBoxCenter);
         let point = json!({"x": 10, "y": 50, "text": "雅楽"});
-        assert!(!s.japanese_interface());
         assert_eq!(made(&mut s, "text.create", point.clone()), roman, "headless, `auto`: the Roman defaults");
-        s.ui_language = Some("ja".into());
-        assert_eq!(made(&mut s, "text.create", point.clone()), japanese);
-        assert_eq!(made(&mut s, "text.create", json!({"x": 10, "y": 90, "text": "笙", "area": {"width": 100, "height": 50}})), japanese);
+        assert_eq!(made(&mut s, "text.create", point.clone()), roman);
+        assert_eq!(
+            made(
+                &mut s,
+                "text.create",
+                json!({"x": 10, "y": 90, "text": "笙", "area": {"width": 100, "height": 50}, "leadingModel": "emBoxTop", "charAlign": "emBoxCenter"})
+            ),
+            japanese
+        );
         // Journaled: a replay in another language does the same.
         let (_, logged) = s.journal.last().unwrap().clone();
         assert_eq!((logged["leadingModel"].as_str(), logged["charAlign"].as_str()), (Some("emBoxTop"), Some("emBoxCenter")));
@@ -746,27 +749,25 @@ mod area_tests {
         assert!(s.execute("text.create", &json!({"x": 0, "y": 0, "text": "a", "leadingModel": "middle"})).is_err());
         // Area type in a path.
         let path = s.execute("shape.rectangle", &json!({"x": 200, "y": 200, "width": 100, "height": 80})).unwrap()["id"].clone();
-        assert_eq!(made(&mut s, "text.createInPath", json!({"path": path, "mode": "area", "text": "篳篥"})), japanese);
-        // A preference set to Japanese counts without a UI; another language doesn't.
-        s.ui_language = None;
-        s.prefs.interface_language = "ja".into();
-        assert_eq!(made(&mut s, "text.create", point.clone()), japanese);
-        s.ui_language = Some("en".into());
-        assert_eq!(made(&mut s, "text.create", point.clone()), roman);
+        assert_eq!(
+            made(
+                &mut s,
+                "text.createInPath",
+                json!({"path": path, "mode": "area", "text": "篳篥", "leadingModel": "emBoxTop", "charAlign": "emBoxCenter"})
+            ),
+            japanese
+        );
         // New styles made from nothing.
         s.execute("select.set", &json!({"ids": []})).unwrap();
-        s.ui_language = Some("ja".into());
         let style = |s: &mut Session, kind: &str| {
             let name = s.execute(&format!("{kind}.new"), &json!({})).unwrap()["name"].as_str().unwrap().to_string();
             let list = s.execute(&format!("{kind}.list"), &json!({})).unwrap();
             list["styles"].as_array().unwrap().iter().find(|st| st["name"] == name.as_str()).unwrap()["attrs"].clone()
         };
-        assert_eq!(style(&mut s, "paraStyle"), json!({"leading_model": "emBoxTop"}));
-        assert_eq!(style(&mut s, "charStyle"), json!({"charAlign": "emBoxCenter"}));
-        s.ui_language = Some("en".into());
+        assert_eq!(style(&mut s, "paraStyle"), json!({}));
+        assert_eq!(style(&mut s, "charStyle"), json!({}));
         assert_eq!(style(&mut s, "paraStyle"), json!({}));
         // Imported text keeps the Roman baseline.
-        s.ui_language = Some("ja".into());
         let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100"><text x="10" y="50">雅楽</text></svg>"#;
         s.execute("document.open", &json!({"name": "t.svg", "dataBase64": vectnor_format::base64_encode(svg.as_bytes())})).unwrap();
         let mut found = vec![];
@@ -776,6 +777,31 @@ mod area_tests {
             }
         });
         assert_eq!(found, [roman]);
+    }
+
+    #[test]
+    fn indic_text_survives_edit_undo_redo_and_native_round_trip() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"width": 600, "height": 400})).unwrap();
+        let original = "తెలుగు हिन्दी বাংলা தமிழ் ಕನ್ನಡ മലയാളം ગુજરાતી ਪੰਜਾਬੀ ଓଡ଼ିଆ";
+        let edited = format!("{original} క్ష कि क्ष");
+        let id = s.execute("text.create", &json!({"x": 10, "y": 50, "text": original})).unwrap()["id"].as_u64().unwrap();
+        let text = |s: &Session| match &s.doc().unwrap().doc.node(NodeId(id)).unwrap().kind {
+            NodeKind::Text(t) => t.plain_text(),
+            _ => panic!("text"),
+        };
+        s.execute("text.setText", &json!({"id": id, "text": edited})).unwrap();
+        assert_eq!(text(&s), edited);
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert_eq!(text(&s), original);
+        s.execute("edit.redo", &json!({})).unwrap();
+        assert_eq!(text(&s), edited);
+        let bytes = vectnor_format::save_file(&s.doc().unwrap().doc);
+        let restored = vectnor_format::load(&bytes).unwrap();
+        match &restored.node(NodeId(id)).unwrap().kind {
+            NodeKind::Text(t) => assert_eq!(t.plain_text(), edited),
+            _ => panic!("text"),
+        }
     }
 
     #[test]

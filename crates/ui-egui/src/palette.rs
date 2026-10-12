@@ -122,9 +122,8 @@ mod tests {
     use crate::i18n::Lang;
 
     #[test]
-    fn entries_are_built_once_per_language_and_match_english_shown_text_and_ids() {
+    fn entries_are_cached_and_match_english_labels_and_ids() {
         let ctx = egui::Context::default();
-        let zh = Lang::from_code("zh-hant").unwrap();
         // Tests running alongside edit shortcuts and install plug-ins, which rebuilds the entries:
         // look twice until nothing changed in between.
         let (en, again) = (0..100)
@@ -135,15 +134,13 @@ mod tests {
             })
             .unwrap();
         assert!(Arc::ptr_eq(&en, &again), "kept while the language stays");
-        let zh_entries = entries(&ctx, zh);
-        assert!(!Arc::ptr_eq(&en, &zh_entries), "rebuilt for another language");
         // Editing a shortcut rebuilds them, so the palette shows the new one.
         crate::shortcut_editor::GENERATION.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        assert!(!Arc::ptr_eq(&zh_entries, &entries(&ctx, zh)), "rebuilt after a shortcut edit");
-        let group = zh_entries.iter().find(|e| e.id == "object.group").unwrap();
-        assert!(group.shown.ends_with(crate::i18n::tr(zh, "Group")), "{}", group.shown);
+        assert!(!Arc::ptr_eq(&en, &entries(&ctx, Lang::EN)), "rebuilt after a shortcut edit");
+        let group = en.iter().find(|e| e.id == "object.group").unwrap();
+        assert!(group.shown.ends_with(crate::i18n::tr(Lang::EN, "Group")), "{}", group.shown);
         // A query matches the English label, the shown label or the id.
-        for word in ["group", crate::i18n::tr(zh, "Group"), "object.group"] {
+        for word in ["group", crate::i18n::tr(Lang::EN, "Group"), "object.group"] {
             assert!(group.haystack.contains(&word.to_lowercase()), "{word}");
         }
     }

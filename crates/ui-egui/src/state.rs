@@ -242,11 +242,6 @@ impl Dialog {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub struct UiState {
-    /// The interface language older versions saved here (`ja`, `cs`…). It now lives in the
-    /// `interfaceLanguage` preference, which [`crate::prefs_dialog::restore`] carries it over to;
-    /// it is never written back.
-    #[serde(rename = "language", skip_serializing)]
-    pub legacy_language: Option<String>,
     pub brightness: Brightness,
     pub dock_tab: DockTab,
     /// The dock's tabbed group (Properties | Layers | Libraries) is collapsed to icons at the top of
@@ -544,7 +539,6 @@ impl UiState {
 impl Default for UiState {
     fn default() -> Self {
         Self {
-            legacy_language: None,
             brightness: Brightness::MediumDark,
             dock_tab: DockTab::Properties,
             dock_collapsed: false,

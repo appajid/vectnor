@@ -433,7 +433,6 @@ fn native_options(custom_titlebar: bool) -> eframe::NativeOptions {
 fn main() -> std::process::ExitCode {
     // First, so every start-up warning is recorded (`logging`).
     let logger = logging::install();
-    vectnor_ui_egui::i18n::detect_system_lang_in_background();
     // Before the first font scan (the app's start): the fonts font services load (#579).
     #[cfg(all(windows, not(target_vendor = "win7")))]
     system_fonts::install();

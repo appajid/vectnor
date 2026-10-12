@@ -5,7 +5,7 @@
 //! shortcuts, the ⌘K palette and the control channel ([`control`]).
 #![forbid(unsafe_code)]
 
-/// Translate a UI string literal into the language the UI is drawn in (see [`i18n`]).
+/// Return an English UI label through the shared widget API (see [`i18n`]).
 #[macro_export]
 macro_rules! tl {
     ($s:expr) => {
@@ -896,12 +896,9 @@ impl VectnorApp {
 /// eframe isn't a dependency of this crate (the host owns the event loop); these entry points are
 /// called from the host's `eframe::App` impl.
 impl VectnorApp {
-    /// The language the UI is drawn in: the Preferences dialog's choice while it is open (so a
-    /// change shows before OK), else the `interfaceLanguage` preference (`auto` = the system's).
+    /// Vectnor's interface is always English, independently of document text languages.
     pub fn ui_language(&self) -> i18n::Lang {
-        let editing =
-            self.ui.dialog.as_ref().filter(|d| d.kind == "preferences").and_then(|d| d.fields.get("interfaceLanguage")).and_then(Value::as_str);
-        i18n::Lang::from_pref(editing.unwrap_or(&self.session.prefs.interface_language))
+        i18n::Lang::EN
     }
 
     /// Per-frame logic before layout (control channel, shortcuts, inbox). A bug that panics costs
@@ -914,12 +911,6 @@ impl VectnorApp {
     }
 
     fn logic_frame(&mut self, ctx: &egui::Context) {
-        let lang = self.ui_language();
-        i18n::set_current(lang);
-        // The engine gives new type the Japanese defaults while the UI is in Japanese.
-        if self.session.ui_language.as_deref() != Some(lang.code()) {
-            self.session.ui_language = Some(lang.code().to_string());
-        }
         self.adopt_context(ctx);
         if !self.styled {
             theme::install_fonts(ctx);

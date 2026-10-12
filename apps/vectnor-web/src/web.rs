@@ -10,7 +10,6 @@ use vectnor_engine::cmd::clipboard::{FILE_HEAD, Flavour, PASTE_ORDER, file_flavo
 use vectnor_engine::cmd::fileio;
 use vectnor_engine::cmd::recovery::{self, Hold, RecoveryStore};
 use vectnor_ui_egui::graphics::GraphicsLoss;
-use vectnor_ui_egui::i18n;
 use vectnor_ui_egui::place::{DropTarget, PlaceArrival, PlaceInbox};
 use vectnor_ui_egui::print::{PrintJob, PrintService, Printer};
 use vectnor_ui_egui::{Services, VectnorApp};
@@ -60,7 +59,6 @@ pub fn start() {
         log::error!("missing <canvas id=\"{CANVAS_ID}\">");
         return;
     };
-    detect_language();
     wasm_bindgen_futures::spawn_local(async move {
         // Before the first frame, which looks for copies a crash left behind.
         let locks = WebLocks::start(RECOVERY_PREFIX).await;
@@ -148,27 +146,6 @@ fn web_options() -> eframe::WebOptions {
         create.instance_descriptor.backends = eframe::wgpu::Backends::GL;
     }
     options
-}
-
-/// Tell the UI the browser's languages (`?lang=es` in the address first, as `VECTNOR_LOCALE`
-/// does on the desktop) before the first frame, so the Automatic interface language follows the
-/// browser; and show the loading text in that language.
-fn detect_language() {
-    let mut tags: Vec<String> = query_param("lang").into_iter().collect();
-    if let Some(navigator) = web_sys::window().map(|w| w.navigator()) {
-        tags.extend(navigator.languages().iter().filter_map(|v| v.as_string()));
-        tags.extend(navigator.language());
-    }
-    i18n::set_system_locales(tags.as_slice());
-    if let Some(el) = element(LOADING_ID) {
-        el.set_text_content(Some(i18n::message(i18n::system_lang(), "Loading Vectnor…").as_str()));
-    }
-}
-
-/// The value of `name=` in the address's query, if given.
-fn query_param(name: &str) -> Option<String> {
-    let query = query();
-    query.trim_start_matches('?').split('&').find_map(|kv| kv.strip_prefix(name)?.strip_prefix('=').map(str::to_string)).filter(|v| !v.is_empty())
 }
 
 fn query() -> String {
@@ -300,7 +277,7 @@ fn notice(lines: &[&str]) {
     el.set_text_content(None);
     for line in lines {
         if let Ok(p) = document.create_element("p") {
-            p.set_text_content(Some(i18n::message(i18n::system_lang(), line).as_str()));
+            p.set_text_content(Some(line));
             // Best effort: the log has the message too.
             el.append_child(&p).ok();
         }

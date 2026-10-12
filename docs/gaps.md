@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -30,10 +30,9 @@ stage ([ROADMAP.md](../ROADMAP.md)).
 | 13 | [G7 Views and windows](#g7-views-and-windows) | 15–25 | no | [ui-parity.md](ui-parity.md) |
 | 14 | [G6 Automation and scripting](#g6-automation-and-scripting) | 8–14 | no | [target-app-parity.md](target-app-parity.md) |
 | 15 | [G15 Performance budgets and a GPU renderer](#g15-performance-budgets-and-a-gpu-renderer) | 15–25 | budgets only | [hardware-parity.md](hardware-parity.md) |
-| 16 | [G16 Localization: the five missing key languages](#g16-localization-the-five-missing-key-languages) | 70–110 | no | [localization-parity.md](localization-parity.md) |
-| 17 | [G17 Ecosystem: third-party plug-ins](#g17-ecosystem-third-party-plug-ins) | 20–45 | no | — |
-| 18 | [G18 Generative AI features](#g18-generative-ai-features) | 30–60 | no | — |
-| 19 | [G19 Accessibility](#g19-accessibility) | 15–25 | no | [ui-parity.md](ui-parity.md) |
+| 16 | [G17 Ecosystem: third-party plug-ins](#g17-ecosystem-third-party-plug-ins) | 20–45 | no | — |
+| 17 | [G18 Generative AI features](#g18-generative-ai-features) | 30–60 | no | — |
+| 18 | [G19 Accessibility](#g19-accessibility) | 15–25 | no | [ui-parity.md](ui-parity.md) |
 
 **Alpha blockers:** none. Every core workflow passes the [alpha gate](roadmap.md#alpha-gate); G9 is the only
 partial one, and it blocks beta, not alpha.
@@ -172,12 +171,15 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
   spike (M5).
 - **Estimate:** 15–25 h (the budget run and fixes block beta).
 
-## G16 Localization: the five missing key languages
+## G16 Interface localization — outside current scope
 
-- **Missing:** Hindi, Arabic, Indonesian, Korean, Vietnamese catalogs; a right-to-left interface and interface
-  shaping for Arabic and Devanagari; messages for Simplified Chinese and Brazilian Portuguese; native review of
-  every catalog. Measured in [localization-parity.md](localization-parity.md).
-- **Estimate:** 70–110 h plus human review.
+- **Owner decision (2026-10-12):** English-only interface. International UI variants and the former
+  70–110 h translation backlog are excluded from active work; this stable gap id is retained as history.
+- **Still required:** Indic document text support, including Unicode input, shaping, editing and native
+  save/reopen. Font-dependent shaping tests cover nine scripts when suitable fonts are available;
+  comprehensive Indic IME, caret/selection and export fidelity remain to be assessed under G4.
+- **Evidence:** [language scope](localization-parity.md), `crates/text/src/tests_indic.rs`,
+  `crates/engine/src/cmd/typecmd.rs`, English-only menu and legacy-preference tests in `ui-egui`.
 
 ## G17 Ecosystem: third-party plug-ins
 
@@ -204,6 +206,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |

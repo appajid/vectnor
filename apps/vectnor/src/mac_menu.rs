@@ -3,8 +3,8 @@
 //! are in `vectnor_ui_egui::native_menu`; this file only builds and updates the `NSMenu`s.
 //!
 //! - Item ids are the items' places (`vc12`, depth first): one command can run from several items
-//!   (each language of Vectnor › Language is `app.language` with its own code).
-//! - A structure change (a recent file added, the language or a shortcut changed) rebuilds the
+//!   (for example, Settings opens the same command on different pages).
+//! - A structure change (a recent file added, a shortcut changed) rebuilds the
 //!   menu; labels, enabled and checked are updated in place.
 //! - A chosen item is a click or a key equivalent: AppKit's current event says which. A key
 //!   equivalent goes back to egui as the key press that was made (the event's modifiers, not the
@@ -298,7 +298,6 @@ impl Backend for MacMenu {
 /// Install the menu bar (in eframe's creator closure, so winit's default menu doesn't stay up).
 /// `None` keeps the menus in the window: AppKit refused them (logged), never a crash.
 pub fn install(ctx: &egui::Context, app: &VectnorApp) -> Option<native_menu::NativeMenu> {
-    vectnor_ui_egui::i18n::set_current(app.ui_language());
     let bar = native_menu::layout(app).bar;
     let built = vectnor_engine::guard::catch_panic(|| {
         let mut menu = MacMenu::new(ctx);

@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-10 · **Change:** major (first checklist, split out of the parity table's two type rows) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -18,6 +18,7 @@ against Illustrator's public documentation; **estimated** unless noted.
 
 | Feature | Status | Notes |
 |---|---|---|
+| Indic Unicode text and shaping | partial, regression tested | English-only interface preserves document text. Nine-script matra/conjunct and equal-style run-split checks run with suitable installed/craft-fonts fonts; edit/undo/redo/native round trip is font-independent. Comprehensive IME, caret/selection and editable export fidelity remain unassessed. No new font assets. |
 | Point, area and type-on-a-path type; vertical variants | done / partial | vertical point, area and path type have initial support |
 | Area Type Options (rows, columns, inset, first baseline, Auto Size, Shrink Text to Fit) | done | |
 | Threaded text, Fit Headline, Text Wrap | done | |
@@ -44,8 +45,21 @@ against Illustrator's public documentation; **estimated** unless noted.
 | CJK: ruby, proportional vertical metrics (`vpal`/`palt`), manual tate-chu-yoko | missing | #966, #633 |
 | Inline symbols in text | beyond Illustrator | not scored |
 
+## Local verification — 2026-10-12
+
+All seven `cargo xtask ci` gates pass: 5,123 tests passed, none failed, four existing tests ignored;
+WASM checks pass. All nine Indic shaping cases ran locally with suitable installed fonts (no font binaries
+added). The native app was launched with `VECTNOR_LOCALE=fr-FR` and `VECTNOR_NO_PREFS=1`: Preferences
+remained English with no language field. Native canvas screenshots show all nine scripts, and real
+Telugu `ui.text` input is preserved. Saving and reopening `.vcnr` retains every source string and produces
+an identical PNG render (SHA-256 comparison). The reopened window stopped presenting frames, so the
+artwork was verified through `ui.render`; the earlier preferences/canvas screenshots were inspected.
+Evidence stays local under `/tmp/vectnor-english-*`; no GitHub upload. This remains focused regression
+coverage, not a claim of complete Indic IME/editor/export parity.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-10 | major | First checklist, split out of the parity table's Type core and Type advanced rows |

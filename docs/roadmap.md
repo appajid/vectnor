@@ -1,6 +1,6 @@
 # Roadmap: milestones and what's next
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
 
 Forward-looking plan. Where Vectnor stands is in [`ROADMAP.md`](../ROADMAP.md) and
 [target-app-parity.md](target-app-parity.md); the ranked work list is [gaps.md](gaps.md). Hours are Opus 5.5
@@ -33,6 +33,10 @@ Checked 2026-10-10 from the code, tests and open issues; no workflow fails, so V
 4. **Core-tool bugs** (G11): Shape Builder regions (#937, #893), Asset Export borders (#983). 8–15 h.
 5. **Raster effects** (G2) continue alongside: Artistic, Sketch, then the Effect Gallery. 24–40 h.
 
+Interface localization is excluded from current work by the owner's 2026-10-12 instruction. Indic document
+text remains required; focused nine-script shaping and native round-trip checks are retained under type.
+Historical overall effort/readiness estimates await scope reassessment.
+
 ## Next
 
 - **Then:** advanced type (G4) and the Illustrator 2026 additions (G13), then 3D (G3), each with a plan in
@@ -47,7 +51,7 @@ Checked 2026-10-10 from the code, tests and open issues; no workflow fails, so V
 
 | # | Milestone | Status | Est. remaining, one agent (h) |
 |---|---|---|---|
-| M0 | Skeleton + vertical slice | ✅ done; Welcome hides editing controls, shows recent artwork thumbnails, supports canvas scrollbars, includes reviewed stability backports and preserves the document workspace | — |
+| M0 | Skeleton + vertical slice | ✅ done; English-only interface with Indic document text retained; Welcome hides editing controls, shows recent artwork thumbnails, supports canvas scrollbars, includes reviewed stability backports and preserves the document workspace | — |
 | M1 | Selection, transform, layers, MCP (common command tools, strict keys, session resources and version-aware result hints) | ✅ mostly done (transform reference point snaps to anchors/centres; rotated objects keep a rotated bounding box and their angle; Free Transform, Scale and Reflect along a rotated box pending) | 4–6 |
 | M2 | Drawing tools + smart guides | ✅ mostly done (optional Alt/Option smoothing from Pencil/Paintbrush uses saved Smooth settings and returns to the drawing tool; Pencil/Paintbrush Keep selected option persists per tool and acts on finished/continued strokes; new ruler guides support Alt/Option orientation switching with live preview and axis-aware snapping; Flare, Reshape, Live Corners widget dragging and per-corner radii and kinds landed, on any path's corners; Shaper rough-shape recognition and orientation steps, the remaining Pen modifier nuances; Shaper Groups with editable sources and separate fill/stroke edits landed; construction widget/refinements pending) | 12–18 |
 | M3 | Paint & appearance (swatches, color, gradient, stroke, appearance, transparency, styles) | ✅ done (M3.7–M3.98): swatches, groups, libraries, tints, Lab spots and Registration; Color Picker, Color panel, Color Guide, Color Themes, Edit Colors and Recolor Artwork; gradients that follow every transform, the annotator, linked stops, freeform gradients, focal points, gradients on strokes and Expand; stroke geometry, arrowheads, dashes fitted to corners, stroke on type, width profiles and the Width tool, Scale Strokes and preview bounds; Appearance targeting, container appearance, target circles, Expand Appearance; knockout, isolation, blend accuracy, CMYK blending, overprint, Attributes, masks and clipping, Flatten Transparency; graphic styles, links and libraries. Left: freeform and mixed spot/process gradients export as stops or process colours to SVG/PDF; confirm the Scale Strokes & Effects default | 4–8 |
@@ -79,6 +83,7 @@ After placed documents (File › Place of a `.vcnr` file, linked), M4.14–M4.98
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |

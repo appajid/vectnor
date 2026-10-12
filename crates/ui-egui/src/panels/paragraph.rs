@@ -252,7 +252,6 @@ mod tests {
         app.session.execute("text.setFormat", &json!({"direction": "leftToRight"})).unwrap();
         assert_eq!(shown(&app), Justify::Left);
         // The direction buttons show with the Indic options only.
-        crate::i18n::set_current(crate::i18n::Lang::EN);
         let tips = |app: &mut VectnorApp| {
             let ctx = egui::Context::default();
             let mut frame = ctx.run_ui(egui::RawInput::default(), |ui| show(app, ui));

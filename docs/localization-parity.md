@@ -1,68 +1,64 @@
-# Localization parity
+# Interface language and document scripts
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (temporary smoothing label translated in every existing catalog) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface; Indic document text remains required) · **Target:** owner requirements; public specifications
 
-Per-language status of Vectnor's interface. How the catalogs work and how to add a language:
-[`development.md` › Localisation](development.md#localisation). Part of
-[target-app-parity.md](target-app-parity.md).
+Appaji Ambarisha requested an English-only Vectnor interface on 2026-10-12 and clarified that Indic
+language support is still required. Interface translations and document text are separate concerns.
 
-**How it is measured:** rows with a translation in each `crates/ui-egui/src/i18n/<code>.tsv`, counted on
-origin/main `01e165af`. The reference is the French catalog, which the tests hold complete: 3,416 interface
-strings (menus, command labels, `tl!` literals: panels, dialogs, tooltips, Preferences) plus 604 `@msg` status and
-error messages, 4,020 in all. A language's % is its rows over 4,020 (capped at 100% per part). The
-`complete_menus` flag and `COMPLETE_MESSAGES` list make `i18n::tests` fail if a complete language misses a
-string, so "full" here is enforced by tests. No language has help content: there is no translated (or English)
-in-app help, and the docs are English.
+## Current interface scope
 
-**Native review:** every catalog was written clean-room from the English meaning, most of it by agents
-(`bflatastic`), with community contributors adding or correcting (German by `dwetscher`, Japanese and Traditional
-Chinese by `imachus`). None is recorded as reviewed by a native speaker; the catalog headers ask for one.
+- English menus, panels, dialogs, tooltips and status/error messages on desktop and WASM.
+- No interface language selector, `app.language` command, translation catalogs or system/browser locale probing.
+- Old `language` and `interfaceLanguage` saved settings are ignored safely; other preferences remain.
+- Shared `i18n` helpers are now English label/format/plural helpers, kept for widget API compatibility.
+- Unicode names, file paths, artwork text, Contributors/Models and legal attribution remain intact.
 
-## The twelve key languages
+The previous twelve-language score (54%, measured 2026-10-10) and 70–110 h translation estimate describe
+an earlier scope. They are historical, not current requirements or evidence of English-interface readiness.
+Headline readiness estimates have not been recalibrated; removing international variants does not improve
+the historical full-product score.
 
-| Language | Code | UI strings translated | Dialogs / tooltips / messages | Script support | Native review | Status | To `full` (h) |
-|---|---|---|---|---|---|---|---|
-| English | `en` | source, 100% | all | Latin | — | full | — |
-| Simplified Chinese (Mandarin) | `zh-hans` | 3,647 rows; menus, panels, dialogs complete (tests); 85% overall | messages in English (1 of 604) | CJK UI font from craft-fonts (BIZ UDPGothic) when embedded, else a system font; IME with marked text at the caret; vertical type partial ([type-parity.md](type-parity.md)) | no | partial | 2–3 |
-| Spanish | `es` | 4,009 / 4,020 (99.7%) | all (604 messages) | Latin | no | full | — (review) |
-| Hindi | `hi` | 0 | none | Devanagari: the document's text shapes (HarfRust), untested for Devanagari, but the egui interface does no complex shaping | no | none | 20–30 |
-| Arabic | `ar` | 0 | none | document text: bidi layout and Paragraph Direction; interface: no right-to-left layout, no Arabic shaping in egui | no | none | 25–40 |
-| French | `fr` | 4,020 / 4,020 (100%) | all | Latin | no | full | — (review) |
-| Portuguese | `pt-br` | 2,726 / 4,020 (68%): every menu label and `tl!` literal | messages in English | Latin | no | partial | 4–6 |
-| Indonesian | `id` | 0 | none | Latin | no | none | 5–8 |
-| Japanese | `ja` | 4,004 / 4,020 (99.6%) | all | CJK UI font as above; Japanese IME; vertical type partial; Japanese crop marks and composition settings | no | full | — (review) |
-| German | `de` | 3,952 / 4,020 (98%; tests hold menus, literals and messages complete) | all (602 of 604 message rows; landed 2026-10-10) | Latin | contributor-written, not reviewed | full | — (review) |
-| Korean | `ko` | 0 | none | Hangul needs a UI font in craft-fonts; the IME path exists | no | none | 6–10 |
-| Vietnamese | `vi` | 0 | none | Latin with stacked diacritics (precomposed forms render) | no | none | 5–8 |
+## Indic text in artwork
 
-**12-language score: ~54%** (equal weights: 100 + 85 + 100 + 0 + 0 + 100 + 68 + 0 + 100 + 98 + 0 + 0, over 12).
-**To `full` for all twelve: ~70–110 h**, most of it Arabic (right-to-left interface) and Hindi (interface
-shaping). Each new Latin-script catalog is ~4,000 rows; the existing ones were written in a few agent hours each
-plus review. Native-speaker review is human work and isn't in the hours.
+Unicode text input and document storage remain unrestricted. HarfRust shapes text using the selected font;
+font lookup/fallback and optional `CRAFT_FONTS_DIR` remain available. The new regression checks cover
+Devanagari, Telugu, Bengali, Tamil, Kannada, Malayalam, Gujarati, Gurmukhi and Odia matras/conjunct clusters
+and equal-style run splits when a suitable installed or craft-fonts font is present. Fonts are not added to
+this repository. Font-dependent checks explicitly report skipped scripts where fonts are unavailable.
 
-## Other shipped languages
+A font-independent command test retains text from all nine scripts through editing, undo/redo and native
+save/load. Existing bidi and East Asian typography options remain available explicitly. New type uses
+Roman-baseline defaults, independent of old interface-language preferences.
 
-| Language | Code | Translated | Status |
-|---|---|---|---|
-| Traditional Chinese (Taiwan) | `zh-hant` | 3,425 rows, menus and literals complete; messages in English (80% overall) | partial |
-| Italian | `it` | 4,011 / 4,020 | full |
-| Russian | `ru` | 4,009 / 4,020 | full |
-| Ukrainian | `uk` | 4,009 / 4,020 (one/few/many plurals) | full |
-| Czech | `cs` | 679 / 4,020 (17%): every menu label | menus only |
+This is focused regression coverage, not a complete Indic parity assessment. Indic IME integration,
+caret/selection inside complex clusters, regional hyphenation and editable export fidelity need separate
+validation. Missing font coverage is reported by the existing font workflow.
 
-Eleven non-English catalogs in all. Illustrator, as its public documentation lists, ships around two dozen
-interface languages (including Korean, Polish, Dutch, Turkish, the Nordic languages, Hungarian, and Middle East
-editions with Arabic and Hebrew); it doesn't ship Hindi, Indonesian or Vietnamese.
+## Evidence
 
-## Not done in any language
+- `crates/ui-egui/src/i18n/tests.rs`: English formatting, Unicode names and obsolete preference migration.
+- `crates/ui-egui/src/tests_nativemenu.rs`: English app menu with no language controls; Appearance retained.
+- `crates/text/src/tests_indic.rs`: source clusters, glyph coverage and shaping across equal-style run splits.
+- `crates/engine/src/cmd/typecmd.rs`: Indic edit/undo/redo/native round trip; explicit East Asian alignment.
+- [Type checklist](type-parity.md) and [development instructions](development.md#localisation).
 
-Locale-aware number and date formats, a right-to-left interface, translated help, and a Traditional Chinese UI
-font for the web build.
+## Local verification — 2026-10-12
+
+All seven `cargo xtask ci` gates pass: 5,123 tests passed, none failed, four existing tests ignored;
+WASM checks pass. All nine Indic shaping cases ran locally with suitable installed fonts (no font binaries
+added). The native app was launched with `VECTNOR_LOCALE=fr-FR` and `VECTNOR_NO_PREFS=1`: Preferences
+remained English with no language field. Native canvas screenshots show all nine scripts, and real
+Telugu `ui.text` input is preserved. Saving and reopening `.vcnr` retains every source string and produces
+an identical PNG render (SHA-256 comparison). The reopened window stopped presenting frames, so the
+artwork was verified through `ui.render`; the earlier preferences/canvas screenshots were inspected.
+Evidence stays local under `/tmp/vectnor-english-*`; no GitHub upload. This remains focused regression
+coverage, not a claim of complete Indic IME/editor/export parity.
 
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-12 | scope | Removed international interface variants by owner request; kept Indic document support and added focused regression coverage. |
 | 2026-10-12 | minor | Alt/Option switches to Smooth label added to all eleven existing non-English catalogs; baseline scores unchanged, native review still pending. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected label added to all eleven existing non-English catalogs; complete-language coverage remains enforced. Baseline scores unchanged; these labels have not had native-speaker review. |
 | 2026-10-10 | major | First per-language table, measured from the catalog row counts against the complete French catalog |
