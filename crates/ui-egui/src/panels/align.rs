@@ -29,9 +29,18 @@ impl AlignTo {
 /// `object.align` params: a single object aligns to the artboard (Illustrator does the same).
 pub fn align_params(base: Value, to: AlignTo, n_selected: usize) -> Value {
     let mut p = base;
-    let to = if n_selected == 1 && to == AlignTo::Selection { AlignTo::Artboard } else { to };
+    let to = aligns_to(to, n_selected);
     p["to"] = json!(to.param());
     p
+}
+
+/// Anchors align to each other even when they belong to a single selected path.
+fn objects_aligned(app: &VectnorApp) -> usize {
+    if app.session.active().is_some_and(|st| !st.selection.anchors.is_empty()) { 0 } else { selection_len(app) }
+}
+
+fn aligns_to(to: AlignTo, n: usize) -> AlignTo {
+    if n == 1 && to == AlignTo::Selection { AlignTo::Artboard } else { to }
 }
 
 pub const ALIGN: [(&str, &str, &str, &str); 6] = [
@@ -56,7 +65,6 @@ pub const DISTRIBUTE: [(&str, &str, &str, &str); 6] = [
 /// They align to what the Align panel's Align To says (the key object while there is one), as
 /// its own buttons do (#789).
 pub fn align_buttons(app: &mut VectnorApp, ui: &mut Ui, size: f32) {
-    let n = selection_len(app);
     let to = align_to(app, ui.ctx());
     for (icon, tip, axis, v) in [
         ("align-start-vertical", "Horizontal Align Left", "horizontal", "left"),
@@ -67,7 +75,7 @@ pub fn align_buttons(app: &mut VectnorApp, ui: &mut Ui, size: f32) {
         ("align-end-horizontal", "Vertical Align Bottom", "vertical", "bottom"),
     ] {
         if widgets::icon_button(ui, icon, tl!(tip), false, size).clicked() {
-            app.run("object.align", align_params(json!({axis: v}), to, n)).ok();
+            app.run("object.align", align_params(json!({axis: v}), to, objects_aligned(app))).ok();
         }
     }
 }
@@ -94,7 +102,7 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
                 ui.add_space(6.0);
             }
             if widgets::icon_button_enabled(ui, icon, tl!(tip), false, n >= 1, 32.0).clicked() {
-                app.run("object.align", align_params(json!({*axis: v}), to, n)).ok();
+                app.run("object.align", align_params(json!({*axis: v}), to, objects_aligned(app))).ok();
             }
         }
     });
@@ -139,13 +147,14 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
         ui.separator();
         ui.vertical(|ui| {
             widgets::subheader(ui, tl!("Align To:"));
+            let shown = aligns_to(to, objects_aligned(app));
             ui.horizontal(|ui| {
                 for (v, icon, tip) in [
                     (AlignTo::Selection, "dc-alignto-selection", tl!("Align to Selection")),
                     (AlignTo::Key, "dc-alignto-key", tl!("Align to Key Object")),
                     (AlignTo::Artboard, "dc-alignto-artboard", tl!("Align to Artboard")),
                 ] {
-                    if widgets::icon_button(ui, icon, tl!(tip), to == v, 28.0).clicked() {
+                    if widgets::icon_button(ui, icon, tl!(tip), shown == v, 28.0).clicked() {
                         set_pstate(ui.ctx(), "align-to", v);
                         // Aligning to the selection or the artboard lets go of the key object.
                         if v != AlignTo::Key && has_key(app) {
@@ -233,5 +242,44 @@ mod tests {
         let st = app.session.active().unwrap();
         let x1 = |id: &serde_json::Value| st.doc.bounds_of(&[vectnor_doc::NodeId(id.as_u64().unwrap())], false).unwrap().x1;
         assert_eq!((x1(&a), x1(&b)), (200.0, 200.0), "both to the artboard's right edge");
+    }
+    #[test]
+    fn single_path_anchors_use_stored_align_to_in_shared_controls() {
+        for to in [AlignTo::Selection, AlignTo::Artboard] {
+            let mut app = VectnorApp::new(vectnor_engine::Session::new(), Default::default());
+            app.run("file.new", json!({"width": 300, "height": 200})).unwrap();
+            let id = app.run("path.create", json!({"d": "M100 40 L200 60 L150 160 Z"})).unwrap()["id"].as_u64().unwrap();
+            app.run("select.anchors", json!({"id": id, "anchors": [[0, 0], [0, 1]], "mode": "set"})).unwrap();
+            let ctx = egui::Context::default();
+            set_pstate(&ctx, "align-to", to);
+            assert_eq!(aligns_to(to, objects_aligned(&app)), to);
+            let cursor = std::cell::Cell::new(egui::Pos2::ZERO);
+            let frame = |app: &mut VectnorApp, events| {
+                let mut out = ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| {
+                    ui.horizontal(|ui| {
+                        cursor.set(ui.cursor().min);
+                        align_buttons(app, ui, 24.0);
+                    });
+                });
+                out.textures_delta.clear();
+            };
+            frame(&mut app, vec![]);
+            let left = cursor.get() + egui::vec2(12.0, 12.0);
+            let press =
+                |pressed| egui::Event::PointerButton { pos: left, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+            frame(&mut app, vec![egui::Event::PointerMoved(left), press(true)]);
+            frame(&mut app, vec![press(false)]);
+            let path = app.session.active().unwrap().doc.node(vectnor_doc::NodeId(id)).unwrap().path_data().unwrap();
+            let xs: Vec<_> = path.anchors().map(|(_, _, a)| a.p.x).collect();
+            assert_eq!(xs, if to == AlignTo::Selection { vec![100.0, 100.0, 150.0] } else { vec![0.0, 0.0, 150.0] });
+            let before = app.session.doc().unwrap().doc.clone();
+            let history = app.session.doc().unwrap().history.undo.len();
+            app.run("object.align", align_params(json!({"horizontal": "left"}), to, objects_aligned(&app))).unwrap();
+            assert_eq!(app.session.doc().unwrap().doc, before);
+            assert_eq!(app.session.doc().unwrap().history.undo.len(), history, "repeated alignment must not add history");
+            app.run("edit.undo", json!({})).unwrap();
+            let path = app.session.active().unwrap().doc.node(vectnor_doc::NodeId(id)).unwrap().path_data().unwrap();
+            assert_eq!(path.anchors().map(|(_, _, a)| a.p.x).collect::<Vec<_>>(), [100.0, 200.0, 150.0]);
+        }
     }
 }

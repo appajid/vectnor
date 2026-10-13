@@ -258,6 +258,17 @@ fn leaves(n: &Node, out: &mut Vec<Node>) {
     }
 }
 
+/// How many shapes a Pathfinder operation takes from `n` selected alone: its leaf shapes, however
+/// deep its groups nest (an expanded stroke is a group inside the group, #1635).
+pub fn shape_count(n: &Node) -> usize {
+    match &n.kind {
+        NodeKind::Path { guide: true, .. } | NodeKind::Path { clipping: true, .. } => 0,
+        NodeKind::Path { .. } | NodeKind::Compound { .. } | NodeKind::Text(_) => 1,
+        NodeKind::Group { children, .. } | NodeKind::Layer { children, .. } => children.iter().map(|n| shape_count(n)).sum(),
+        _ => 0,
+    }
+}
+
 /// A node for `path`: a plain path for one subpath, else a compound path.
 pub(crate) fn shape_node(d: &mut Document, path: PathData, style_src: Option<&Node>) -> Node {
     let id = d.alloc_id();
@@ -334,6 +345,7 @@ fn run_pf(s: &mut Session, op: PathfinderOp) -> Result<Value> {
                 continue;
             }
             if shape_mode
+                && roots.len() > 1
                 && lv.len() > 1
                 && let Some(top) = lv.last()
             {

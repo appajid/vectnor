@@ -156,7 +156,7 @@ For the experimental, unsupported 64-bit Windows 7 build, see [Windows 7 instruc
 
 ## Status
 
-Reviewed upstream fixes resolve the initial planar-cutting regression. All seven local CI gates pass: formatting, workspace lint, tests, assets, branding, layering and WASM. [Pinned adaptations and verification](docs/vectnor/UPSTREAM_AUDIT.md) retain the remaining correctness and platform limits.
+Reviewed upstream fixes improve selection/drawing, character styles, file handling and UI, alongside the earlier planar-cutting repair. All eight local CI gates pass: formatting, workspace lint, tests, assets, branding, clean-room markers, layering and WASM. Native save/reopen checks preserve the verified objects and rendered pixels. [Pinned adaptations and verification](docs/vectnor/UPSTREAM_AUDIT.md) retain the remaining correctness and platform limits.
 
 Renamed to **Vectnor** on 2026-10-12. Native documents use `.vcnr`.
 

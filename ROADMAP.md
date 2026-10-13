@@ -2,7 +2,7 @@
 
 **Stage: alpha** · next: beta, ~13 points (ready for real work ~62% → ~75%, and reliable `.ai` exchange) and ~170–270 h away
 
-> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Vectnor is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
 on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
@@ -114,6 +114,7 @@ Ranked; detail in [docs/roadmap.md](docs/roadmap.md) and [docs/gaps.md](docs/gap
 
 | Date | What landed |
 |---|---|
+| 2026-10-13 | Local upstream correctness pass: isolated/overlapping anchor selection, anchor Align/Delete, grouped Pathfinder, Pen jitter, Width modifiers, style capture/Auto leading, CSV precision, readable fields/rails, template Preview, clipboard images, ICC alignment, macOS flush fallback and a clean-room CI gate. No headline score change. |
 | 2026-10-12 | Owner scope: English-only interface; removed translated UI variants and selectors while retaining Indic document text. Nine-script shaping and edit/undo/redo/native round-trip checks added. |
 | 2026-10-12 | G1: Alt/Option smoothing from Pencil/Paintbrush is optional and saved; it edits the selected path through Smooth and restores the drawing tool, with one-step undo. |
 | 2026-10-12 | G1: Pencil and Paintbrush have a saved Keep selected option; live preview stays selected, finished and continued strokes follow the choice with one-step undo. |
@@ -136,6 +137,7 @@ The full pre-standard record of what landed is kept in [docs/roadmap.md](docs/ro
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |

@@ -44,6 +44,8 @@ pub struct PenTool {
     in_h: Point,
     /// The pointer at the last button-down or drag: Space held moves the anchor as far as it moves.
     last: Point,
+    /// Whether pointer movement passed the screen-space drag threshold after this press.
+    dragged: bool,
     /// The last anchor of the path being drawn, while a click retracts its outgoing handle or a
     /// drag pulls a new one out: (path, subpath, anchor, its position).
     handle: Option<(NodeId, usize, usize, Point)>,
@@ -162,6 +164,7 @@ impl Tool for PenTool {
             }
             PointerKind::Down => {
                 self.last = ev.pos;
+                self.dragged = false;
                 if let Some((id, first, last, _)) = active {
                     let end = last_anchor(cx, id);
                     // A one-anchor path doesn't close on itself: its anchor is the last one too.
@@ -224,6 +227,12 @@ impl Tool for PenTool {
             PointerKind::Drag => {
                 if let Some(t) = &mut self.convert {
                     return t.pointer(cx, ev);
+                }
+                if !self.dragged {
+                    if ev.pos.distance(self.last) < cx.tol(3.0) {
+                        return vec![];
+                    }
+                    self.dragged = true;
                 }
                 if let Some((id, si, ai, a)) = self.handle {
                     let mut h = ev.pos;
@@ -772,5 +781,18 @@ mod tests {
         assert_eq!(t.cursor(&cx_b, Point::new(150.0, 350.0), Mods::default()), Cursor::Pen);
         let acts = click(&mut t, &cx_b, 150.0, 350.0, Mods::default());
         assert!(matches!(&acts[..], [Action::Begin(_), Action::Preview(c, _)] if c == "path.create"), "{acts:?}");
+    }
+    #[test]
+    fn press_inside_drag_threshold_places_a_corner() {
+        let (d, s) = (vectnor_doc::Document::new(500.0, 500.0), Selection::default());
+        let paint = paint();
+        let cx =
+            ToolContext { zoom: 1.0, smart_guides: false, snap_to_point: false, snap_to_pixel: false, snap_to_grid: false, ..cx(&d, &s, &paint) };
+        let mut pen = PenTool::default();
+        pen.pointer(&cx, &PointerEvent::new(PointerKind::Down, 100.0, 100.0));
+        assert!(pen.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 101.0, 101.0)).is_empty());
+        assert_eq!(pen.pointer(&cx, &PointerEvent::new(PointerKind::Up, 101.0, 101.0)), vec![Action::Commit]);
+        pen.pointer(&cx, &PointerEvent::new(PointerKind::Down, 200.0, 200.0));
+        assert_eq!(pen.pointer(&cx, &PointerEvent::new(PointerKind::Drag, 204.0, 200.0)).len(), 1);
     }
 }

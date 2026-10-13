@@ -1,5 +1,7 @@
 # Vectnor upstream provenance
 
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (twenty updated adaptations plus two older alignment dependencies; local only)
+
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
 The supplied source was initially committed as `d8d143e72223590ca4b451b792ca4e52cf68d23d`. Its original upstream revision was not preserved as verified Git ancestry. Subsequent ports compare the actual source and tests instead of assuming that history. The review baseline is `cdca9f872becb0c1b7baef107a2a9dda3035ddbf`.
@@ -23,3 +25,18 @@ Developer and maintainer: **Appaji Ambarisha** (`appajid`). Vectnor keeps its ow
 All nine selected contributions were merged upstream when inspected. Only the reviewed code/test portions were ported; product identifiers were adapted to Vectnor. No upstream contributor preference entries, fonts, artwork, branding, community controls or publication workflows were copied. Source-author logins record provenance and do not modify the generated Contributors/Models registry.
 
 [Pinned review and decisions](docs/vectnor/UPSTREAM_AUDIT.md) · [Machine-readable snapshot](docs/vectnor/upstream-audit.json) · [Shared structure with Pagenor](docs/vectnor/STRUCTURE.md).
+
+## Local update — M0.upstream-update, 2026-10-13
+
+Twenty updated upstream PRs and two older required alignment dependencies are adapted locally after the
+last change `d4f8181`. Each source author's login, PR URL, immutable head, raw diff hash and verified Git
+blob identity is recorded in [the new review snapshot](docs/vectnor/upstream-audit-2026-10-13.json).
+[Adaptations and limits](docs/vectnor/UPSTREAM_AUDIT.md#2026-10-13-local-update--m0upstream-update)
+distinguish open proposals from merged fixes and identify the portions fitted to Vectnor's earlier APIs.
+Existing provenance and contributor registries remain intact. No source, build or web app is uploaded.
+
+## Revision history
+
+| Date | Change | Summary |
+|---|---|---|
+| 2026-10-13 | minor | Reviewed upstream adaptations and compatibility/verification notes; no upload. |

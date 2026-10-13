@@ -1,5 +1,7 @@
 # Development
 
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed local correctness pass and clean-room marker gate)
+
 ## Web build
 
 `apps/vectnor-web` runs the same `VectnorApp` in the browser through eframe's web runner. The renderer is wgpu: WebGPU where the browser has it, WebGL2 otherwise. It is Rust only; the only JavaScript is the glue wasm-bindgen generates.
@@ -173,6 +175,14 @@ missing-font skips; `typecmd.rs` checks Indic edit/undo/redo/native round trips 
 Use `CRAFT_FONTS_DIR` or installed fonts for coverage; do not commit additional font binaries. Web builds
 also need suitable fonts loaded for document text. See [language scope](localization-parity.md).
 
+## Clean-room marker gate
+
+`cargo xtask cleanroom` runs in `cargo xtask ci` after the vendor-name check. It checks repository bytes
+for prohibited copyright/creator markers, excluding required notices/OFL licence texts and explicitly
+marked handwritten importer headers (`cleanroom-ok`). The markers record synthetic format tests; they
+never authorize importing vendor assets or code. Compressed and UTF-16 metadata are not decoded;
+reported unreadable/oversized files require review. See the pinned [upstream audit](vectnor/UPSTREAM_AUDIT.md).
+
 ## Vendor names gate
 
 `cargo xtask brands` (part of `cargo xtask ci`) fails when user-visible text names another vendor's products or company: string literals in Rust sources (command labels and params docs, menus, panels, MCP tool definitions), `Cargo.toml` descriptions and packaging files. Comments and test code are not checked. Say "the reference app" or name the feature itself. A line that must keep an old name, such as an alias that files or preferences from earlier versions still use, carries a `brand-ok` comment.
@@ -267,3 +277,9 @@ Vertical type keeps its logical order down the column. SVG export outlines text 
 lines (with a warning) until it is written with `direction`/`unicode-bidi`; PDF and raster exports
 use the laid-out glyphs. No font is bundled for these scripts: the installed fonts' fallback
 covers them (the web build needs a font with that coverage).
+
+## Revision history
+
+| Date | Change | Summary |
+|---|---|---|
+| 2026-10-13 | minor | Reviewed upstream adaptations and compatibility/verification notes; no upload. |

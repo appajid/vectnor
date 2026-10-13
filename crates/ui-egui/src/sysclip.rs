@@ -91,7 +91,9 @@ impl VectnorApp {
                 }
                 let Some(f) = cb.read(&PASTE_ORDER) else { return Ok(()) };
                 // Text that is only an address goes with a browser's copied picture: the picture.
-                let f = if f.mime == TEXT && is_address(&String::from_utf8_lossy(&f.data)) { cb.read(&[BITMAP]).unwrap_or(f) } else { f };
+                let text = String::from_utf8_lossy(&f.data);
+                // Some clipboard hosts put blank text beside the copied picture.
+                let f = if f.mime == TEXT && (text.trim().is_empty() || is_address(&text)) { cb.read(&[BITMAP]).unwrap_or(f) } else { f };
                 import_command(&f, center)
             }
             // Text only: SVG markup is art, other text is left alone.

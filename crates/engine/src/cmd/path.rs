@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 
 use serde_json::{Value, json};
 use vectnor_doc::{NodeId, NodeKind};
-use vectnor_geom::{AnchorKind, PathData, Point, SubPath, Vec2};
+use vectnor_geom::{Anchor, AnchorKind, PathData, Point, SubPath, Vec2};
 
 use super::create::anchor_from_json;
 use super::*;
@@ -90,7 +90,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Delete Anchor Points",
             [],
             None,
-            "{} delete the direct-selected anchors and their segments, opening closed paths there (the Delete key)",
+            "{} remove selected anchors at their original indexes, open closed paths there and remove objects selected whole alongside them; surviving paths stay selected for a second Delete",
             has_anchors,
             delete_anchors
         ),
@@ -116,7 +116,7 @@ pub fn specs() -> Vec<CommandSpec> {
     ]
 }
 
-fn path_mut(d: &mut vectnor_doc::Document, id: NodeId) -> Result<&mut PathData> {
+pub(super) fn path_mut(d: &mut vectnor_doc::Document, id: NodeId) -> Result<&mut PathData> {
     let n = d.node_mut(id).ok_or(EngineError::NoNode(id))?;
     match &mut n.kind {
         NodeKind::Path { path, live, .. } => {
@@ -380,7 +380,7 @@ fn join(s: &mut Session, p: &Value) -> Result<Value> {
 
 type AnchorTargets = Vec<(NodeId, Vec<(usize, usize)>)>;
 
-fn anchor_targets(s: &Session) -> Result<AnchorTargets> {
+pub(super) fn anchor_targets(s: &Session) -> Result<AnchorTargets> {
     let st = s.doc()?;
     let mut out = vec![];
     for id in &st.selection.objects {
@@ -456,35 +456,87 @@ fn convert_anchors(s: &mut Session, p: &Value) -> Result<Value> {
 pub(crate) fn delete_anchors(s: &mut Session, _: &Value) -> Result<Value> {
     let st = s.doc()?;
     let sel = st.selection.anchors.clone();
+    let whole: Vec<NodeId> = st.selection.objects.iter().copied().filter(|id| !st.selection.anchors.contains_key(id)).collect();
     s.edit("Clear", |d, selection| {
+        let targets: BTreeSet<NodeId> = whole.into_iter().filter(|id| d.node(*id).is_some_and(|n| !n.is_layer())).collect();
+        let roots: Vec<NodeId> = targets
+            .iter()
+            .copied()
+            .filter(|id| !d.ancestry(*id).unwrap_or_default().iter().rev().skip(1).any(|ancestor| targets.contains(ancestor)))
+            .collect();
+        for id in roots {
+            d.remove(id)?;
+        }
+        let mut survivors = vec![];
         for (id, set) in &sel {
-            let remove_node = {
+            // A selected parent may already have removed this path.
+            if d.node(*id).is_none() {
+                continue;
+            }
+            let empty = {
                 let path = path_mut(d, *id)?;
-                // Deleting an anchor from a closed path opens it there (Illustrator behaviour on Delete).
-                for &(si, ai) in set.iter().rev() {
-                    if let Some(sp) = path.subpaths.get_mut(si)
-                        && ai < sp.anchors.len()
-                    {
-                        if sp.closed {
-                            sp.anchors.rotate_left(ai + 1);
-                            sp.anchors.pop();
-                            sp.closed = false;
-                        } else {
-                            sp.anchors.remove(ai);
-                        }
-                    }
-                }
-                path.subpaths.retain(|s| s.anchors.len() >= 2);
+                path.subpaths = std::mem::take(&mut path.subpaths)
+                    .into_iter()
+                    .enumerate()
+                    .flat_map(|(si, sp)| {
+                        let gone = set.iter().filter_map(|&(s, ai)| (s == si).then_some(ai)).collect();
+                        without_anchors(sp, &gone)
+                    })
+                    .collect();
+                path.subpaths.retain(|sp| sp.anchors.len() >= 2);
                 path.subpaths.is_empty()
             };
-            if remove_node {
+            if empty {
                 d.remove(*id)?;
+            } else {
+                survivors.push(*id);
             }
         }
-        selection.clear();
+        let guides = selection.guides.clone();
+        d.retain_guides(selection, |i, _| !guides.contains(&i));
+        selection.set(survivors);
         Ok(())
     })?;
     ok()
+}
+
+/// Remove anchors `removed`. An open path stays one path and joins across the gap. A closed path
+/// opens there: each stretch of anchors that were not deleted becomes its own open path, in the
+/// original order, including a stretch that wraps past the last anchor.
+fn without_anchors(sp: SubPath, removed: &BTreeSet<usize>) -> Vec<SubPath> {
+    let n = sp.anchors.len();
+    let gone: BTreeSet<usize> = removed.iter().copied().filter(|&i| i < n).collect();
+    if gone.is_empty() {
+        return vec![sp];
+    }
+    let keep = |anchors: Vec<Anchor>| (anchors.len() >= 2).then(|| SubPath::new(anchors, false));
+    if !sp.closed {
+        return keep(sp.anchors.into_iter().enumerate().filter(|(i, _)| !gone.contains(i)).map(|(_, a)| a).collect()).into_iter().collect();
+    }
+    let mut runs: Vec<Vec<Anchor>> = vec![];
+    let mut run = vec![];
+    for (i, anchor) in sp.anchors.into_iter().enumerate() {
+        if gone.contains(&i) {
+            if !run.is_empty() {
+                runs.push(std::mem::take(&mut run));
+            }
+        } else {
+            run.push(anchor);
+        }
+    }
+    // The anchors before the first deletion and after the last are one stretch.
+    if gone.contains(&0) {
+        if !run.is_empty() {
+            runs.push(run);
+        }
+    } else if !runs.is_empty() {
+        let head = runs.remove(0);
+        run.extend(head);
+        runs.insert(0, run);
+    } else if !run.is_empty() {
+        runs.push(run);
+    }
+    runs.into_iter().filter_map(keep).collect()
 }
 
 fn reshape(s: &mut Session, p: &Value) -> Result<Value> {

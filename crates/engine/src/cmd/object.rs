@@ -159,7 +159,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Align",
             ["Window", "Align"],
             None,
-            "{horizontal?: \"left\"|\"center\"|\"right\", vertical?: \"top\"|\"center\"|\"bottom\", to?: \"selection\"|\"artboard\"|\"key\" (default: the key object when the selection has one, select.key, else the selection), bounds?: \"preview\"|\"geometric\" (default: the Use Preview Bounds preference; preview bounds take in strokes)}",
+            "{horizontal?: \"left\"|\"center\"|\"right\", vertical?: \"top\"|\"center\"|\"bottom\", to?: \"selection\"|\"artboard\"|\"key\" (default: the key object when the selection has one, select.key, else the selection), bounds?: \"preview\"|\"geometric\" (default: the Use Preview Bounds preference; preview bounds take in strokes)}; when anchors are selected, align those points and their handles instead of whole paths; key-anchor alignment is not available",
             has_selection,
             align
         ),
@@ -719,7 +719,7 @@ fn isolate(s: &mut Session, p: &Value) -> Result<Value> {
         .or_else(|| s.active().and_then(|d| d.selection.objects.first().copied()))
         .ok_or_else(|| bad("object.isolate", "missing id"))?;
     let st = s.doc_mut()?;
-    if st.doc.node(id).is_none_or(|n| !n.is_container()) {
+    if !st.doc.node(id).ok_or(EngineError::NoNode(id))?.is_container() {
         return Err(bad("object.isolate", "only groups and layers can be isolated"));
     }
     let isolation = st.doc.node(id).filter(|n| n.shaper.is_some()).and_then(|n| n.children()).and_then(|c| c.first()).map_or(id, |n| n.id);
@@ -889,9 +889,12 @@ fn reference_rect(s: &Session, p: &Value, ids: &[NodeId], preview: bool) -> Resu
 fn align(s: &mut Session, p: &Value) -> Result<Value> {
     let ids = selected_roots(s)?;
     let preview = preview_bounds(s, p, "object.align")?;
-    let r = reference_rect(s, p, &ids, preview)?;
     let h = str_param(p, "horizontal");
     let v = str_param(p, "vertical");
+    if !s.doc()?.selection.anchors.is_empty() {
+        return align_anchors(s, p, &ids, (h, v));
+    }
+    let r = reference_rect(s, p, &ids, preview)?;
     let key = s.doc()?.selection.key;
     let moves: Vec<(NodeId, Vec2)> = {
         let d = &s.doc()?.doc;
@@ -919,6 +922,55 @@ fn align(s: &mut Session, p: &Value) -> Result<Value> {
         for (id, dv) in &moves {
             if let Some(n) = d.node_mut(*id) {
                 n.transform(Affine::translate(*dv), false);
+            }
+        }
+        Ok(())
+    })?;
+    ok()
+}
+
+/// [`align`] of the selected anchor points (whole paths among them give all theirs): each point
+/// moves to the edge or centre of the points' bounds, or of the artboard with Align To Artboard.
+fn align_anchors(s: &mut Session, p: &Value, ids: &[NodeId], (h, v): (Option<&str>, Option<&str>)) -> Result<Value> {
+    let targets = super::path::anchor_targets(s)?;
+    let d = &s.doc()?.doc;
+    let pts: Vec<Point> = targets
+        .iter()
+        .flat_map(|(id, refs)| refs.iter().filter_map(move |(si, ai)| d.node(*id)?.path_data()?.subpaths.get(*si)?.anchors.get(*ai).map(|a| a.p)))
+        .collect();
+    let Some(bounds) = pts.iter().skip(1).fold(pts.first().map(|q| Rect::from_points(*q, *q)), |b, q| b.map(|b| b.union_pt(*q))) else {
+        return ok();
+    };
+    // shortcut: no key anchor yet, so Align To Key Object aligns to the points' bounds as Selection does.
+    let r = if align_to(s, p) == Some("artboard") { reference_rect(s, p, ids, false)? } else { bounds };
+    let target = |q: Point| {
+        let x = match h {
+            Some("left") => r.x0,
+            Some("center") => r.center().x,
+            Some("right") => r.x1,
+            _ => q.x,
+        };
+        let y = match v {
+            Some("top") => r.y0,
+            Some("center") => r.center().y,
+            Some("bottom") => r.y1,
+            _ => q.y,
+        };
+        Point::new(x, y)
+    };
+    if pts.iter().all(|q| {
+        let dv = target(*q) - *q;
+        dv.x.abs() <= 1e-9 && dv.y.abs() <= 1e-9
+    }) {
+        return ok();
+    }
+    s.edit("Align", |d, _| {
+        for (id, refs) in &targets {
+            let path = super::path::path_mut(d, *id)?;
+            for &(si, ai) in refs {
+                if let Some(a) = path.anchor_mut(si, ai) {
+                    a.translate(target(a.p) - a.p);
+                }
             }
         }
         Ok(())

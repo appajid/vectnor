@@ -1,0 +1,2333 @@
+{
+  "upstream": "https://github.com/storytold/vectorcraft",
+  "review_date": "2026-10-13",
+  "vectnor_baseline": "d4f8181c895094773b62fc151aa3be172c96c90c",
+  "since_last_local_change_utc": "2026-10-12T12:58:51Z",
+  "capture_note": "Three bounded public GitHub REST pages sorted by update time; 300 distinct PR metadata records inspected, 190 updated since the last local change. This is a snapshot, not a claim to include updates made after capture. Older required alignment dependencies are recorded separately.",
+  "counts": {
+    "scanned": 300,
+    "updated": 190,
+    "updated_open": 56,
+    "updated_merged": 125,
+    "updated_closed_unmerged": 9,
+    "updated_adapted": 20,
+    "older_dependencies": 2
+  },
+  "selected": [
+    {
+      "number": 1666,
+      "url": "https://github.com/storytold/vectorcraft/pull/1666",
+      "title": "Direct Selection stays inside isolation mode",
+      "author": "turtwig",
+      "head": "ed4225e1bbbcb51dc0556b67a77919979c2c3e36",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "21eadfed3ab85cf020e5a6a5563cd90e87a9357c",
+      "diff_sha256": "a73bd18048626e6d394a5b8274cd17615a60b116dd904d6fc5416283d80a5ae4",
+      "adaptation": "Direct and Group Selection stay within the isolated object.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/tools/src/direct.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/tools/src/direct.rs": "55a9bff24c4c5a2a3abd6a4998a476b65216b158"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1509,
+      "url": "https://github.com/storytold/vectorcraft/pull/1509",
+      "title": "Direct Selection: a selected path's anchor is picked before one of an object above it",
+      "author": "marcoarnulfo",
+      "head": "e4c2b3db94bde2a044382098247e1f78a3ed29c6",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T22:10:24Z",
+      "merge_commit": "c67c25128c535effe1743cb52a912db21788e84e",
+      "diff_sha256": "6bb2042a77ad9d5e001ad7e6b4529fe2ff0a29a4b7a1e704805b83e09a03bd95",
+      "adaptation": "Selected paths win overlapping anchor hit tests.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/tools/src/direct.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/tools/src/direct.rs": "afdad69b838b7824c76e8ab8a99b1af808049566"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1633,
+      "url": "https://github.com/storytold/vectorcraft/pull/1633",
+      "title": "G4: propagate character-style Auto-leading resets",
+      "author": "sanyamsingh001",
+      "head": "a1ab9ba05fa91bda41cf89669fb360e7ed3f6377",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "d59f07013313727632ba03a3e1978ba148276c29",
+      "diff_sha256": "b3fb455dd42415111656322eadba870ebb8d68acb786ced715554564f12444d5",
+      "adaptation": "Character-style Auto leading is explicit; resets propagate while local overrides survive.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/textstyles.rs",
+        "crates/ui-egui/src/panels/text_styles.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/textstyles.rs": "fc929e3cb4ef65f1a6d050622e4c59f92d6233c1",
+        "crates/ui-egui/src/panels/text_styles.rs": "2426b06885352900b5bacc7923a57a558d5d9cc4"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1630,
+      "url": "https://github.com/storytold/vectorcraft/pull/1630",
+      "title": "G1: honor Shift-double-click in Width Point Edit",
+      "author": "sanyamsingh001",
+      "head": "8ef4faf9653ecee2571ff9a74d98d9d8dcabbb6d",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "272b9363ed0a7c70b2af35ab33f676e541d72974",
+      "diff_sha256": "d95648da935971805eff7d9f0bb664f28407136f77eae5a34d10175e0958ec91",
+      "adaptation": "Shift-double-click enables adjoining Width-point adjustment.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/tools/src/distort/width.rs",
+        "crates/ui-egui/src/dialogs/width_point.rs",
+        "crates/ui-egui/src/menus.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/tools/src/distort/width.rs": "744797c805c807e742a14d0e12153602dfbea44b",
+        "crates/ui-egui/src/dialogs/width_point.rs": "4a252f6c1ac8754ffa884ce891ec2c6356d50d6a",
+        "crates/ui-egui/src/menus.rs": "8b63d803c1483491bc831e8322ee12a7091d41fb"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1589,
+      "url": "https://github.com/storytold/vectorcraft/pull/1589",
+      "title": "ICC profiles written here have their tags 4-byte aligned",
+      "author": "switch87",
+      "head": "7b0164e4e70c3e6fb441d43a7e9b60792a7f9869",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-13T04:28:58Z",
+      "merge_commit": "6b99150aac36653a89736a293376d93085bf6c9c",
+      "diff_sha256": "2b4efa0821527999afbe5332c12eeaa3899214cf59ca63de91a5ea92e60b82b2",
+      "adaptation": "Generated ICC tags are aligned to four-byte boundaries with checked byte ranges and bounded repacking.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/color/src/cms/icc.rs",
+        "crates/color/src/cms/tests_icc.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/color/src/cms/icc.rs": "df105751f970f714f464f8b20f60a2c9e9e654e2",
+        "crates/color/src/cms/tests_icc.rs": "2e5f099c213bdeb2dd12387be2e6efbb83e2d6c2"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1485,
+      "url": "https://github.com/storytold/vectorcraft/pull/1485",
+      "title": "Graph Data: the CSV keeps each value exactly, not rounded to two decimals",
+      "author": "webdevtodayjason",
+      "head": "43e1a7380c9fa22bd767c85419bf8c060d859bfe",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T21:06:04Z",
+      "merge_commit": "7fadeb4ed2972451ca8205b0a9adaa78f752db8c",
+      "diff_sha256": "eda3f42f20f864b49c6bb2bed9289b377d1542fb03a0b71335345e9d0e17e49c",
+      "adaptation": "Graph CSV preserves numeric precision instead of rounding data to display precision.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/graph.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/graph.rs": "fd5fbee7d8b404cf45bb16651ade43bf86bb1062"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1549,
+      "url": "https://github.com/storytold/vectorcraft/pull/1549",
+      "title": "Keyboard Shortcuts: Duplicate is listed, so it can be given a shortcut",
+      "author": "marcoarnulfo",
+      "head": "00195e8d2825360b1bbf8d13629bb8567e913ee5",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-13T02:07:32Z",
+      "merge_commit": "523fd6e1853c46a125ed161f696bcadb992c748c",
+      "diff_sha256": "9648ce686773302e933c8d5006b3e8f8d96e85843119f36a3edbbbf48404781c",
+      "adaptation": "Duplicate is available in Keyboard Shortcuts.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/edit.rs",
+        "crates/ui-egui/src/shortcut_editor.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/edit.rs": "9ca8f6e91a00b82cfe9eb07c2ceb203e2e60af59",
+        "crates/ui-egui/src/shortcut_editor.rs": "1fb0c2c7336459b132d8c0a8a448cee40891da18"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1580,
+      "url": "https://github.com/storytold/vectorcraft/pull/1580",
+      "title": "Keyboard Shortcuts: the commands outside the menus that run without params are listed too (#1539)",
+      "author": "bflatastic",
+      "head": "20f5174710e14214ed43ab8829af53b07d885747",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-13T02:08:48Z",
+      "merge_commit": "8fbf724cf6f5922aa5820cdd26bd1d1acc44be3b",
+      "diff_sha256": "1a30de63bf927d9304e76a7769b055635a953dccfc680c26ded94c19b9f14697",
+      "adaptation": "Eligible commands outside menus can receive shortcuts.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/ui-egui/src/shortcut_editor.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/ui-egui/src/shortcut_editor.rs": "612f1370fb175110115636bcc68f7c8bfb890289"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1490,
+      "url": "https://github.com/storytold/vectorcraft/pull/1490",
+      "title": "Part of #1465: selected text in value fields is readable",
+      "author": "bflatastic",
+      "head": "09f62097f052a52bbb1e5a9e8690f1831c7600e9",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T19:49:43Z",
+      "merge_commit": "e74cb01ecc2858fa5b8c07fcc04952e9ab64f47f",
+      "diff_sha256": "95142c6dc20ed2264ebe6e07afa0a4c2e0f71faccce2a6f0b17acfe8819064d4",
+      "adaptation": "Selected field text uses a readable foreground.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/ui-egui/src/dialogs/form.rs",
+        "crates/ui-egui/src/dialogs/swatch_options.rs",
+        "crates/ui-egui/src/theme.rs",
+        "crates/ui-egui/src/widgets.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/ui-egui/src/dialogs/form.rs": "e00b9f4cca0b509e9b3b7e1410374cce890beadc",
+        "crates/ui-egui/src/dialogs/swatch_options.rs": "6f4a2ed1ccbec7fa19a8425e56d2aa16163b9e64",
+        "crates/ui-egui/src/theme.rs": "d35e56577da9cfb714d238ed19a4992f029db09a",
+        "crates/ui-egui/src/widgets.rs": "c0a94c6e722a3a45a0293684822d8359644a1367"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1506,
+      "url": "https://github.com/storytold/vectorcraft/pull/1506",
+      "title": "Fix #1483: sliders in dialogs show their rail",
+      "author": "bflatastic",
+      "head": "dd1c26b6270652494f90d0406cad49a9823fc7ef",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T21:05:32Z",
+      "merge_commit": "e30b1492a1581b769d17f97005062cc6c46ede49",
+      "diff_sha256": "eabbf70127f0f56e973b1e7b24fa411b28a7a01516de3e37d31fe26755901281",
+      "adaptation": "Slider rails are visible; template layers remain in Preview during Outline view.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/render/src/lib.rs",
+        "crates/render/src/tests_layeropts.rs",
+        "crates/ui-egui/src/dialogs/png_options.rs",
+        "crates/ui-egui/src/dialogs/save_for_web.rs",
+        "crates/ui-egui/src/prefs_dialog.rs",
+        "crates/ui-egui/src/widgets.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/render/src/lib.rs": "ceb153f2e255261ed28f5fc3a3f330b89a944a41",
+        "crates/render/src/tests_layeropts.rs": "a2864cc61f53a5dbe331a4232f9a3de53dde754f",
+        "crates/ui-egui/src/dialogs/png_options.rs": "93d3284e63e94f0afcd66401dd446d8e9bba16ef",
+        "crates/ui-egui/src/dialogs/save_for_web.rs": "9426fa866b512e6f9d98dec4b31190cb629b7594",
+        "crates/ui-egui/src/prefs_dialog.rs": "0e2bb93a2d30214f05318571b0c9ccf76638d391",
+        "crates/ui-egui/src/widgets.rs": "7019fdcb9d6271f8b56dde1657b34b11f965973e"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1404,
+      "url": "https://github.com/storytold/vectorcraft/pull/1404",
+      "title": "Paste the picture when the clipboard text beside it is blank.",
+      "author": "vbasky",
+      "head": "f90854520404b4c62b878dc55f1f9a4fb01d9393",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T13:22:22Z",
+      "merge_commit": "22f14bec246e3dbbe4795765e84572f89ad2b91c",
+      "diff_sha256": "10ac536bb4eb697b74db322ead1f678a9ae8259526228faa2124709c04978da1",
+      "adaptation": "A clipboard picture accompanied by blank text still pastes as an image.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "apps/vectorcraft-web/src/web.rs",
+        "crates/ui-egui/src/sysclip.rs",
+        "crates/ui-egui/src/tests_sysclip.rs"
+      ],
+      "verified_blob_ids": {
+        "apps/vectorcraft-web/src/web.rs": "500281876422801bb7e313b0c189a686c3ce795e",
+        "crates/ui-egui/src/sysclip.rs": "a2eb8a918fe9efc8955bfb9831c2bfc41ca26054",
+        "crates/ui-egui/src/tests_sysclip.rs": "8ffc8a889117db9ba61db7362a7845a1044a8927"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1415,
+      "url": "https://github.com/storytold/vectorcraft/pull/1415",
+      "title": "object.isolate: an id that doesn't exist says so",
+      "author": "bflatastic",
+      "head": "ec38b00a22f09ef08381958733864c02f6242e80",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T13:06:25Z",
+      "merge_commit": "2a0a279c93efd82ea64787363f361c6d1b6b9c04",
+      "diff_sha256": "12d2f4a628abc7633f99f5936a6f097410ba776e9d553ef05d83cb6253079be7",
+      "adaptation": "A missing isolation target reports the missing object without changing eligible object kinds.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/object.rs",
+        "crates/engine/src/tests.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/object.rs": "f5f59169c2295545775236699f208cb3e83c3bd8",
+        "crates/engine/src/tests.rs": "ad1bda900dd41591be762b8f2e970344ca1cded1"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1493,
+      "url": "https://github.com/storytold/vectorcraft/pull/1493",
+      "title": "Fix #1450: the Pathfinder panel works on a group selected alone",
+      "author": "bflatastic",
+      "head": "7625feea08b3af8fd3824c6457fb47df5bbd475f",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T20:11:15Z",
+      "merge_commit": "499cd4f30c17323caafd72c18767ae49b668c778",
+      "diff_sha256": "91d9e4abed57a6f3c65a6d90f775bcbb1cd3a7d4172d7c38416a9e0f4dc5a581",
+      "adaptation": "A single selected group supplies its shapes separately to Pathfinder.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/pathops.rs",
+        "crates/engine/src/tests_pathops.rs",
+        "crates/ui-egui/src/panels/pathfinder.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/pathops.rs": "8b35f394f39cbba07c9f77d6d5f02634aba4572a",
+        "crates/engine/src/tests_pathops.rs": "6796fd60174d2b3c5084600940d501b17d574590",
+        "crates/ui-egui/src/panels/pathfinder.rs": "6a78816f5b0b47243ea18041ace9ebd616ed081f"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1642,
+      "url": "https://github.com/storytold/vectorcraft/pull/1642",
+      "title": "Pathfinder panel: a group selected alone counts its nested shapes, so an expanded stroke keeps the Shape Modes enabled",
+      "author": "marcoarnulfo",
+      "head": "aef6e07ce5fa0c5e8779cd6bc77067f4d42ae194",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "0749a424e259a415d0bf6e22c2ef3cc65107c51d",
+      "diff_sha256": "f4182d42092602a2fc447718e9ca1b08ca75dcd00ba05f218341e98b757bc29b",
+      "adaptation": "Pathfinder counts nested shapes after Expand; local counting avoids cloned node allocations.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/mod.rs",
+        "crates/engine/src/cmd/pathops.rs",
+        "crates/ui-egui/src/panels/pathfinder.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/mod.rs": "5713dba4391da1c6e54d66febd32e742ec05981e",
+        "crates/engine/src/cmd/pathops.rs": "b3354b08130712423d33a0d904406fb3dee1d71f",
+        "crates/ui-egui/src/panels/pathfinder.rs": "425772367bb15267a8b7943e35406eda538a3052"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1641,
+      "url": "https://github.com/storytold/vectorcraft/pull/1641",
+      "title": "Align: anchor points of one path align to each other, not to the artboard",
+      "author": "marcoarnulfo",
+      "head": "fc766aa19b2f98d60813d23619276c8569205030",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "f72422e0cc189e055768c5fa7eac38f2716eea6b",
+      "diff_sha256": "82d1ff8038d16d4d6457531a75adffb085303f49c577f52edfc086efd20644da",
+      "adaptation": "A single path's selected anchors follow Align To instead of being treated as one whole object.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/ui-egui/src/panels/align.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/ui-egui/src/panels/align.rs": "33101596b684aa13cbaeb80041c1164fba31a16a"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1674,
+      "url": "https://github.com/storytold/vectorcraft/pull/1674",
+      "title": "Delete removes every selected anchor and keeps the remainder selected",
+      "author": "turtwig",
+      "head": "7b168b40bc5ef5aacb527258f5175e2d303df921",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "1d7c7befeb0efbfb9b148569d87883e0d03dae68",
+      "diff_sha256": "51b83d67fc15de9ebaae40d6967bdd5a7b83c0985c395c851e267d200bb202e7",
+      "adaptation": "Delete removes original anchor indexes and whole selected objects together; surviving paths remain selected.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/edit.rs",
+        "crates/engine/src/cmd/path.rs",
+        "crates/engine/tests/clear_commands.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/edit.rs": "3d6325d65503cd8fb570f9bc2662010a40a3ed00",
+        "crates/engine/src/cmd/path.rs": "bf1dcc106a8351ffad22da670574917ace532887",
+        "crates/engine/tests/clear_commands.rs": "1cb639e206949fc09f0f5a8adb2aba2d8d166b68"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1625,
+      "url": "https://github.com/storytold/vectorcraft/pull/1625",
+      "title": "Save: a network drive on macOS that refuses the full flush gets a plain fsync",
+      "author": "marcoarnulfo",
+      "head": "544b17ec331d785475286cb82f7edd93af1b4968",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-13T06:26:56Z",
+      "merge_commit": "972945f80dd9a2d17a40f67b2f02d0ab3b4936b6",
+      "diff_sha256": "6af26de84e54115276f4d9260afbe50b1546c8a63a3d3ee0005304c8df071a39",
+      "adaptation": "Apple ENOTSUP from a full flush falls back to plain fsync; other failures preserve error handling.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/fileio/mod.rs",
+        "crates/format/src/atomic.rs",
+        "crates/format/src/lib.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/fileio/mod.rs": "89acf941d49f555ec96bbf3eea1ea9e099da9674",
+        "crates/format/src/atomic.rs": "feaa235a51e17fbad4a9a9cb025946f7c1464512",
+        "crates/format/src/lib.rs": "e6891e1ea3c255a49d2b16b646fb0212272282da"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1663,
+      "url": "https://github.com/storytold/vectorcraft/pull/1663",
+      "title": "Pen: ignore pointer movement inside a 3 px drag threshold",
+      "author": "ham9zah",
+      "head": "ece36283c2c43cd51f8355145129d0d2fb72ffa4",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "b50a5749717bb0eac914e83aee071914bc25747b",
+      "diff_sha256": "863aa0346c8ffb8f72305fb1339284a4c3f588de5c9392d42f1aad82621b3830",
+      "adaptation": "Pen movement below three screen pixels remains a corner click.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/engine/tests/pen_click_after_smooth.rs",
+        "crates/tools/src/pen.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/tests/pen_click_after_smooth.rs": "d36a701b63e04e676f55e41df6c4b1b253f03959",
+        "crates/tools/src/pen.rs": "ac43c24a61c1a6b7dad5f86ae8bbf5542fe182d2"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {
+      "number": 1634,
+      "url": "https://github.com/storytold/vectorcraft/pull/1634",
+      "title": "G4: capture character styles from selected text",
+      "author": "sanyamsingh001",
+      "head": "f856cdc3bd2ef8146b1c1cafb83203d4c04db44a",
+      "state_at_review": "open",
+      "merged_at": null,
+      "merge_commit": "0a20aa6074db7ac0f7d49ca6c89be2a41e9417db",
+      "diff_sha256": "09e5e910e42fc60460a5828d0e1a3d8330873783ae94201e0e7a0b0a3348e955",
+      "adaptation": "Character-style capture uses selection-start target keys; Apply keeps its selected range.",
+      "role": "updated PR",
+      "reviewed_rust_files": [
+        "crates/ui-egui/src/panels/text_styles.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/ui-egui/src/panels/text_styles.rs": "92a071d8b4c9203842bf160240ded635bb2a4ec4"
+      },
+      "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied."
+    },
+    {"number": 1437, "url": "https://github.com/storytold/vectorcraft/pull/1437", "title": "xtask cleanroom: the gate that fails on the reference vendor copyright notices and app-made fixtures", "author": "EricKuck", "head": "54c4e0b1f96b0943cec9f7bdb4f7e5c4c690399e", "state_at_review": "open", "merged_at": null, "merge_commit": "b60c891d4854830cedab51f352a075306cf0bd2d", "diff_sha256": "ee156c230b2ab571a4930b338b45bdf315cfde80200fbdfa8f6f655ef74b8609", "adaptation": "Clean-room marker checks run in CI, preserving required notices and documented handwritten fixture headers.", "role": "updated PR", "reviewed_rust_files": ["crates/engine/src/cmd/fileio/tests_epsimport.rs", "crates/engine/tests/import_fuzz.rs", "crates/eps/src/import/tests_illustrator.rs", "xtask/src/brands.rs", "xtask/src/cleanroom.rs", "xtask/src/main.rs"], "verified_blob_ids": {"crates/engine/src/cmd/fileio/tests_epsimport.rs": "2ad0ea0881d9942397540f511248083582c9858e", "crates/engine/tests/import_fuzz.rs": "699edaf13f64a16c78683f7ba4151e262ad08663", "crates/eps/src/import/tests_illustrator.rs": "e978a9bac582c1a5073b73d6a246891b41ff1c44", "xtask/src/brands.rs": "4ca6b4fa3efd52c329cbd2d6fd1bf2c54c9ff9e1", "xtask/src/cleanroom.rs": "1c8b6062b91c33a739c8763b194fbdc508742c66", "xtask/src/main.rs": "2203b9423d6c8dd472ddc6942755ca447379d7d0"}, "scope_note": "Reviewed Rust portions only; branding, font assets, catalogs, contributor profiles and upstream documentation are not copied.", "provenance_marker": "brand-ok: immutable upstream fixture filename, not a Vectnor UI label"},
+    {
+      "number": 1216,
+      "url": "https://github.com/storytold/vectorcraft/pull/1216",
+      "title": "#1180: Align aligns the selected anchor points",
+      "author": "bflatastic",
+      "head": "06d3e52c2470b403b9f9b677154de672e4c01e91",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-11T15:08:14Z",
+      "merge_commit": "f455e362aaf1c46a40635f169b9b6e3f99a62d5c",
+      "diff_sha256": "c421c30823146733f0b1c2a0f53de92d460d171ddd635f97f93e30f2abe5f602",
+      "adaptation": "Dependency: engine aligns selected anchors and their handles, preserving unselected points.",
+      "role": "older dependency",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/object.rs",
+        "crates/engine/src/cmd/path.rs",
+        "crates/engine/src/tests.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/object.rs": "ba3e580b7d24323488cc4b959f0b248609640346",
+        "crates/engine/src/cmd/path.rs": "935ef5a18fa2ef3252c3bfaf0ecec021bf007dae",
+        "crates/engine/src/tests.rs": "b0afc0d891d6385e540b1dede2f3ccc8aa145c1a"
+      },
+      "scope_note": "Only the alignment/no-op dependency is adapted; other changes in this PR are excluded."
+    },
+    {
+      "number": 1276,
+      "url": "https://github.com/storytold/vectorcraft/pull/1276",
+      "title": "fix: 動かないアンカー整列でUndo履歴を増やさない #1180",
+      "author": "haranishi",
+      "head": "4109717a9a879a3c9a332b57199a19cd246b5f76",
+      "state_at_review": "merged",
+      "merged_at": "2026-10-12T00:49:05Z",
+      "merge_commit": "fade678fb96bc3fba3d55dabcbb4bb4d923f91f8",
+      "diff_sha256": "08277aab89e4c74bc67aac6057c549a1b03166798cf5f230b9ed2199bc2f03a7",
+      "adaptation": "Dependency: repeated anchor alignment creates no extra undo entry.",
+      "role": "older dependency",
+      "reviewed_rust_files": [
+        "crates/engine/src/cmd/object.rs",
+        "crates/engine/src/tests.rs"
+      ],
+      "verified_blob_ids": {
+        "crates/engine/src/cmd/object.rs": "648d9cb5384045ca6650f08d83b12f122d9381a1",
+        "crates/engine/src/tests.rs": "86a65680d7a0fe187310f94a7b5e6cdad532e065"
+      },
+      "scope_note": "Only the alignment/no-op dependency is adapted; other changes in this PR are excluded."
+    }
+  ],
+  "reviewed": [
+    {
+      "number": 1674,
+      "url": "https://github.com/storytold/vectorcraft/pull/1674",
+      "title": "Delete removes every selected anchor and keeps the remainder selected",
+      "updated_at": "2026-10-13T09:43:11Z",
+      "head": "7b168b40bc5ef5aacb527258f5175e2d303df921",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1632,
+      "url": "https://github.com/storytold/vectorcraft/pull/1632",
+      "title": "Export: offer TIFF in Export for Screens and Asset Export",
+      "updated_at": "2026-10-13T09:35:16Z",
+      "head": "e10f0f9e136b4134fd66371bfa602c2f9db73be6",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1641,
+      "url": "https://github.com/storytold/vectorcraft/pull/1641",
+      "title": "Align: anchor points of one path align to each other, not to the artboard",
+      "updated_at": "2026-10-13T09:30:55Z",
+      "head": "fc766aa19b2f98d60813d23619276c8569205030",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1673,
+      "url": "https://github.com/storytold/vectorcraft/pull/1673",
+      "title": "Web: embed the editor in another site's page (?embed=<origin>)",
+      "updated_at": "2026-10-13T09:27:09Z",
+      "head": "1b2696d003a13f835c9fec800d6ebb2909c2a91d",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1400,
+      "url": "https://github.com/storytold/vectorcraft/pull/1400",
+      "title": "Write simple rectangles, circles, and ellipses back to SVG as those elements.",
+      "updated_at": "2026-10-13T09:07:54Z",
+      "head": "1420507809404ef182068da3cea5135ad4b3cf1e",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1672,
+      "url": "https://github.com/storytold/vectorcraft/pull/1672",
+      "title": "SVG import: percentages in a symbol resolve against its viewBox (#1561)",
+      "updated_at": "2026-10-13T09:06:12Z",
+      "head": "615a33173ba467e0779e4969dfde516d373682a8",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1670,
+      "url": "https://github.com/storytold/vectorcraft/pull/1670",
+      "title": "3D and Materials: the light takes the documented settings",
+      "updated_at": "2026-10-13T09:05:44Z",
+      "head": "a1d8551f4f9e52e26ee1ad7557c6ce22c472d72b",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1669,
+      "url": "https://github.com/storytold/vectorcraft/pull/1669",
+      "title": "3D and Materials: Perspective runs 0° to 160°, as documented",
+      "updated_at": "2026-10-13T09:05:41Z",
+      "head": "26e425f1b4208d32cbb1849fe6470cc6c121fce5",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1667,
+      "url": "https://github.com/storytold/vectorcraft/pull/1667",
+      "title": "Render: objects that share an appearance keep their own stroke outlines between frames",
+      "updated_at": "2026-10-13T09:05:39Z",
+      "head": "5f00b48fd5dd3e80c582374bab018cb2e994eb80",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1666,
+      "url": "https://github.com/storytold/vectorcraft/pull/1666",
+      "title": "Direct Selection stays inside isolation mode",
+      "updated_at": "2026-10-13T09:05:37Z",
+      "head": "ed4225e1bbbcb51dc0556b67a77919979c2c3e36",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1606,
+      "url": "https://github.com/storytold/vectorcraft/pull/1606",
+      "title": "Open by a relative path finds relative links; convert reports import warnings",
+      "updated_at": "2026-10-13T08:39:05Z",
+      "head": "13bd24ba7952481f3a663e9bfb3f0d8fd029c3d6",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1599,
+      "url": "https://github.com/storytold/vectorcraft/pull/1599",
+      "title": "SVG import: an unsupported filter's warning names the filter and the object",
+      "updated_at": "2026-10-13T08:39:02Z",
+      "head": "546c81624ae587ce355f0cbcdd2b2123b0b3aa15",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1611,
+      "url": "https://github.com/storytold/vectorcraft/pull/1611",
+      "title": "Type: stylistic sets, alternates, titling, figure styles, superscript and subscript",
+      "updated_at": "2026-10-13T08:38:59Z",
+      "head": "eb25a85d90b7abcd8967d3728207e34f05cf7e78",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1603,
+      "url": "https://github.com/storytold/vectorcraft/pull/1603",
+      "title": "SVG import: a third-party vector editor's pages become artboards",
+      "updated_at": "2026-10-13T08:38:56Z",
+      "head": "04bb6d6f278ae0239d6c035bbbc0ea309e2c5592",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1241,
+      "url": "https://github.com/storytold/vectorcraft/pull/1241",
+      "title": "fix: スポイトでアートボードの背景色を取得する #1234",
+      "updated_at": "2026-10-13T08:29:04Z",
+      "head": "536a4dda4fcd27fe4738a346c0fa976b796346ce",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1328,
+      "url": "https://github.com/storytold/vectorcraft/pull/1328",
+      "title": "fix(svg): emit rect/circle/ellipse as primitives when geometry fits (#1292)",
+      "updated_at": "2026-10-13T08:27:07Z",
+      "head": "0fef6328712f0da61c2fbf669039d9da50c4661f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1295,
+      "url": "https://github.com/storytold/vectorcraft/pull/1295",
+      "title": "Move partially overlapping artwork with artboards",
+      "updated_at": "2026-10-13T08:27:06Z",
+      "head": "91ebbe92636146720b2ee6d7c7ba64a6be412a18",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1564,
+      "url": "https://github.com/storytold/vectorcraft/pull/1564",
+      "title": "Repeat: Mirror puts its axis on the art's edge, so the mirror touches it",
+      "updated_at": "2026-10-13T08:27:02Z",
+      "head": "f576cc84cd2dd61a98997d007a3bfc161a370c8a",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1248,
+      "url": "https://github.com/storytold/vectorcraft/pull/1248",
+      "title": "SVG: physicalSize writes width and height in points",
+      "updated_at": "2026-10-13T08:26:59Z",
+      "head": "39b32523a0b3ca6a244ca538fe76569a18e48263",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1437,
+      "url": "https://github.com/storytold/vectorcraft/pull/1437",
+      "title": "xtask cleanroom: the gate that fails on the reference vendor copyright notices and app-made fixtures",
+      "updated_at": "2026-10-13T08:26:56Z",
+      "head": "54c4e0b1f96b0943cec9f7bdb4f7e5c4c690399e",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1472,
+      "url": "https://github.com/storytold/vectorcraft/pull/1472",
+      "title": "Export As SVG with Use Artboards clips art to the artboard; Place keeps a clipped group's clip",
+      "updated_at": "2026-10-13T08:26:53Z",
+      "head": "22b104d62c1396ea621e8608da982908a16dfba5",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1587,
+      "url": "https://github.com/storytold/vectorcraft/pull/1587",
+      "title": "Toolbar: drag the Fill square onto the Stroke square (or back) to copy its paint",
+      "updated_at": "2026-10-13T08:26:51Z",
+      "head": "b4c80f3fa6fc22eb7f1d35d055202a7937292c8e",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1600,
+      "url": "https://github.com/storytold/vectorcraft/pull/1600",
+      "title": "Fix #1477: drag across checkboxes to check or uncheck several",
+      "updated_at": "2026-10-13T08:26:49Z",
+      "head": "c77a7cbee5fc921f18ed1900c48fa192eda70322",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1663,
+      "url": "https://github.com/storytold/vectorcraft/pull/1663",
+      "title": "Pen: ignore pointer movement inside a 3 px drag threshold",
+      "updated_at": "2026-10-13T08:26:48Z",
+      "head": "ece36283c2c43cd51f8355145129d0d2fb72ffa4",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1094,
+      "url": "https://github.com/storytold/vectorcraft/pull/1094",
+      "title": "Web: opt-in embedding bridge for host pages (?host=parent)",
+      "updated_at": "2026-10-13T07:57:42Z",
+      "head": "9bd6ea496969744dc0dd028de4458b8dcb72b4f3",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1342,
+      "url": "https://github.com/storytold/vectorcraft/pull/1342",
+      "title": "docs: add user docs in docs/user",
+      "updated_at": "2026-10-13T07:57:41Z",
+      "head": "59dcbf92c6046350f7fa30e9aefad48762ab091f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1631,
+      "url": "https://github.com/storytold/vectorcraft/pull/1631",
+      "title": "G1: delete the selected artboards from panel actions",
+      "updated_at": "2026-10-13T07:57:35Z",
+      "head": "148434241c4743a2b7dcb18784593185cfbb7d23",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1634,
+      "url": "https://github.com/storytold/vectorcraft/pull/1634",
+      "title": "G4: capture character styles from selected text",
+      "updated_at": "2026-10-13T07:57:33Z",
+      "head": "f856cdc3bd2ef8146b1c1cafb83203d4c04db44a",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1633,
+      "url": "https://github.com/storytold/vectorcraft/pull/1633",
+      "title": "G4: propagate character-style Auto-leading resets",
+      "updated_at": "2026-10-13T07:57:32Z",
+      "head": "a1ab9ba05fa91bda41cf89669fb360e7ed3f6377",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1652,
+      "url": "https://github.com/storytold/vectorcraft/pull/1652",
+      "title": "Cursors: paint the tool cursors on Wayland, where the compositor showed the bitmap twice too big",
+      "updated_at": "2026-10-13T07:57:30Z",
+      "head": "de6e4466354722524e7dbe825d848c2f0bc8370d",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1651,
+      "url": "https://github.com/storytold/vectorcraft/pull/1651",
+      "title": "Scribble: one zig-zag per region, no lines across holes and notches",
+      "updated_at": "2026-10-13T07:57:28Z",
+      "head": "42f79d84aabe86da44332fa77d219b6df3022f98",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1630,
+      "url": "https://github.com/storytold/vectorcraft/pull/1630",
+      "title": "G1: honor Shift-double-click in Width Point Edit",
+      "updated_at": "2026-10-13T07:57:27Z",
+      "head": "8ef4faf9653ecee2571ff9a74d98d9d8dcabbb6d",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1646,
+      "url": "https://github.com/storytold/vectorcraft/pull/1646",
+      "title": "Roughen (Smooth): a turn-back stays smooth instead of becoming a cusp",
+      "updated_at": "2026-10-13T07:57:25Z",
+      "head": "d8e72b836e2ef22354f929755ba7b7810f4da6cc",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1642,
+      "url": "https://github.com/storytold/vectorcraft/pull/1642",
+      "title": "Pathfinder panel: a group selected alone counts its nested shapes, so an expanded stroke keeps the Shape Modes enabled",
+      "updated_at": "2026-10-13T07:57:24Z",
+      "head": "aef6e07ce5fa0c5e8779cd6bc77067f4d42ae194",
+      "state": "open",
+      "decision": "adapted"
+    },
+    {
+      "number": 1654,
+      "url": "https://github.com/storytold/vectorcraft/pull/1654",
+      "title": "EPS import: a stitched shading keeps its hard colour changes",
+      "updated_at": "2026-10-13T07:57:21Z",
+      "head": "53165ddd982fc2648dfaf13fcaf7649812f8136f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1208,
+      "url": "https://github.com/storytold/vectorcraft/pull/1208",
+      "title": ".ai import: copied area type and type on a path keep their own place",
+      "updated_at": "2026-10-13T07:49:06Z",
+      "head": "66fd1b78a2810746661ab5aebedc25e389370cbd",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1183,
+      "url": "https://github.com/storytold/vectorcraft/pull/1183",
+      "title": "File › Scripts: run JavaScript scripts over the command registry (G6)",
+      "updated_at": "2026-10-13T07:44:35Z",
+      "head": "d1df204fe6e68ac0541117ffee4861b2b0ec2dc4",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1659,
+      "url": "https://github.com/storytold/vectorcraft/pull/1659",
+      "title": "Fix #1597: the Transform panel shows and sets a selected ruler guide's X or Y",
+      "updated_at": "2026-10-13T07:38:48Z",
+      "head": "51e7044b0e108c5184880c9eae3bb713d40a0dab",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1658,
+      "url": "https://github.com/storytold/vectorcraft/pull/1658",
+      "title": "Fix #1602: drawn points snap to where paths and guides intersect",
+      "updated_at": "2026-10-13T07:07:46Z",
+      "head": "dae13d57f0c22383fda0ec49e751c2452bb0e37f",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1608,
+      "url": "https://github.com/storytold/vectorcraft/pull/1608",
+      "title": "Scripts: Check Script… reports what a .jsx script needs and does, without running it",
+      "updated_at": "2026-10-13T07:07:03Z",
+      "head": "3374d0778d7e822ebb403a02d8b1d8947bc0ae8f",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1657,
+      "url": "https://github.com/storytold/vectorcraft/pull/1657",
+      "title": "Image Trace: Flat Logo takes the tones of an unevenly lit colour for one colour",
+      "updated_at": "2026-10-13T06:58:20Z",
+      "head": "62036eac6c8899f46290345e02da1ca322a79171",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1647,
+      "url": "https://github.com/storytold/vectorcraft/pull/1647",
+      "title": "Image Trace: levelling moves no end of a line by more than 1.6 px",
+      "updated_at": "2026-10-13T06:57:40Z",
+      "head": "7af5790b71d1145379998bdb8ebea0681e737703",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1614,
+      "url": "https://github.com/storytold/vectorcraft/pull/1614",
+      "title": "i18n(pl): confirm the maintainer-added Polish rows",
+      "updated_at": "2026-10-13T06:43:53Z",
+      "head": "26ec0464bbc882d0584d638ef1a2f59528e55336",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1649,
+      "url": "https://github.com/storytold/vectorcraft/pull/1649",
+      "title": "Part of #1620: a save falls back when a folder refuses the temporary file or the rename",
+      "updated_at": "2026-10-13T06:31:53Z",
+      "head": "0cc7e59df036e8431b0fb48bbd00e0f8c2729773",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1650,
+      "url": "https://github.com/storytold/vectorcraft/pull/1650",
+      "title": "Fix #1616: a tool flyout is as wide as its longest translated row",
+      "updated_at": "2026-10-13T06:31:52Z",
+      "head": "c49fb3003241f1458c3b0c97b5ddb7dd7dce67b0",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1622,
+      "url": "https://github.com/storytold/vectorcraft/pull/1622",
+      "title": "Object: Lock and Hide › All Artwork Above go through each top-level layer once",
+      "updated_at": "2026-10-13T06:31:12Z",
+      "head": "f0810ca58b06fd34ead78e8c7875311a42b49428",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1621,
+      "url": "https://github.com/storytold/vectorcraft/pull/1621",
+      "title": "Render: pattern tiles at different scales are kept between frames",
+      "updated_at": "2026-10-13T06:31:07Z",
+      "head": "35d6aa0a1660606f9e37e5251757a8a3c707f231",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1617,
+      "url": "https://github.com/storytold/vectorcraft/pull/1617",
+      "title": "Area type: a word too wide for the top lines of a shape moves down instead of breaking",
+      "updated_at": "2026-10-13T06:31:00Z",
+      "head": "36dc6e0c1156b4ab817f436c58a26479e1f4580a",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1619,
+      "url": "https://github.com/storytold/vectorcraft/pull/1619",
+      "title": "Strokes: a zero-length subpath draws its round or projecting cap as a dot",
+      "updated_at": "2026-10-13T06:30:56Z",
+      "head": "791bd91d5ce6800ee15aaa47a9fba4dba683e2f4",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1625,
+      "url": "https://github.com/storytold/vectorcraft/pull/1625",
+      "title": "Save: a network drive on macOS that refuses the full flush gets a plain fsync",
+      "updated_at": "2026-10-13T06:30:53Z",
+      "head": "544b17ec331d785475286cb82f7edd93af1b4968",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1628,
+      "url": "https://github.com/storytold/vectorcraft/pull/1628",
+      "title": "Image Trace: progress docs for the edge, stroke, memory and options work",
+      "updated_at": "2026-10-13T05:55:06Z",
+      "head": "8a91be79835ed6e8fec450f4e76befd802d17e66",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1627,
+      "url": "https://github.com/storytold/vectorcraft/pull/1627",
+      "title": "Image Trace: Gradients",
+      "updated_at": "2026-10-13T05:24:35Z",
+      "head": "250da4226efea5d119fa56b4f9164fb8adf71c01",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1623,
+      "url": "https://github.com/storytold/vectorcraft/pull/1623",
+      "title": "Effects: effect.apply and effect.setParams refuse parameters the effect doesn't take (#1592)",
+      "updated_at": "2026-10-13T05:19:24Z",
+      "head": "175ad4a1e34fdd3cae1c6b772e8d218dee8f3850",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1626,
+      "url": "https://github.com/storytold/vectorcraft/pull/1626",
+      "title": "WIP: SVG import: absolute units convert at 96 per inch inside the drawing",
+      "updated_at": "2026-10-13T05:19:14Z",
+      "head": "6655b18f99d0e3684f91d9b5b1a421adee6a4014",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1585,
+      "url": "https://github.com/storytold/vectorcraft/pull/1585",
+      "title": "PDF/.ai import: type stroked glyph by glyph stays one object",
+      "updated_at": "2026-10-13T05:08:30Z",
+      "head": "95304ad7f637a8b996a6ff90a8f685c92bd62cbf",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1586,
+      "url": "https://github.com/storytold/vectorcraft/pull/1586",
+      "title": "PDF/.ai import: evenly tracked type on a path keeps its length",
+      "updated_at": "2026-10-13T05:08:27Z",
+      "head": "02da9bbdc916906163475ed9dca689270f3cbd8a",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1618,
+      "url": "https://github.com/storytold/vectorcraft/pull/1618",
+      "title": "Image Trace: Auto Grouping",
+      "updated_at": "2026-10-13T04:47:49Z",
+      "head": "9c42a2942a1943cb304aa62f569131144cc4bd3b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1605,
+      "url": "https://github.com/storytold/vectorcraft/pull/1605",
+      "title": "Embed craft-fonts by default via .cargo/config.toml [env]",
+      "updated_at": "2026-10-13T04:46:15Z",
+      "head": "81b742318d568c69ce5d2aa235ceac9d110da074",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1591,
+      "url": "https://github.com/storytold/vectorcraft/pull/1591",
+      "title": "Offset Path: an empty result says the offset leaves nothing",
+      "updated_at": "2026-10-13T04:32:03Z",
+      "head": "bc343414d89a7402c3f00df8e57998e365936548",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1589,
+      "url": "https://github.com/storytold/vectorcraft/pull/1589",
+      "title": "ICC profiles written here have their tags 4-byte aligned",
+      "updated_at": "2026-10-13T04:32:01Z",
+      "head": "7b0164e4e70c3e6fb441d43a7e9b60792a7f9869",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1581,
+      "url": "https://github.com/storytold/vectorcraft/pull/1581",
+      "title": "Warp › Arc: bend in the object's real proportions",
+      "updated_at": "2026-10-13T04:31:58Z",
+      "head": "a169693817613a8a04514024be5794c39b3a114c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1577,
+      "url": "https://github.com/storytold/vectorcraft/pull/1577",
+      "title": "Commands: objects given as ids stand in for the selection",
+      "updated_at": "2026-10-13T04:31:55Z",
+      "head": "dc64aaa41b09e0aa308441c5b9f88794b10a0743",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1572,
+      "url": "https://github.com/storytold/vectorcraft/pull/1572",
+      "title": "Pathfinder: Trim, Merge and Crop remove strokes",
+      "updated_at": "2026-10-13T04:31:52Z",
+      "head": "de8d5c96abeb19fe680d363ab6e1630be928f3b7",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1569,
+      "url": "https://github.com/storytold/vectorcraft/pull/1569",
+      "title": "SVG import: a third-party vector editor flowed text (flowRoot) becomes area type",
+      "updated_at": "2026-10-13T04:31:49Z",
+      "head": "db85d465c8f7671a1e27d269e4ef505ec96860ab",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1565,
+      "url": "https://github.com/storytold/vectorcraft/pull/1565",
+      "title": "SVG import: CSS transforms in CSS syntax move objects; the font shorthand styles type",
+      "updated_at": "2026-10-13T04:31:47Z",
+      "head": "2c01a42b358f9f7d1335c6fa7c826214dce2aaa5",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1553,
+      "url": "https://github.com/storytold/vectorcraft/pull/1553",
+      "title": "EPS/PS import: Type 42 fonts set type at their size",
+      "updated_at": "2026-10-13T04:31:43Z",
+      "head": "e2a63a8baf783620b6c5de8663586905bff95a4b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1551,
+      "url": "https://github.com/storytold/vectorcraft/pull/1551",
+      "title": "PDF import: images in an alpha soft mask count by their alpha",
+      "updated_at": "2026-10-13T04:31:40Z",
+      "head": "44d170f059d079dddbef7db6684722a651c8506c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1544,
+      "url": "https://github.com/storytold/vectorcraft/pull/1544",
+      "title": "PDF/EPS import: a clip only counts as covering the page when it does",
+      "updated_at": "2026-10-13T04:31:38Z",
+      "head": "9652d1d6b257effd6b06f69198a341d73c2e122c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1541,
+      "url": "https://github.com/storytold/vectorcraft/pull/1541",
+      "title": "Render: effect rasters drawn after a pattern fill keep their place and size",
+      "updated_at": "2026-10-13T04:31:35Z",
+      "head": "05fdd15b45cfe0a0bd62c1d4c7dfc6841afc13fe",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1531,
+      "url": "https://github.com/storytold/vectorcraft/pull/1531",
+      "title": "SVG import: <textPath> follows basic shapes (circle, ellipse, rect, line, polyline, polygon)",
+      "updated_at": "2026-10-13T04:31:32Z",
+      "head": "3239e8b97e80668e28d99ea185545ccb3db1998b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1492,
+      "url": "https://github.com/storytold/vectorcraft/pull/1492",
+      "title": "Native save: documents whose JSON is large are written compact",
+      "updated_at": "2026-10-13T04:31:29Z",
+      "head": "f3040e37627a36ced437142b719e183529a82d29",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1612,
+      "url": "https://github.com/storytold/vectorcraft/pull/1612",
+      "title": "Docs: ROADMAP 2026-10-13 adds #1492–#1583; Average and Join corrected to missing, Polish row count",
+      "updated_at": "2026-10-13T04:30:32Z",
+      "head": "d44615753ac4aee6a7622d4316d81f1a9e05580d",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1576,
+      "url": "https://github.com/storytold/vectorcraft/pull/1576",
+      "title": "Palette nearest-colour lookup: branch-and-bound index over the linear scan",
+      "updated_at": "2026-10-13T04:29:40Z",
+      "head": "670946ef7543c32d75e8a33ea84d9fe69c619273",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1571,
+      "url": "https://github.com/storytold/vectorcraft/pull/1571",
+      "title": "Select Behind: test each object once instead of re-hitting the whole document",
+      "updated_at": "2026-10-13T04:29:38Z",
+      "head": "bdb9963c730473e5639cb3c67d7953bd83a59de0",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1609,
+      "url": "https://github.com/storytold/vectorcraft/pull/1609",
+      "title": "Image Trace: Shapes, and corners whose pixel is mostly outside the shape",
+      "updated_at": "2026-10-13T04:02:42Z",
+      "head": "9ca74ac011f3b56d5c3fc6830efebecf79fa23ac",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1532,
+      "url": "https://github.com/storytold/vectorcraft/pull/1532",
+      "title": "Add Arabic (العربية) interface translation",
+      "updated_at": "2026-10-13T03:45:34Z",
+      "head": "ce52cddf99c062d79af1dcba08797e67684b29c2",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1594,
+      "url": "https://github.com/storytold/vectorcraft/pull/1594",
+      "title": "Custom rounded corners: one corner, Alt for all, per-corner radius",
+      "updated_at": "2026-10-13T03:36:03Z",
+      "head": "6e9014ec83c0567219f3517fa08cdcc8157650b9",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1596,
+      "url": "https://github.com/storytold/vectorcraft/pull/1596",
+      "title": "SVG import: percentage lengths in a symbol with a viewBox are of the viewBox",
+      "updated_at": "2026-10-13T03:26:38Z",
+      "head": "5fe916a425db9148b3f4fd742864269592379f3e",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1507,
+      "url": "https://github.com/storytold/vectorcraft/pull/1507",
+      "title": "G16: Vietnamese interface (vi)",
+      "updated_at": "2026-10-13T03:23:35Z",
+      "head": "2ec817e76ac64ddb1e1e7ff0e661921a07dda8b1",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1595,
+      "url": "https://github.com/storytold/vectorcraft/pull/1595",
+      "title": "Image Trace: stroked centre lines lie in the middle of their ink and are as wide as it",
+      "updated_at": "2026-10-13T03:14:02Z",
+      "head": "8e7b9ba4368af2b73dd2764031ae071db135000f",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1593,
+      "url": "https://github.com/storytold/vectorcraft/pull/1593",
+      "title": "Image Trace: Snap Curves To Lines levels lines a degree or two askew",
+      "updated_at": "2026-10-13T02:36:15Z",
+      "head": "612082e26e2253c543f5faa82b1ee884b2f650b0",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 992,
+      "url": "https://github.com/storytold/vectorcraft/pull/992",
+      "title": "Font coverage probe investigation (held for measurement)",
+      "updated_at": "2026-10-13T02:32:34Z",
+      "head": "ae5fa0647ace0fa6bce765ac861bdeb2e341b59b",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1567,
+      "url": "https://github.com/storytold/vectorcraft/pull/1567",
+      "title": "Replace linear scan in CSS class dedup with a HashMap lookup",
+      "updated_at": "2026-10-13T02:32:25Z",
+      "head": "3af08505f819f5b52b21e8e626156fae45d5736d",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1558,
+      "url": "https://github.com/storytold/vectorcraft/pull/1558",
+      "title": "Zig Zag: ridges are spaced evenly along each segment's length, so a straight line gets a regular wave",
+      "updated_at": "2026-10-13T02:32:21Z",
+      "head": "45334df88171d6b9aabf89a9291ca30ec655c79c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1566,
+      "url": "https://github.com/storytold/vectorcraft/pull/1566",
+      "title": "Symbols panel: New Symbol asks for Symbol Options before making the symbol",
+      "updated_at": "2026-10-13T02:32:27Z",
+      "head": "fea316911dd9059bf34b5a31bfd2dd31a6effa53",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1583,
+      "url": "https://github.com/storytold/vectorcraft/pull/1583",
+      "title": "Fix #1534: guide paths take the guide colour and style, and a dragged selection snaps to ruler guides with Smart Guides on",
+      "updated_at": "2026-10-13T02:10:51Z",
+      "head": "50911d860864b38c0565ad0f55437bfc2792f1af",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1580,
+      "url": "https://github.com/storytold/vectorcraft/pull/1580",
+      "title": "Keyboard Shortcuts: the commands outside the menus that run without params are listed too (#1539)",
+      "updated_at": "2026-10-13T02:10:51Z",
+      "head": "20f5174710e14214ed43ab8829af53b07d885747",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1582,
+      "url": "https://github.com/storytold/vectorcraft/pull/1582",
+      "title": "Fix #1533: Join merges the selected anchors that lie on one another (after Average) into one",
+      "updated_at": "2026-10-13T02:10:50Z",
+      "head": "0a16b62a228c19f36ae5e44464880220360d140d",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1543,
+      "url": "https://github.com/storytold/vectorcraft/pull/1543",
+      "title": "Guides: Lock Guides locks the paths made into guides too",
+      "updated_at": "2026-10-13T02:09:41Z",
+      "head": "79b5d73ca7bb7e8bbb0dc187e07aff1a855f60ca",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1549,
+      "url": "https://github.com/storytold/vectorcraft/pull/1549",
+      "title": "Keyboard Shortcuts: Duplicate is listed, so it can be given a shortcut",
+      "updated_at": "2026-10-13T02:09:36Z",
+      "head": "00195e8d2825360b1bbf8d13629bb8567e913ee5",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1066,
+      "url": "https://github.com/storytold/vectorcraft/pull/1066",
+      "title": "App bar: a DEV tag marks development builds",
+      "updated_at": "2026-10-13T07:57:40Z",
+      "head": "22635bbe581b8d1973c08fa0585e53ab6708bb2f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1574,
+      "url": "https://github.com/storytold/vectorcraft/pull/1574",
+      "title": "Image Trace: Ignore Color, and the Auto Color and Outline presets",
+      "updated_at": "2026-10-13T01:47:05Z",
+      "head": "761cc2371aeb1e0312dcb59907132fe3b7da0b57",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1547,
+      "url": "https://github.com/storytold/vectorcraft/pull/1547",
+      "title": "Fix #1512: round corners next to curves stay inside the corner, and the Smooth tool smooths what is under the drag",
+      "updated_at": "2026-10-13T01:42:51Z",
+      "head": "61cc3f6040d54629707dc3aaf5cbb0f4470cfcd3",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1562,
+      "url": "https://github.com/storytold/vectorcraft/pull/1562",
+      "title": "build: recursively ignore target directories and indexing markers",
+      "updated_at": "2026-10-13T01:02:37Z",
+      "head": "8b59458167268a06f35630504aa223a4e619c8f6",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1563,
+      "url": "https://github.com/storytold/vectorcraft/pull/1563",
+      "title": "Image Trace: thin lines in blurred and scanned art keep smooth edges",
+      "updated_at": "2026-10-13T00:50:59Z",
+      "head": "c2ed31dc4cb3aa7d9e8419d8e928bb83aab50000",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1424,
+      "url": "https://github.com/storytold/vectorcraft/pull/1424",
+      "title": "text: the Han fallback takes an explicit CjkPreference, held on the database",
+      "updated_at": "2026-10-13T00:44:14Z",
+      "head": "a0af30109157d7902187777a4009b813a4bb026f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1530,
+      "url": "https://github.com/storytold/vectorcraft/pull/1530",
+      "title": "AI import: gradient stops listed upwards aren't reversed, so a midpoint stays on the stop that starts its part of the ramp",
+      "updated_at": "2026-10-13T00:15:43Z",
+      "head": "48d5bd1aeec47303356e34c5fd21141f068f1643",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1528,
+      "url": "https://github.com/storytold/vectorcraft/pull/1528",
+      "title": ".ai import: a page's art past its artboard no longer lies over the page before it",
+      "updated_at": "2026-10-13T00:15:10Z",
+      "head": "5203f4f04764898124c79d52f533d3514239cef7",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1548,
+      "url": "https://github.com/storytold/vectorcraft/pull/1548",
+      "title": "Fix #1529: Linux reads the font folders fontconfig is set up with",
+      "updated_at": "2026-10-13T00:14:32Z",
+      "head": "3a88ad085577c247389056c796c75224a84fa108",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1546,
+      "url": "https://github.com/storytold/vectorcraft/pull/1546",
+      "title": "Image Trace: a 16 megapixel photo is traced in 0.9 GB, not 3.9",
+      "updated_at": "2026-10-13T00:14:02Z",
+      "head": "c9fac957609fbbca0f82ad61a6d1a917ca9a04ca",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1545,
+      "url": "https://github.com/storytold/vectorcraft/pull/1545",
+      "title": "Docs: ROADMAP 2026-10-12 adds #1474–#1525 (late merges of the day)",
+      "updated_at": "2026-10-13T00:12:47Z",
+      "head": "9dfa7bf93120b99399c1bc9a743248e558169200",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1517,
+      "url": "https://github.com/storytold/vectorcraft/pull/1517",
+      "title": "Decode print-size rasters in Crop Image trim and the renderer; say when an export is missing an image",
+      "updated_at": "2026-10-13T00:04:08Z",
+      "head": "d084af162f770230fb11ed97b18c2ba12c014fae",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1540,
+      "url": "https://github.com/storytold/vectorcraft/pull/1540",
+      "title": "Part of #1479: an image too large to decode is reported on Open, Place and in the Links panel",
+      "updated_at": "2026-10-12T23:43:50Z",
+      "head": "66add30d65df77d7fbf951e1440913df6ea8241e",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1538,
+      "url": "https://github.com/storytold/vectorcraft/pull/1538",
+      "title": "Fix #1499: PDF and EPS another app copied paste as editable vector art",
+      "updated_at": "2026-10-12T23:43:50Z",
+      "head": "b3f6edddfe6ecf2a01840ae5e3969c4771c2dc5b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1537,
+      "url": "https://github.com/storytold/vectorcraft/pull/1537",
+      "title": "Make Compound Path: the compound path of a group takes its backmost path's paint",
+      "updated_at": "2026-10-12T23:43:50Z",
+      "head": "a046fd30fe84b60babfbf46f9414f277fac62409",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1498,
+      "url": "https://github.com/storytold/vectorcraft/pull/1498",
+      "title": "i18n: add Polish (pl) interface language",
+      "updated_at": "2026-10-12T23:35:07Z",
+      "head": "1e5f430ac56c319d315e1c8c3bfcf91c7acfe870",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1535,
+      "url": "https://github.com/storytold/vectorcraft/pull/1535",
+      "title": "Image Trace: abutting regions share one curve along their edge (no gaps, no overlaps)",
+      "updated_at": "2026-10-12T23:27:58Z",
+      "head": "20ec49b2e7216dbc189dcb6ab87441db5a6c7d0c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1182,
+      "url": "https://github.com/storytold/vectorcraft/pull/1182",
+      "title": "Dragging Support for Gradient Tool's Color Picker",
+      "updated_at": "2026-10-12T23:25:23Z",
+      "head": "37469414133580a1cd497f7f546f20487b7a4469",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1522,
+      "url": "https://github.com/storytold/vectorcraft/pull/1522",
+      "title": "README.md: add clone instructions to quick start",
+      "updated_at": "2026-10-12T22:59:33Z",
+      "head": "1e0063258a45f04f7c028305c01966aa696a2564",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1526,
+      "url": "https://github.com/storytold/vectorcraft/pull/1526",
+      "title": "3D and Materials: Inflate takes Twist, Taper and Cap",
+      "updated_at": "2026-10-12T22:59:30Z",
+      "head": "15cef94ba6d057bdbc120f25cf801dbded4fd20d",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1525,
+      "url": "https://github.com/storytold/vectorcraft/pull/1525",
+      "title": "3D and Materials: twisted Extrude & Bevel walls keep their faces",
+      "updated_at": "2026-10-12T22:59:26Z",
+      "head": "431dc43e43288670c4beb6c9ad923f548f35304e",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1524,
+      "url": "https://github.com/storytold/vectorcraft/pull/1524",
+      "title": "3D and Materials: Extrude & Bevel's Twist runs 0° to 360°, as documented",
+      "updated_at": "2026-10-12T22:59:22Z",
+      "head": "e750891912e75f675e686d133dcec6f9071fb00e",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1523,
+      "url": "https://github.com/storytold/vectorcraft/pull/1523",
+      "title": "macOS: the app no longer reads the menus at every step of a move, scale or shape drag",
+      "updated_at": "2026-10-12T22:59:17Z",
+      "head": "fb2089aaf5c7535b1132e2595c96fedd1b6e7715",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1519,
+      "url": "https://github.com/storytold/vectorcraft/pull/1519",
+      "title": "Part of #1429: path, Pathfinder and live-object commands add and remove many objects in one pass",
+      "updated_at": "2026-10-12T22:59:13Z",
+      "head": "88bd4812e0f3f52812cf0140c884498661a6e394",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1515,
+      "url": "https://github.com/storytold/vectorcraft/pull/1515",
+      "title": "Part of #1429: Layers panel and artboard commands on many rows take time linear in the document",
+      "updated_at": "2026-10-12T22:59:09Z",
+      "head": "6f9e2d5c163d34fe7f8cca594cf590f96108c029",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1200,
+      "url": "https://github.com/storytold/vectorcraft/pull/1200",
+      "title": "Linux: Automatic draws on the GPU the Wayland compositor draws with",
+      "updated_at": "2026-10-12T22:26:07Z",
+      "head": "6a214253a8b23e9a595cf0594c63b1e05f28e356",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1514,
+      "url": "https://github.com/storytold/vectorcraft/pull/1514",
+      "title": "QR Code: shape.qrCode draws a QR Code as one path",
+      "updated_at": "2026-10-12T22:25:04Z",
+      "head": "a31ea88618342c9bd11b542e5836eefd8aa53d61",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1453,
+      "url": "https://github.com/storytold/vectorcraft/pull/1453",
+      "title": "Effect › 3D and Materials: Extrude & Bevel, Inflate and Rotate",
+      "updated_at": "2026-10-12T22:13:48Z",
+      "head": "2cf2b972f5411c782f3443accbc6fe1d6447493a",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1521,
+      "url": "https://github.com/storytold/vectorcraft/pull/1521",
+      "title": "Fix Intel Mac crash: probe Metal shader language version support",
+      "updated_at": "2026-10-12T22:12:40Z",
+      "head": "a86d06a033dc5e65fe73d7ca78254db8b436b5e7",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1511,
+      "url": "https://github.com/storytold/vectorcraft/pull/1511",
+      "title": "i18n: complete the French (fr) UI catalog (423 entries)",
+      "updated_at": "2026-10-12T22:11:03Z",
+      "head": "57a4d9c6e1603ad430be8bddd367efead2dfd44b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1509,
+      "url": "https://github.com/storytold/vectorcraft/pull/1509",
+      "title": "Direct Selection: a selected path's anchor is picked before one of an object above it",
+      "updated_at": "2026-10-12T22:11:01Z",
+      "head": "e4c2b3db94bde2a044382098247e1f78a3ed29c6",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1502,
+      "url": "https://github.com/storytold/vectorcraft/pull/1502",
+      "title": "CLI: perf on Windows reports the cores busy and its working set, and the help lists --deep",
+      "updated_at": "2026-10-12T22:10:57Z",
+      "head": "22e06db73d24d0062cd9548ba2ea03cbdfd361cf",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1520,
+      "url": "https://github.com/storytold/vectorcraft/pull/1520",
+      "title": "Image Trace: progress docs for the palette and photo changes",
+      "updated_at": "2026-10-12T21:59:46Z",
+      "head": "cf137c8c90981bd8916fed7e94091ee66618756b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1516,
+      "url": "https://github.com/storytold/vectorcraft/pull/1516",
+      "title": "Image Trace: photos trace into smooth tones (smoothing first, stacked layers by lightness)",
+      "updated_at": "2026-10-12T21:42:09Z",
+      "head": "77f81c894475d8fb9e6813d6c4fcd11166f4c5a1",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1510,
+      "url": "https://github.com/storytold/vectorcraft/pull/1510",
+      "title": "Layers: a .ai another app wrote opens with its top-level layers closed, as its groups",
+      "updated_at": "2026-10-13T08:27:01Z",
+      "head": "349e85d8d1510b11cd9559bdd31548aa00202fb3",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1436,
+      "url": "https://github.com/storytold/vectorcraft/pull/1436",
+      "title": "Gradients: a midpoint bends the ramp along the exponential curve PDF shadings use, in exports and Expand too",
+      "updated_at": "2026-10-13T08:26:58Z",
+      "head": "3331cb00f957c6945a4175657011d6619fa32fdc",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1506,
+      "url": "https://github.com/storytold/vectorcraft/pull/1506",
+      "title": "Fix #1483: sliders in dialogs show their rail",
+      "updated_at": "2026-10-12T21:06:48Z",
+      "head": "dd1c26b6270652494f90d0406cad49a9823fc7ef",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1505,
+      "url": "https://github.com/storytold/vectorcraft/pull/1505",
+      "title": "Fix #1486: a template layer stays in Preview in Outline view",
+      "updated_at": "2026-10-12T21:06:48Z",
+      "head": "a787fb487c5c192956b455b2996208b2f610c6ba",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1501,
+      "url": "https://github.com/storytold/vectorcraft/pull/1501",
+      "title": "Docs: ROADMAP 2026-10-12 adds #1430–#1497 (later merges of the day)",
+      "updated_at": "2026-10-12T21:06:47Z",
+      "head": "c1be8b82dbd9f1acefcf8ffa22fd37563cc98618",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1487,
+      "url": "https://github.com/storytold/vectorcraft/pull/1487",
+      "title": "Tabs panel: drag a tab stop from where the press landed",
+      "updated_at": "2026-10-12T21:06:23Z",
+      "head": "7ab9a46bf8f381d8d58eca7f39e34a8f2d3e194f",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1485,
+      "url": "https://github.com/storytold/vectorcraft/pull/1485",
+      "title": "Graph Data: the CSV keeps each value exactly, not rounded to two decimals",
+      "updated_at": "2026-10-12T21:06:26Z",
+      "head": "43e1a7380c9fa22bd767c85419bf8c060d859bfe",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1504,
+      "url": "https://github.com/storytold/vectorcraft/pull/1504",
+      "title": "Image Trace: colour presets trace flat art with its own colours (no shattering, no slivers)",
+      "updated_at": "2026-10-12T20:55:46Z",
+      "head": "4204ce36dbc846e07d745f6c8b42c84c0ec0cb82",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1500,
+      "url": "https://github.com/storytold/vectorcraft/pull/1500",
+      "title": "Fix #1471: making and restyling type reports text that doesn't fit its frame",
+      "updated_at": "2026-10-12T20:44:51Z",
+      "head": "8b8fd1476b2ec5ee7c39809e31daec6115dde671",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1481,
+      "url": "https://github.com/storytold/vectorcraft/pull/1481",
+      "title": "3D and Materials: curves follow a tolerance, and Rotate takes large outlines",
+      "updated_at": "2026-10-12T20:28:33Z",
+      "head": "c3c036daf2ecd478cc08e94c1160835a35bce3ac",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1474,
+      "url": "https://github.com/storytold/vectorcraft/pull/1474",
+      "title": "i18n(hu): informal address in a row added on merge",
+      "updated_at": "2026-10-12T20:28:30Z",
+      "head": "905a965d1e85a8db6554f02ec27622538f2c2739",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1497,
+      "url": "https://github.com/storytold/vectorcraft/pull/1497",
+      "title": "Fix #1457: a focused field follows its value when a slider or preview changes it",
+      "updated_at": "2026-10-12T20:13:31Z",
+      "head": "3672e0ae8496b1c873d57404281b29b253b51eaa",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1496,
+      "url": "https://github.com/storytold/vectorcraft/pull/1496",
+      "title": "Fix #1442: an unknown parameter key is an error naming it and the nearest accepted key",
+      "updated_at": "2026-10-12T20:13:31Z",
+      "head": "3acc29f8e0fdb510858011a034718935b06172fc",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1495,
+      "url": "https://github.com/storytold/vectorcraft/pull/1495",
+      "title": "Part of #1459: the window's surface may be as large as the graphics adapter allows",
+      "updated_at": "2026-10-12T20:13:31Z",
+      "head": "ff6e136b9761ae455e36f7aca402e58d73713fee",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1494,
+      "url": "https://github.com/storytold/vectorcraft/pull/1494",
+      "title": "Fix #1448, #1460: Transform Objects in the Transform dialogs and Transform Each, and Reflect across an angle",
+      "updated_at": "2026-10-12T20:13:31Z",
+      "head": "897d99a70f81053306c942aeee59139ba0945734",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1493,
+      "url": "https://github.com/storytold/vectorcraft/pull/1493",
+      "title": "Fix #1450: the Pathfinder panel works on a group selected alone",
+      "updated_at": "2026-10-12T20:13:31Z",
+      "head": "7625feea08b3af8fd3824c6457fb47df5bbd475f",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1461,
+      "url": "https://github.com/storytold/vectorcraft/pull/1461",
+      "title": "i18n(cs): catch up with strings added since the Czech catalog",
+      "updated_at": "2026-10-12T19:56:22Z",
+      "head": "847730bf8b1c0cedfbbf92feb0bd12f0b1e43187",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1490,
+      "url": "https://github.com/storytold/vectorcraft/pull/1490",
+      "title": "Part of #1465: selected text in value fields is readable",
+      "updated_at": "2026-10-12T19:51:23Z",
+      "head": "09f62097f052a52bbb1e5a9e8690f1831c7600e9",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1489,
+      "url": "https://github.com/storytold/vectorcraft/pull/1489",
+      "title": "Part of #1466: grayscale TIFFs with an alpha channel or extra channels can be placed",
+      "updated_at": "2026-10-12T19:51:23Z",
+      "head": "81a568f4c672be169df4419af54bb6eb8ede51b5",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1488,
+      "url": "https://github.com/storytold/vectorcraft/pull/1488",
+      "title": "Fix #1462: Split Into Grid has its row and column sizes, gutters, totals, Add Guides and Preview",
+      "updated_at": "2026-10-12T19:51:23Z",
+      "head": "cb9d93b647c08948d796d3973ec3037cb46dfe09",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1464,
+      "url": "https://github.com/storytold/vectorcraft/pull/1464",
+      "title": "Part of #1429: Alt-drags with the selection and transform tools copy the objects once per drag",
+      "updated_at": "2026-10-12T19:50:32Z",
+      "head": "571289ddb6529f7e8604b05a4a7216fbc76b164a",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1463,
+      "url": "https://github.com/storytold/vectorcraft/pull/1463",
+      "title": "Plug-ins: numeric defaults stay in their declared range",
+      "updated_at": "2026-10-12T19:50:21Z",
+      "head": "08c8c1179855ef05533b612eab0f703b57591c67",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1445,
+      "url": "https://github.com/storytold/vectorcraft/pull/1445",
+      "title": "Fix #1444: text.fitHeadline sees wrapping in a frame one line tall",
+      "updated_at": "2026-10-12T19:15:51Z",
+      "head": "2b34554ac81ba969cc8aa803fff02f89c60bf550",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1478,
+      "url": "https://github.com/storytold/vectorcraft/pull/1478",
+      "title": "Image Trace: edges to a fraction of a pixel in Black and White, Grayscale and Color",
+      "updated_at": "2026-10-12T19:06:03Z",
+      "head": "fcd7e3b42dbff63b00dc05902b9a0e263c98a7e3",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1452,
+      "url": "https://github.com/storytold/vectorcraft/pull/1452",
+      "title": "Render: raster effects are made again when patterns, symbols, images, settings or fonts change",
+      "updated_at": "2026-10-12T18:38:47Z",
+      "head": "f4e72fe6a5608b19344a5f07a8c84d9d83d5b5e6",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1451,
+      "url": "https://github.com/storytold/vectorcraft/pull/1451",
+      "title": "Type: frames and paths beyond 1,000,000,000 pt hold no text, and layout limits its search for room",
+      "updated_at": "2026-10-12T18:38:44Z",
+      "head": "8754646784cd4871e8ebaae87c9e38c21b73b60c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 865,
+      "url": "https://github.com/storytold/vectorcraft/pull/865",
+      "title": "Add OmaStore manifest",
+      "updated_at": "2026-10-12T18:31:59Z",
+      "head": "abcc14a4b43d719b465653883952a34299149233",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 857,
+      "url": "https://github.com/storytold/vectorcraft/pull/857",
+      "title": "ci: Add RISC-V Linux build with deb, rpm, and tar.gz packaging",
+      "updated_at": "2026-10-12T18:31:57Z",
+      "head": "29883f1370feab67e31c53307d71948e4c84f43d",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1449,
+      "url": "https://github.com/storytold/vectorcraft/pull/1449",
+      "title": "Fix #1423: an Affinity text frame too short for its first line is made taller instead of showing nothing",
+      "updated_at": "2026-10-12T17:31:12Z",
+      "head": "988f52ecc89386fd90da565febc3eefd0033bb76",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1447,
+      "url": "https://github.com/storytold/vectorcraft/pull/1447",
+      "title": "Docs: ROADMAP 2026-10-12 adds #1397–#1428 (later merges of the day)",
+      "updated_at": "2026-10-12T17:31:12Z",
+      "head": "25c33b6927a1a816421fa90f8a0595ad66efa34b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1277,
+      "url": "https://github.com/storytold/vectorcraft/pull/1277",
+      "title": "M2.x: Path Length panel (editable path length, object.setLength)",
+      "updated_at": "2026-10-12T17:28:03Z",
+      "head": "feb61db0ab1641facf8a0888eadc2a95f14f9926",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1319,
+      "url": "https://github.com/storytold/vectorcraft/pull/1319",
+      "title": "Preserve explicit closed flags in DXF SPLINE export",
+      "updated_at": "2026-10-12T17:28:02Z",
+      "head": "b3fbae3161a16cd39b3e0af4ee7bc3bf4b68c999",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1456,
+      "url": "https://github.com/storytold/vectorcraft/pull/1456",
+      "title": "Add a Nix flake (NixOS, GNOME and Hyprland)",
+      "updated_at": "2026-10-12T17:42:10Z",
+      "head": "0efc09b61f445333af89db6d9e959789002fa7bc",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1281,
+      "url": "https://github.com/storytold/vectorcraft/pull/1281",
+      "title": "perf: bounds cache, change sets and an R-tree for hover, marquee, snapping and drags (#1280)",
+      "updated_at": "2026-10-12T17:27:45Z",
+      "head": "e2f48f5c9f0ff70d34a153376985c1fa440e19a6",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1348,
+      "url": "https://github.com/storytold/vectorcraft/pull/1348",
+      "title": "Library panel: libraries opened from files stay listed after a restart",
+      "updated_at": "2026-10-12T17:27:44Z",
+      "head": "19240b9975b1404017821a05f9235f9154179ebb",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1406,
+      "url": "https://github.com/storytold/vectorcraft/pull/1406",
+      "title": "Portable mode: a portable.txt beside the executable keeps the settings in the upstream appData (#1366)",
+      "updated_at": "2026-10-12T17:27:42Z",
+      "head": "3caeb4d4b0852a406c2d74dfd653c90b7a322c0e",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1455,
+      "url": "https://github.com/storytold/vectorcraft/pull/1455",
+      "title": "Image Trace: a quality harness and the baseline for every preset",
+      "updated_at": "2026-10-12T17:12:26Z",
+      "head": "182a2cda4bc3a3dcd5402f7796b4c6787196a0b6",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1430,
+      "url": "https://github.com/storytold/vectorcraft/pull/1430",
+      "title": "Part of #1429: Edit and Object commands on many objects take time linear in the document",
+      "updated_at": "2026-10-12T16:53:00Z",
+      "head": "ffa948dcc30e41b3380e96aca2c36e62409038fb",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1440,
+      "url": "https://github.com/storytold/vectorcraft/pull/1440",
+      "title": ".ai import: editingData \"always\" and convert --editing-data open a file from its editing data even where its page draws differently",
+      "updated_at": "2026-10-12T16:30:11Z",
+      "head": "9e4ed2d430edb0b90f1ea42b7d35d0f5221cb6bd",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1439,
+      "url": "https://github.com/storytold/vectorcraft/pull/1439",
+      "title": ".ai import: art styles, a clipping path's own fill, compound paths of looks and a group's own transparency from the editing data",
+      "updated_at": "2026-10-12T16:30:05Z",
+      "head": "939bc02f6ba2c2ff7dd50a88346baaed30bfb06f",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1438,
+      "url": "https://github.com/storytold/vectorcraft/pull/1438",
+      "title": ".ai import: radial and skewed gradient matrices, focal points and stop order, gradient meshes and artboard names from the editing data",
+      "updated_at": "2026-10-12T16:30:02Z",
+      "head": "77120ada6286bcd01107e5537b53621f8a58055c",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1435,
+      "url": "https://github.com/storytold/vectorcraft/pull/1435",
+      "title": "SVG export: knockout groups of opaque art draw in order, without masks",
+      "updated_at": "2026-10-12T16:30:00Z",
+      "head": "92f117cf1d227ff78c499fc8ed4c30587eebbcb8",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1434,
+      "url": "https://github.com/storytold/vectorcraft/pull/1434",
+      "title": "PDF import: an editor's .ai keeps its RGB numbers, and a fill faded or masked by its group keeps its stroke apart",
+      "updated_at": "2026-10-12T16:29:57Z",
+      "head": "34b3c59a03a0f99b9ff4c122628beec581410312",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1398,
+      "url": "https://github.com/storytold/vectorcraft/pull/1398",
+      "title": "Open a text-only AI page when it is not the PDF-compatibility notice.",
+      "updated_at": "2026-10-12T16:25:42Z",
+      "head": "bc04b2d8edb5c75f410ca348d6bfdc1eb3cd7eb2",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1402,
+      "url": "https://github.com/storytold/vectorcraft/pull/1402",
+      "title": "Hide the selection bounds while a corner-radius drag is underway.",
+      "updated_at": "2026-10-12T16:25:24Z",
+      "head": "bf2b5643dce6a58f5c71cff7633de4ff53f24f92",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1443,
+      "url": "https://github.com/storytold/vectorcraft/pull/1443",
+      "title": "Match the raster sibling’s UI font and community button",
+      "updated_at": "2026-10-12T16:17:55Z",
+      "head": "183f2a9454f89cefb2eea7064cf44731a3757bff",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1203,
+      "url": "https://github.com/storytold/vectorcraft/pull/1203",
+      "title": "Keep Spiral decay settings consistent with drawn geometry",
+      "updated_at": "2026-10-12T16:11:15Z",
+      "head": "04abef9e32e43d38202f7d1ec07583830fdd92dc",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1425,
+      "url": "https://github.com/storytold/vectorcraft/pull/1425",
+      "title": "Fix #1410: .ai import: a compound path is painted as its last path, and one whose paths sit in a group draws them",
+      "updated_at": "2026-10-12T16:09:43Z",
+      "head": "311f50651cc7dc0ff4180835943bd759451b1609",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1409,
+      "url": "https://github.com/storytold/vectorcraft/pull/1409",
+      "title": "Fix #1396: a stroke wider than its closed shape paints solid",
+      "updated_at": "2026-10-12T15:52:45Z",
+      "head": "1168c319b037eac11c20a9171b9e6bed435ade15",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1399,
+      "url": "https://github.com/storytold/vectorcraft/pull/1399",
+      "title": "Reject a control port that is not a number before the window starts.",
+      "updated_at": "2026-10-12T15:49:35Z",
+      "head": "37b0f1d3702982e309ce0c271f0ba1a12e913205",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1404,
+      "url": "https://github.com/storytold/vectorcraft/pull/1404",
+      "title": "Paste the picture when the clipboard text beside it is blank.",
+      "updated_at": "2026-10-12T15:48:50Z",
+      "head": "f90854520404b4c62b878dc55f1f9a4fb01d9393",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1397,
+      "url": "https://github.com/storytold/vectorcraft/pull/1397",
+      "title": "Report compound-path paint and a non-normal blend in document summaries.",
+      "updated_at": "2026-10-12T15:48:29Z",
+      "head": "a366e8ee0d28bd21121af16b5cb9eda6fa362ef0",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1365,
+      "url": "https://github.com/storytold/vectorcraft/pull/1365",
+      "title": "Part of #394: Highlight Alternate Glyphs paints pink behind OpenType substitutions",
+      "updated_at": "2026-10-12T14:23:24Z",
+      "head": "7e7d425dae7edbbffeefb62e1554f712784aa141",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1418,
+      "url": "https://github.com/storytold/vectorcraft/pull/1418",
+      "title": "Docs: sync mcp.md with acting prefs and shipped command families",
+      "updated_at": "2026-10-12T14:22:08Z",
+      "head": "3da2685065d7a0b0a3333f90e882796b0f6e583d",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1428,
+      "url": "https://github.com/storytold/vectorcraft/pull/1428",
+      "title": "Fix #1412: the Transform dialogs preview on the canvas, and arrow keys step their angles and percentages",
+      "updated_at": "2026-10-12T14:11:57Z",
+      "head": "4d17702536a360111e8aeee1d6a381bf9f3a1417",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1427,
+      "url": "https://github.com/storytold/vectorcraft/pull/1427",
+      "title": "Fix #1408: the Transform tools and commands act on the anchors selected with Direct Selection",
+      "updated_at": "2026-10-12T14:11:57Z",
+      "head": "a41d59604bfdd8b60fd2c9441aa8d09370376678",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1426,
+      "url": "https://github.com/storytold/vectorcraft/pull/1426",
+      "title": "Fix #1410: an .ai compound path takes its last path's paint, and paths grouped in it stay its paths",
+      "updated_at": "2026-10-12T14:11:57Z",
+      "head": "003234a05666d2ba15765c6826adfe9284bbc06b",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1421,
+      "url": "https://github.com/storytold/vectorcraft/pull/1421",
+      "title": "text: the Han fallback follows the interface language, one list per script",
+      "updated_at": "2026-10-12T13:58:12Z",
+      "head": "e5bba3d56e8ea6575aa08cb42e2515f96b2de4dd",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1243,
+      "url": "https://github.com/storytold/vectorcraft/pull/1243",
+      "title": "Hide selection bounds during corner-radius dragging",
+      "updated_at": "2026-10-12T13:55:36Z",
+      "head": "6c88cfe9723b4e0f4089878b3ec8157e4d6b65e2",
+      "state": "closed",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1416,
+      "url": "https://github.com/storytold/vectorcraft/pull/1416",
+      "title": "Isolation mode: new art made beside an isolated object widens the isolation",
+      "updated_at": "2026-10-12T13:41:01Z",
+      "head": "d35be21683aa85e10529a346307cd20f4f8db673",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1131,
+      "url": "https://github.com/storytold/vectorcraft/pull/1131",
+      "title": "CI: FreeBSD and Windows ARM64 nightly and on release, not per PR",
+      "updated_at": "2026-10-12T13:21:03Z",
+      "head": "f5f2942319cd3d04c369650ed87e274900fcf87f",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1403,
+      "url": "https://github.com/storytold/vectorcraft/pull/1403",
+      "title": "Keep a numeric field caret when focus arrives while the pointer is still down.",
+      "updated_at": "2026-10-12T13:14:11Z",
+      "head": "d62511b2804e1a033dd48fe971b041476e55a0b3",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1401,
+      "url": "https://github.com/storytold/vectorcraft/pull/1401",
+      "title": "Sample the artboard paper when the eyedropper misses every object.",
+      "updated_at": "2026-10-12T13:14:10Z",
+      "head": "253a48449e5c97e84ab3868a60104b824b920ede",
+      "state": "open",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1415,
+      "url": "https://github.com/storytold/vectorcraft/pull/1415",
+      "title": "object.isolate: an id that doesn't exist says so",
+      "updated_at": "2026-10-12T13:08:03Z",
+      "head": "ec38b00a22f09ef08381958733864c02f6242e80",
+      "state": "merged",
+      "decision": "adapted"
+    },
+    {
+      "number": 1414,
+      "url": "https://github.com/storytold/vectorcraft/pull/1414",
+      "title": "Fix #1387: a .ai whose PDF part draws only text opens from it",
+      "updated_at": "2026-10-12T13:08:00Z",
+      "head": "7f5d8a3db1dc61b565a6955df1b60a22fea64fa6",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    },
+    {
+      "number": 1413,
+      "url": "https://github.com/storytold/vectorcraft/pull/1413",
+      "title": "Fix #1388: PDF and .ai import and file.place keep overprint",
+      "updated_at": "2026-10-12T13:07:57Z",
+      "head": "bfb173e967ff3e3cf650c09cb29ddb22312b2eb0",
+      "state": "merged",
+      "decision": "not selected for this bounded correctness pass"
+    }
+  ],
+  "deferred_groups": [
+    {
+      "group": "Excluded by owner scope",
+      "reason": "International UI variants, font bundling, replacement branding, community controls and publication workflows are excluded.",
+      "examples": [
+        1498,
+        1507,
+        1511,
+        1532,
+        1605,
+        1443,
+        865,
+        857
+      ]
+    },
+    {
+      "group": "Larger dependency and platform changes",
+      "reason": "3D/lighting, image-tracing architecture, Linux font discovery, scripting and embedding need separate compatibility/platform reviews.",
+      "examples": [
+        1453,
+        1669,
+        1670,
+        1546,
+        1548,
+        1611,
+        1673,
+        1183,
+        1608
+      ]
+    },
+    {
+      "group": "Import/export and geometry follow-ups",
+      "reason": "SVG unit/primitive proposals, newer stroke-outline behavior, wide import changes and coincident Join remain candidates for separate focused validation.",
+      "examples": [
+        1400,
+        1328,
+        1596,
+        1626,
+        1619,
+        1582,
+        1551,
+        1585,
+        1565
+      ]
+    },
+    {
+      "group": "Newer cache contracts",
+      "reason": "The proposed shared-appearance stroke cache repair requires the newer upstream renderer/cache contract; it is not transplanted into Vectnor's earlier cache.",
+      "examples": [
+        1667,
+        1621,
+        1281
+      ]
+    },
+    {
+      "group": "Potentially destructive save fallback",
+      "reason": "The plain-fsync repair is adapted, but replacing atomic saves with direct overwrite when temporary-file/rename operations fail needs a separate data-loss review.",
+      "examples": [
+        1649
+      ]
+    }
+  ],
+  "preserved": [
+    "Vectnor identity and Appaji Ambarisha developer credit",
+    ".vcnr extension and vectnor header",
+    "English-only UI and Indic document text",
+    "Welcome thumbnails, canvas scrollbars, Contributors and Models",
+    "Original licences, notices, font assets and contributor registry"
+  ],
+  "verification": {
+    "status": "complete locally",
+    "ci_gates": [
+      "fmt",
+      "clippy",
+      "test",
+      "assets",
+      "brands",
+      "cleanroom",
+      "layers",
+      "wasm"
+    ],
+    "tests_passed": 5153,
+    "tests_failed": 0,
+    "existing_ignored": 4,
+    "native": {
+      "anchorAlignment": "selected points only; repeat preserves history; undo/redo pass",
+      "anchorDelete": "original-index deletion; remainder selected; second Delete; undo/redo pass",
+      "groupedPathfinder": "Minus Front works on members of one selected group",
+      "autoLeading": "source/follower reset to Auto; local 56 pt override retained; Telugu text preserved",
+      "widthModifier": "Shift-double-click opens adjoining adjustment checked",
+      "nativeRoundTrip": "all checked objects unchanged; identical rendered PNG hash"
+    },
+    "screenshots_inspected": [
+      "preferences.png",
+      "width-shift.png",
+      "canvas.png",
+      "about.png"
+    ],
+    "native_log": "/tmp/vectnor-upstream-2026-10-13/native-check.log",
+    "ci_log": "/tmp/vectnor-upstream-2026-10-13/ci.log",
+    "build_log": "/tmp/vectnor-upstream-2026-10-13/build.log",
+    "perf": {
+      "profile": "optimized development; no release claim",
+      "paths": 50000,
+      "budgets_before_passed": 8,
+      "budgets_after_passed": 8,
+      "budgets_total": 10,
+      "existing_overruns": {
+        "render_400_percent_ms": {
+          "before": 22.79,
+          "after": 22.46,
+          "budget": 16
+        },
+        "open_native_ms": {
+          "before": 314.75,
+          "after": 310.32,
+          "budget": 300
+        }
+      },
+      "note": "No performance improvement claimed; small timing differences are not evidence of a speedup.",
+      "before_log": "/tmp/vectnor-upstream-2026-10-13/perf-before.log",
+      "after_log": "/tmp/vectnor-upstream-2026-10-13/perf-after.log"
+    },
+    "identity": "Vectnor 0.9.0; English interface and Indic document text retained; no fonts/assets imported",
+    "publication": "local only; no GitHub upload"
+  }
+}

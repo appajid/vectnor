@@ -1019,3 +1019,10 @@ fn path_commands_reject_bad_anchors_before_modifying_geometry() {
     s.execute("path.setAnchors", &json!({"id": a.0, "subpaths": [{"anchors": [{"x": 0, "y": 0}, {"x": 30, "y": 40}], "closed": false}]})).unwrap();
     assert_eq!(s.doc().unwrap().doc.node(a).unwrap().path_data().unwrap().anchor_count(), 2);
 }
+#[test]
+fn isolating_an_object_that_doesnt_exist_says_so() {
+    let mut s = session();
+    let e = s.execute("object.isolate", &json!({"id": 999_999})).unwrap_err();
+    assert_eq!(e.to_string(), EngineError::NoNode(NodeId(999_999)).to_string());
+    assert!(!e.to_string().contains("type"), "{e}");
+}

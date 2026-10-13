@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** scope (English-only interface by owner request; Indic document text retained and covered by regression tests; historical readiness estimates not recalculated) · **Target:** Adobe Illustrator 2026 (30.x; public documentation only)
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -42,6 +42,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G1 Interaction fidelity
 
+- **Completed locally (2026-10-13):** Direct/Group Selection respects isolation and selected-path priority; anchor Align/Delete uses point semantics and original indexes; grouped Pathfinder, Pen jitter, Shift-double-click Width options, field contrast/slider rails and shortcut discovery are covered by the [reviewed upstream pass](vectnor/UPSTREAM_AUDIT.md). Key anchors and broader modifier work remain.
+
 - **Completed locally (2026-10-12):** optional Alt/Option smoothing from Pencil/Paintbrush borrows the real Smooth tool with saved fidelity. One undo step, no extra path, original tool restored on release/Escape; Cmd/Ctrl selection keeps priority. Interior Pencil path redrawing and unchecked Alt straight-line drawing remain.
 - **Completed locally (2026-10-12):** Pencil/Paintbrush Keep selected is configurable and saved separately for each tool. Preview selection, finished/continued strokes, cancellation, tool-switch completion and undo/redo follow the setting.
 - **Completed locally (2026-10-12):** Alt/Option swaps a new ruler guide's orientation, preview and snapping while dragging from either ruler; release creates one guide in one undo step. Existing-guide Alt-drag retains copying.
@@ -69,6 +71,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G10 Launch and stability on real machines
 
+- **Improved locally (2026-10-13):** macOS saves fall back to plain fsync only for an unsupported full flush; failed fallback retains the original save error and temporary-file cleanup. Actual SMB and other launch/platform reports remain unverified.
+
 - **Missing:** the app not starting or staying in the background on some Windows 11 machines (#858, #964 fixed
   2026-10-10, #620, #818), slow pointer on a Linux AppImage (#575), macOS paste from other apps (#954), a
   web-free crash/hang reporter, a field record.
@@ -95,6 +99,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Estimate:** 8–15 h.
 
 ## G4 Advanced type
+
+- **Completed locally (2026-10-13):** character-style capture target keys and explicit Auto-leading resets, with preserved local overrides and native round-trip/history regression coverage. Indic document text remains required.
 
 - **Missing:** hyphenation and justification options, Optical Margin Alignment (type core); CJK vertical
   composition (ruby, mojikumi sets and dialog, proportional vertical metrics #966, kinsoku settings #633, manual
@@ -206,6 +212,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |

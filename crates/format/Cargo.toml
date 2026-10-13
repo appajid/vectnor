@@ -16,6 +16,10 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 flate2 = { workspace = true }
 
+# Safe plain fsync fallback on Apple volumes that refuse full flushes.
+[target.'cfg(target_vendor = "apple")'.dependencies]
+rustix = { workspace = true, features = ["std", "fs"] }
+
 [dev-dependencies]
 vectnor-testkit = { workspace = true }
 proptest = { workspace = true }

@@ -91,11 +91,19 @@ pub fn specs() -> Vec<CommandSpec> {
             "Clear",
             ["Edit"],
             Some("Delete"),
-            "{ids?} delete the objects `ids`, else the selection (direct-selected anchors, else objects, else ruler guides)",
+            "{ids?} delete the objects `ids`, else the selection (fully selected objects and direct-selected anchors together, else ruler guides)",
             has_selection_or_guides,
             clear
         ),
-        cmd!("edit.duplicate", "Duplicate", [], None, "{dx?, dy?} duplicate the selection in place (offset optional)", has_selection, duplicate),
+        cmd!(
+            "edit.duplicate",
+            "Duplicate",
+            ["Edit"],
+            None,
+            "{dx?, dy?} duplicate the selection in place (offset optional)",
+            has_selection,
+            duplicate
+        ),
     ]
 }
 

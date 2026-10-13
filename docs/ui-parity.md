@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Alt/Option smoothing from freehand tools implemented; scores unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -38,7 +38,7 @@ tools, never checked side by side) isn't captured row by row.
 
 | Behaviour (Illustrator, public docs) | Status | Notes |
 |---|---|---|
-| Click: corner anchor; drag: smooth anchor with symmetric handles | done | `pen.rs` |
+| Click: corner anchor; drag: smooth anchor with symmetric handles | done | Movement below three screen pixels remains a corner click; smooth-to-corner regression covered (#1663). |
 | Shift constrains segments and handles to 45° | done | Illustrator's Constrain Angle preference is honoured (`constrainAngle`) |
 | Alt mid-drag splits the handles (only the outgoing follows) | done | keeps the curve already shaped |
 | Space mid-drag repositions the anchor, handles and all | done | |
@@ -67,10 +67,12 @@ tools, never checked side by side) isn't captured row by row.
 | Drag a handle with Shift (45° about its anchor), Alt (move one handle alone) | done | handles snap to smart guides |
 | Show handles when multiple anchors are selected; Highlight anchors on mouse over; anchor and handle size | done | Preferences › Selection & Anchor Display |
 | Convert selected anchors to corner/smooth from the Control bar and Properties | done | |
-| Cut path at selected anchors, Remove Anchor Points, Delete removes segments | done | |
+| Align selected anchors to Selection or Artboard | done / partial | Panel/shared controls and engine move points/handles; unselected points remain fixed. Repeated alignment adds no history. Key anchors remain missing (#1641; #1216/#1276 dependencies). |
+| Width Point Edit: Shift-double-click adjusts adjoining points | done | Saved geometry, Cancel and Undo/Redo regression coverage (#1630). |
+| Cut path at selected anchors, Remove Anchor Points, Delete removes segments | partial | Delete removes all selected original anchor indexes and whole objects together; surviving paths remain selected. Newer independent segment-selection semantics remain outside this backport. |
 | Live Corners widgets (radius readout, Alt-click cycles kind, double-click the Corners dialog) | done | clicking a widget without pre-selecting the anchor (#908) missing |
 | Corners between curved sides, Relative rounding | missing | |
-| Isolation mode by double-click, breadcrumbs, Esc to exit | done | |
+| Isolation mode by double-click, breadcrumbs, Esc to exit | done | Direct/Group Selection picks only the isolated subtree; selected paths win overlapping anchor hits (#1666, #1509). |
 | "Magnetic" moves of selected anchors with a modifier (#955 request) | missing | not an Illustrator feature as documented; under discussion |
 
 ## Smart guides and snapping
@@ -136,7 +138,7 @@ tools, never checked side by side) isn't captured row by row.
 (`crates/tools/src/catalog.rs`), a shortcut editor with chords, and saved sets. Not yet diffed item by item
 against Illustrator's published default shortcut list; estimated ~70% of it. Remaining: the panel shortcuts,
 the type shortcuts (tracking/kerning/leading/baseline steps with Alt/Shift), and selection shortcuts in the
-Layers panel.
+Layers panel. Eligible parameter-free panel commands and Duplicate can now receive shortcuts (#1549/#1580).
 
 ## Panels, Control bar, Properties, context menus
 
@@ -174,6 +176,7 @@ re-measure of the panels added since.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |
 | 2026-10-12 | minor | New ruler guides switch orientation with Alt/Option, including stationary-pointer previews and snapping on the effective axis; one undo step. Scores and estimates unchanged. |
