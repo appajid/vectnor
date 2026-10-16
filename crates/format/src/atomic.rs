@@ -21,7 +21,14 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> io::Result<()> {
 pub fn write_atomic_with(path: &Path, fill: impl FnOnce(&mut File) -> io::Result<()>) -> io::Result<()> {
     let target = resolve_link(path)?;
     let tmp = temp_path(&target)?;
-    let mut f = OpenOptions::new().write(true).create_new(true).open(&tmp)?;
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    if target.exists() {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.mode(0o600);
+    }
+    let mut f = options.open(&tmp)?;
     let filled = fill(&mut f).and_then(|()| sync_file(&f));
     drop(f);
     filled.and_then(|()| keep_permissions(&target, &tmp)).and_then(|()| std::fs::rename(&tmp, &target)).inspect_err(|_| {
@@ -175,6 +182,28 @@ mod tests {
     /// The other files in `d` besides `keep`.
     fn leftovers(d: &Path, keep: &str) -> Vec<String> {
         std::fs::read_dir(d).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().to_string()).filter(|n| n != keep).collect()
+    }
+
+    /// Replacing a private file (#1712): the staging file is owner-only while it is written, whatever
+    /// the umask, and the saved file keeps the old permissions.
+    #[cfg(unix)]
+    #[test]
+    fn staging_of_a_private_file_is_owner_only() {
+        use std::os::unix::fs::PermissionsExt as _;
+        let d = dir("private-staging");
+        let path = d.join("doc.vcnr");
+        std::fs::write(&path, b"secret").unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+        let mut staging_mode = 0;
+        write_atomic_with(&path, |f| {
+            staging_mode = f.metadata()?.permissions().mode() & 0o777;
+            f.write_all(b"new")
+        })
+        .unwrap();
+        assert_eq!(staging_mode, 0o600, "the staging file must not be group or world readable");
+        assert_eq!(std::fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o600);
+        assert_eq!(std::fs::read(&path).unwrap(), b"new");
+        let _ = std::fs::remove_dir_all(&d);
     }
 
     #[test]

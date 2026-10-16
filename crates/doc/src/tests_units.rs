@@ -66,3 +66,33 @@ fn readouts_show_two_decimals() {
     assert_eq!((Unit::Inches.number(595.2756), Unit::Points.number(595.2756)), ("8.2677".into(), "595.276".into()));
     assert_eq!(Unit::Points.number(-0.00001), "0");
 }
+
+#[test]
+fn a_negative_operand_after_an_operator_is_a_sign() {
+    assert_eq!(Unit::Points.parse("10*-2"), Some(-20.0));
+    assert_eq!(Unit::Points.parse("-10/-2"), Some(5.0));
+    assert_eq!(Unit::Points.parse("5--3"), Some(8.0));
+    assert_eq!(Unit::Points.parse("5 - -3"), Some(8.0));
+    assert_eq!(Unit::Points.parse("5+-3"), Some(2.0));
+    assert_eq!(Unit::Points.parse("10-2"), Some(8.0));
+    assert_eq!(super::parse_number("90*-1"), Some(-90.0));
+}
+
+#[test]
+fn mixed_mul_div() {
+    // `*` and `/` share one precedence level and run left to right.
+    assert_eq!(Unit::Points.parse("10/2*5"), Some(25.0));
+    assert_eq!(crate::parse_number("100*3/4"), Some(75.0));
+    assert_eq!(Unit::Points.parse("10*2/5"), Some(4.0));
+    assert_eq!(Unit::Points.parse("10*2/5 px"), Some(Unit::Pixels.to_pt(4.0)));
+}
+
+#[test]
+fn field_arithmetic_is_bounded_and_preserves_operator_precedence() {
+    assert_eq!(Unit::Points.parse(&"1+".repeat(10000)), None);
+    assert_eq!(Unit::Points.parse(&("1+".repeat(100) + "1")), None);
+    assert_eq!(Unit::Points.parse("12/-2*3+5--1"), Some(-12.0));
+    assert_eq!(Unit::Points.parse("100/0"), None);
+    assert_eq!(Unit::Points.parse("क+1"), None);
+    assert_eq!(Unit::Points.parse("10/2*5 px"), Some(Unit::Pixels.to_pt(25.0)));
+}

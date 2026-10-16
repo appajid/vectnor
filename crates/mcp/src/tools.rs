@@ -96,9 +96,9 @@ pub fn tool_definitions() -> Vec<Value> {
         tool(
             "command_batch",
             "Run several commands",
-            "Run steps in order; each edit is its own undo step. A param string that is exactly \"$N.path\" (N: 0-based step index) or \"$last.path\" takes that value from an earlier step's result, e.g. {\"id\":\"$1.id\"}; \"$$\" starts a literal \"$\". Returns completed, failed and results. Stops on the first error by default.",
+            "Run steps in order; each edit is its own undo step. A param string that is exactly \"$N.path\" (N: 0-based step index) or \"$last.path\" takes that value from an earlier step's result, e.g. {\"id\":\"$1.id\"}; \"$$\" starts a literal \"$\". Returns completed, failed and results. Stops on the first error by default. At most 256 steps; kept results total at most 8 MiB.",
             obj(
-                json!({"steps": {"type":"array", "items":obj(json!({"id":string("Command id"),"params":{"type":"object"}}), &["id"])}, "stop_on_error":{"type":"boolean", "default":true}}),
+                json!({"steps": {"type":"array", "maxItems":256, "items":obj(json!({"id":string("Command id"),"params":{"type":"object"}}), &["id"])}, "stop_on_error":{"type":"boolean", "default":true}}),
                 &["steps"],
             ),
             false,
@@ -896,8 +896,17 @@ pub fn call_tool(b: &mut dyn Backend, name: &str, args: &Value) -> ToolResult {
     }
 }
 
+/// Most steps one `command_batch` may hold, and most bytes its kept step results may total.
+/// Batches run sequentially and every result is kept for later steps' `"$N.path"` references, so
+/// without caps one batch could do unbounded work and pile up an unbounded reply (#1727).
+pub(crate) const MAX_COMMAND_BATCH_STEPS: usize = 256;
+pub(crate) const MAX_COMMAND_BATCH_BYTES: usize = 8 * 1024 * 1024;
+
 fn command_batch(b: &mut dyn Backend, a: &Args) -> Result<ToolResult, String> {
     let steps = a.get("steps").and_then(Value::as_array).ok_or("`steps` must be an array")?;
+    if steps.len() > MAX_COMMAND_BATCH_STEPS {
+        return Err(format!("`steps` holds {} steps; at most {MAX_COMMAND_BATCH_STEPS}", steps.len()));
+    }
     let stop = match a.get("stop_on_error") {
         None => true,
         Some(v) => v.as_bool().ok_or("`stop_on_error` must be a boolean")?,
@@ -905,6 +914,9 @@ fn command_batch(b: &mut dyn Backend, a: &Args) -> Result<ToolResult, String> {
     let (mut completed, mut failed, mut results) = (0, 0, Vec::new());
     // Each step's result (null for a failed one), for later steps' `"$N.path"` references.
     let mut values: Vec<Value> = vec![];
+    // The kept results all go back in the reply, so their total size is capped: one batch can't
+    // pile up an unbounded answer (#1727).
+    let mut kept_bytes = 0usize;
     for step in steps {
         let result = vectnor_engine::guard::catch_panic(|| {
             let args = step.as_object().ok_or("each step must be an object")?;
@@ -920,20 +932,29 @@ fn command_batch(b: &mut dyn Backend, a: &Args) -> Result<ToolResult, String> {
             b.call("engine.execute", json!({"command":id,"params":params}))
         })
         .unwrap_or_else(|e| Err(format!("internal error: {e}")));
-        match result {
-            Ok(v) => {
-                completed += 1;
-                values.push(v.clone());
-                results.push(json!({"ok":true,"result":v}));
-            }
-            Err(e) => {
-                failed += 1;
-                values.push(Value::Null);
-                results.push(json!({"ok":false,"error":e}));
-                if stop {
-                    break;
-                }
-            }
+        let ok = result.is_ok();
+        let entry = match result {
+            Ok(v) => json!({"ok": true, "result": v}),
+            Err(e) => json!({"ok": false, "error": e}),
+        };
+        // Bound failures too: a backend's diagnostic can be just as large as its result.
+        let size = entry.to_string().len();
+        if kept_bytes.saturating_add(size) > MAX_COMMAND_BATCH_BYTES {
+            failed += 1;
+            results.push(json!({"ok": false, "error": format!("this step was attempted, but the batch's replies exceed {MAX_COMMAND_BATCH_BYTES} bytes: its reply is dropped and the batch stops; inspect state before retrying")}));
+            break;
+        }
+        kept_bytes += size;
+        if ok {
+            completed += 1;
+            values.push(entry.get("result").cloned().unwrap_or(Value::Null));
+        } else {
+            failed += 1;
+            values.push(Value::Null);
+        }
+        results.push(entry);
+        if !ok && stop {
+            break;
         }
     }
     let mut r = ToolResult::json(&json!({"completed":completed,"failed":failed,"results":results}));

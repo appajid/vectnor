@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged) · **Target:** public documentation and owner requirements
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -67,7 +67,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 
 | Area | Weight | Done | Main gaps | One agent (h) | Kind |
 |---|---:|---:|---|---:|---|
-| Selection, transform & align tools | 6 | 85% | Anchor alignment/deletion, isolation and overlap picking corrected; remaining: Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances | 4–6 | estimated |
+| Selection, transform & align tools | 6 | 85% | Anchor alignment/deletion, isolation/overlap picking and Direct Selection drag cancellation corrected; remaining: Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances | 4–6 | estimated |
 | Drawing tools (Pen, Curvature, Pencil, shapes, Shaper) | 7 | 85% | Keep selected and optional Alt/Option smoothing done for Pencil/Paintbrush; Shaper construction widget, interior Pencil path redrawing, unchecked Alt straight-line drawing and other Pencil/Pen nuances, Blob Brush options, Touch Type, Dimension tool, Live Corners on curved corners; see [ui-parity.md](ui-parity.md) | 8–13 | estimated |
 | Path operations, Pathfinder, Shape Builder, Live Paint | 5 | 80% | Shape Builder still misses some planar regions (#937); line-grid seams (#893) and persisted cutting regression fixed; gap detection/options and Live Paint Gap Options remain | 4–8 | estimated (lowered from 86%: open issues) |
 | Colour, swatches, gradients, patterns, mesh, recolor | 7 | 92% | 30.0's gradient dither, perceptual blending and gradient presets; freeform and mixed spot/process gradients in SVG/PDF | 4–7 | estimated (lowered from 96%: target moved) |
@@ -83,11 +83,11 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 | Layers, artboards, document setup | 5 | 78% | 30.0's artboard locking and colours and managing artboards from the canvas, Layers panel row context menus and Collect for Export | 5–8 | estimated (lowered from 82%: target moved) |
 | View & navigation | 3 | 70% | saved-view input validates before mutation; multiple windows and Arrange, Snap to Glyph remain | 9–14 | estimated |
 | Guides, grids, smart guides, snapping, rulers | 3 | 80% | new-guide Alt/Option orientation switching done; 30.0's tangent and perpendicular snapping and its snapping panel, "intersect" smart guides, global/video rulers, distance readouts while drawing | 4–7 | estimated (lowered from 85%: target moved) |
-| File formats | 6 | 75% | `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
+| File formats | 6 | 75% | Save/export safety and bitmap header checks verified; remaining: `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
 | Export for Screens, Asset Export, slices, Save for Web | 3 | 85% | anti-aliasing ghost borders (#983), TIFF in Export for Screens (30.2) | 2–4 | estimated |
 | Print, colour management, separations, flattener | 3 | 80% | print preview fidelity | 2–4 | estimated |
-| Automation (Actions, Variables, scripting, batch) | 3 | 60% | a scripting surface (Illustrator: JavaScript/ExtendScript), Batch, image and graph variables, dataset import/export | 8–14 | estimated |
-| UI chrome (panels, Properties, workspaces, preferences) | 6 | 80% | Properties per context, ~17 Preferences options stored but unused (#394), panels outside the window, SVG Interactivity, context menus beyond the canvas, accessibility | 13–20 | estimated |
+| Automation (Actions, Variables, scripting, batch) | 3 | 60% | MCP framing/envelope/reply guards verified; remaining: a scripting surface (Illustrator: JavaScript/ExtendScript), Batch, image and graph variables, dataset import/export | 8–14 | estimated |
+| UI chrome (panels, Properties, workspaces, preferences) | 6 | 80% | Field focus commits and arithmetic corrected; remaining: Properties per context, ~17 Preferences options stored but unused (#394), panels outside the window, SVG Interactivity, context menus beyond the canvas, accessibility | 13–20 | estimated |
 | Libraries, Links, Package | 2 | 82% | shared libraries, linked graphics, gradients and patterns as library items (no cloud by design) | 2–3 | estimated |
 | Generative AI (Text to Vector, Generative Recolor, Shape Fill, Concept to Vector, Prompt to Edit, Rewrite Text) | 2 | 0% | a pluggable provider and the panels; needs an owner decision on models | 30–60 | measured (absent) |
 | **Feature depth** | **105** | **~75%** | | **~250–420** | |
@@ -299,7 +299,7 @@ about 1–1.5 agent-hours each, so the other rows (estimated on the older scale)
 
 | Area | Weight | Done | Missing (main items) | One agent (h) |
 |---|---:|---:|---|---:|
-| Selection, transform & align tools | 6 | 85% | Anchor alignment/deletion, isolation and overlap picking corrected; remaining: Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances (the rotated persistent bounding box is done) | 4–6 |
+| Selection, transform & align tools | 6 | 85% | Anchor alignment/deletion, isolation/overlap picking and Direct Selection drag cancellation corrected; remaining: Free Transform/Scale/Reflect along a rotated box, Start Global Edit, transform nuances (the rotated persistent bounding box is done) | 4–6 |
 | Drawing tools | 7 | 85% | rough-square Shaper recognition and orientation steps corrected; editable Shaper Groups landed; remaining: Shaper construction widget/gesture refinements, pencil and the remaining pen modifier nuances, the freehand Tool Options' Keep selected, Alt to the Smooth tool, Blob Brush Merge Only with Selection and brush angle/roundness, Touch Type, Live Corners on corners between curved sides (and Relative rounding) | 8–13 |
 | Path operations, Pathfinder, Shape Builder, Live Paint | 5 | 86% | Live Paint gap options, Shape Builder gap detection, options (Tool Options dialog, clicking a stroke in merge mode) and Shift-drag marquee | 3–6 |
 | Colour, swatches, gradients, patterns, mesh, recolor | 7 | 96% | freeform and mixed spot/process gradients in SVG/PDF (exported as stops or process colours), pattern fills in Expand | 2–4 |
@@ -362,6 +362,7 @@ since 2026-10-01.
 
 ## Evidence: what ships today, by area
 
+- **Local safety/editing pass (2026-10-17):** eighteen [pinned upstream adaptations](vectnor/UPSTREAM_AUDIT.md): save dates/staging and export containment, bounded brush/graph/image processing, MCP framing/envelope/reply matching, field focus/arithmetic, Direct Selection Escape and Pencil paint. `ruzstd` 0.9.1 security fix included. Scores/hours remain estimates unchanged; importer-depth and broader automation/platform work are deferred.
 - **Local correctness pass (2026-10-13):** the [upstream audit](vectnor/UPSTREAM_AUDIT.md) pins twenty updated adaptations and two required alignment dependencies. Selection/align/drawing fixes, grouped Pathfinder, style capture/Auto leading, chart precision, field/slider clarity, clipboard picture fallback, template Preview, aligned ICC output and macOS safe-flush behavior are regression-tested. A clean-room marker gate joins CI. Existing area scores/hours are retained without remeasurement; key-anchor alignment and broad platform/type gaps remain.
 
 - **Temporary smoothing:** `tool.setOption {tool: "pencil" | "paintbrush", key: "altToSmooth", value: true}` enables a shared, saved switch. Alt/Option at the press borrows the existing Smooth tool and its own saved fidelity; the gesture remains smoothing if Alt is released before mouse-up. Mouse-up or Escape restores the original tool and options; Cmd/Ctrl still borrows selection first. Original tests cover both tools, smoothing/no new path, undo/redo, no-selection no-op, cancellation/switches, normal drawing and saved preferences, including headless canvas input. Native UI verification clicks the checkbox on and runs real Alt drags from both tools: the same path drops from 41 anchors to 2, without a new object; tool/options, undo/redo, subsequent drawing and `.vcnr` save/reopen all verified. All seven CI gates pass (5,156 tests passed; four existing ignored). Public reference: [Pencil options](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/draw-shapes/pencil-tool-options.html).
@@ -466,6 +467,7 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |

@@ -296,3 +296,25 @@ fn an_undo_group_is_one_undo_step() {
     assert!((width(&s) - 120.0).abs() < 1e-9);
     assert_eq!(undo_len(&s), undo + 2);
 }
+
+#[test]
+fn a_failed_preview_is_not_journaled_at_commit() {
+    let mut s = Session::new();
+    s.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+    s.execute("shape.rectangle", &json!({"x": 10, "y": 10, "width": 100, "height": 50})).unwrap();
+    let journal = s.journal.len();
+
+    // Only a failing preview: committing records nothing.
+    s.begin_interaction("Bad").unwrap();
+    assert!(s.preview("no.such.command", &json!({})).is_err());
+    s.commit_interaction().unwrap();
+    assert_eq!(s.journal.len(), journal);
+
+    // A good preview followed by a failing one: the document is back at the snapshot, so the
+    // earlier preview is not journaled either.
+    s.begin_interaction("Opacity").unwrap();
+    s.preview("transparency.set", &json!({"opacity": 50})).unwrap();
+    assert!(s.preview("no.such.command", &json!({})).is_err());
+    s.commit_interaction().unwrap();
+    assert_eq!(s.journal.len(), journal);
+}

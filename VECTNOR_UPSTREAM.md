@@ -1,6 +1,6 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (twenty updated adaptations plus two older alignment dependencies; local only)
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
@@ -35,8 +35,17 @@ blob identity is recorded in [the new review snapshot](docs/vectnor/upstream-aud
 distinguish open proposals from merged fixes and identify the portions fitted to Vectnor's earlier APIs.
 Existing provenance and contributor registries remain intact. No source, build or web app is uploaded.
 
+## Local update — M0.upstream-safety, 2026-10-17
+
+Eighteen adaptations selected after `f6d40ed` are recorded in the
+[dated source-author/head/blob snapshot](docs/vectnor/upstream-audit-2026-10-17.json).
+The [review](docs/vectnor/UPSTREAM_AUDIT.md#2026-10-17-local-update--m0upstream-safety) distinguishes
+551 metadata-screened updates from 27 candidate diff scopes and 18 reviewed local adaptations. Existing attribution,
+contributor registries, branding and licenses remain intact. No upload.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream adaptations and compatibility/verification notes; no upload. |

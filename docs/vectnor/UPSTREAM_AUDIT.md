@@ -1,6 +1,61 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed local correctness adaptations; English UI and Indic text retained)
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
+
+## 2026-10-17 local update — M0.upstream-safety
+
+Screened **551 PRs updated since `f6d40ed`** (2026-10-13 11:01:43 UTC): 364 merged, 171 open and
+16 closed without merge. Ten public GitHub REST pages contained 1,000 distinct metadata records; page six
+crossed the cutoff. Scoped **27 candidate diffs** for applicability, then reviewed and adapted code/tests from **18 PRs** (17 merged and one open).
+Metadata screening is not a claim that every proposal's code was reviewed or implemented. The
+[dated snapshot](upstream-audit-2026-10-17.json) records every screened decision, source-author logins,
+immutable heads, raw diff SHA-256 and verified postimage Git blob IDs. Older audit snapshots are unchanged.
+
+| PR | State | Author / inspected head | Local adaptation |
+|---|---|---|---|
+| [#1774](https://github.com/storytold/vectorcraft/pull/1774) | merged | @MarekSpodBiedry / `8a7e36ede870` | Stamp File Info save dates only after a successful write, including edits during background saving. |
+| [#1775](https://github.com/storytold/vectorcraft/pull/1775) | merged | @MarekSpodBiedry / `1f44a18c7a07` | A failed live preview clears the preview journal and pending paint; committing it records no failed edit. |
+| [#1777](https://github.com/storytold/vectorcraft/pull/1777) | merged | @MarekSpodBiedry / `d82d6e362048` | Sanitize export prefixes and suffixes as filename text so files remain inside the export folder. |
+| [#1778](https://github.com/storytold/vectorcraft/pull/1778) | merged | @MarekSpodBiedry / `122fe05cee3a` | Create replacement staging files owner-only on Unix; retain Vectnor atomic rename and original-file preservation on failure. |
+| [#1780](https://github.com/storytold/vectorcraft/pull/1780) | merged | @MarekSpodBiedry / `7abc1cfa1093` | Use finite, counted and capped scatter-axis ticks instead of an unbounded floating-point loop. |
+| [#1779](https://github.com/storytold/vectorcraft/pull/1779) | merged | @MarekSpodBiedry / `ce53bb7c5782` | Enforce the Liquify dab limit inside long-segment expansion and repeated-point input. |
+| [#1803](https://github.com/storytold/vectorcraft/pull/1803) | merged | @AyberkA0 / `e80cc9b49b9d` | Escape cancels existing Direct Selection drag states and clears snapping state; fit to the earlier tool fields. |
+| [#1804](https://github.com/storytold/vectorcraft/pull/1804) | merged | @AyberkA0 / `ef2d678cbf50` | A filled Pencil path preserves stroke None; invisible unfilled paths and brushes still receive a visible stroke. |
+| [#1787](https://github.com/storytold/vectorcraft/pull/1787) | merged | @MarekSpodBiedry / `d775549258a8` | Commit typed panel values on focus loss before canvas selection changes; keep Escape cancellation and external-value synchronization. |
+| [#2022](https://github.com/storytold/vectorcraft/pull/2022) | merged | @Silvertree2010 / `18c1bb0d55e9` | Apply a negative picas sign to the whole picas-plus-points value. |
+| [#2209](https://github.com/storytold/vectorcraft/pull/2209) | merged | @Silvertree2010 / `a59621fa78ba` | Treat a sign after an arithmetic operator as the sign of the next operand. |
+| [#2069](https://github.com/storytold/vectorcraft/pull/2069) | merged | @Silvertree2010 / `1524ceae096f` | Evaluate mixed multiplication and division from left to right. Local adapter bounds input bytes and expression recursion. |
+| [#2470](https://github.com/storytold/vectorcraft/pull/2470) | open | @Silvertree2010 / `39a7cc5b41e1` | Reject signs and other non-hex digits before parsing color hex components. |
+| [#1776](https://github.com/storytold/vectorcraft/pull/1776) | merged | @MarekSpodBiedry / `63402451cce0` | Check embedded DIB PNG/JPEG dimensions from headers before allocating decoded pixels. |
+| [#1807](https://github.com/storytold/vectorcraft/pull/1807) | merged | @AyberkA0 / `0d28ee08722e` | Raise ruzstd to 0.9.1 for RUSTSEC-2026-0344, preserving the other dependency versions. |
+| [#1764](https://github.com/storytold/vectorcraft/pull/1764) | merged | @fahrim / `5336d8019623` | Bound MCP request/reply framing, legacy batch messages and command_batch steps/retained replies. Keep existing per-step undo semantics; local cap covers error replies too. |
+| [#1768](https://github.com/storytold/vectorcraft/pull/1768) | merged | @fahrim / `7e5606684798` | Require a JSON-RPC 2.0 MCP envelope and correlate app reply IDs. An unmatched reply closes the connection without replay. |
+| [#1761](https://github.com/storytold/vectorcraft/pull/1761) | merged | @euisuh / `e9fc3c57ae0c` | Malformed app JSON drops the desynchronized connection and reports uncertain completion; next explicit call reconnects. Thumb-worker test and unrelated docs excluded. |
+
+Compatibility choices and deferred work:
+
+- MCP command batches keep Vectnor's current per-step undo contract; newer upstream atomic-batch APIs are not imported. Both successful and failed retained replies share the cap. Envelope rules apply to MCP; the desktop control protocol retains its existing request shape.
+- Field arithmetic adds a local 4,096-byte input cap and 64-level recursion cap. The field buffer also follows external value changes. The supplied Direct Selection Escape fix is fitted to existing state fields; mesh/corner/bracket and guide-specific cancellation remain separate work.
+- Replacement staging is owner-only on Unix and keeps existing target permissions. Vectnor still preserves the old file on write/rename failure; the direct-overwrite save fallback is deferred. Windows ACL behavior needs platform verification.
+- The newer native unpack module is absent here (#1783). Cross-importer nesting/cycle controls (#1852/#1863), document ID/batch/control deadline contracts (#1862), connection lifetime/input scheduling (#1797/#1815), newer open-path deletion (#1982) and guide Escape (#1922) require separate compatibility work. They remain explicitly deferred.
+- Large renderer/cache, PDF backend, tracing, 3D, file-format, scripting and platform changes are metadata-screened candidates, not ported wholesale. Localization, mandatory font embedding, community/promotional integrations and publication changes are excluded or deferred by owner scope. No new assets, fonts or contributor profile entries.
+- `ruzstd` alone moves from 0.9.0 to 0.9.1; the package checksum matches the pinned upstream patch. [RustSec confirms the decompression-bomb fix](https://rustsec.org/advisories/RUSTSEC-2026-0344.html). The application version remains 0.9.0.
+
+Verification: **all eight CI gates pass — 5,183 tests passed, zero failed, four existing ignored**.
+The affected-crate library run passes 3,297 tests. The actual browser app also compiles for WASM;
+an existing dead-code warning in unchanged `dialogs/missing_links.rs` remains. Native control verification
+checks real Direct Selection preview/Escape/release, filled Pencil Stroke None, invalid-hex refusal,
+failed-save document preservation, Telugu edit/undo/redo and `.vcnr` save/reopen. Reopened node JSON and
+artwork PNG SHA-256 are identical and the document is clean. Canvas/Preferences/About screenshots were
+inspected: English UI, Indic text, Vectnor branding, Appaji Ambarisha and Contributors/Models remain.
+The test app quit cleanly and `dist/Vectnor.app` is rebuilt from verified optimized-development binaries.
+
+Performance remains **8/10 budgets before and after** (50k paths, optimized-development profile):
+400% render 21.77 → 21.60 ms (16 ms limit); native open 354.48 → 321.04 ms (300 ms limit).
+These are single runs with unknown load-average reporting; no speedup or release-performance claim.
+The final after run follows completed CI/web/native checks; an earlier overlapping run is retained
+separately and excluded. Evidence stays local under `/tmp/vectnor-upstream-2026-10-17/`.
+Scores/estimates are unchanged. No source, build, PR or web app is uploaded.
 
 ## 2026-10-13 local update — M0.upstream-update
 
@@ -97,6 +152,7 @@ Full CI logs: `/tmp/vectnor-upstream-ci-verified.log`. Native proof: `/tmp/vectn
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](upstream-audit-2026-10-17.json). No upload. |
 | 2026-10-12 | minor | Nine merged upstream fixes selected, pinned, adapted and regression-tested; Pagenor structure comparison documented. |
 
 ## Revision history

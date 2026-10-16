@@ -1,6 +1,6 @@
 # Vectnor MCP server
 
-> **Last reviewed:** 2026-10-12 · **Last updated:** 2026-10-12 · **Change:** minor (lost remote replies report uncertainty and never replay edits)
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
 
 `vectnor-cli mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server on stdio
 (newline-delimited JSON-RPC 2.0; see [Protocol](#protocol) for version negotiation). Agents use it to
@@ -3087,4 +3087,19 @@ Envelope Options.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |
+
+## Local protocol hardening — 2026-10-17
+
+MCP request lines are limited to 16 MiB, legacy JSON-RPC batches to 64 messages, command batches to
+256 steps and retained command-batch replies to 8 MiB (plus the final stop diagnostic). Oversized request
+lines are refused and skipped in bounded chunks; later lines can still run. Every MCP request and
+notification requires `"jsonrpc": "2.0"` before dispatch. The desktop control channel keeps its existing
+`{id, method, params}` request shape.
+
+Remote app replies are capped at 256 MiB and must match the request's numeric ID. Malformed JSON or
+unmatched IDs drop the connection and report uncertain completion; edits are never automatically replayed.
+The next explicit call reconnects. A no-ID refusal from the app reports its reason and that nothing ran.
+Command batches retain the existing per-step undo behavior; an over-limit retained reply means that step
+was attempted, so inspect state before retrying. [Review and limits](vectnor/UPSTREAM_AUDIT.md).

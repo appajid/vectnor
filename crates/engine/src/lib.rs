@@ -1312,13 +1312,17 @@ impl Session {
             st.doc = it.doc.clone();
             st.selection = it.selection.clone();
         }
+        // The previous preview's paint is undone with it.
+        self.pending_paint = None;
         let rw = cmd::distortcmds::perspective_rewrite(self, cmd, params);
         let (cmd, params) = rw.as_ref().map_or((cmd, params), |(c, p)| (c.as_str(), p));
         let r = self.execute(cmd, params);
         let params = self.noted(params);
         let st = self.doc_mut()?;
         if let Some(it) = &mut st.interaction {
-            it.preview = Some((cmd.to_string(), params));
+            // A failed preview leaves the document at the snapshot, so nothing is left to commit
+            // (not even an earlier successful preview, which the reset above already undid).
+            it.preview = r.is_ok().then(|| (cmd.to_string(), params));
         }
         r
     }

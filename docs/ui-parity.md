@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged) · **Target:** public documentation and owner requirements
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -172,10 +172,20 @@ Medium Dark theme and four brightness levels, the categorized and Advanced toolb
 public screenshots on 2026-10-02 (~75–80% then). Missing: a System theme that follows the OS (#825), a
 re-measure of the panels added since.
 
+## Local interaction follow-up — 2026-10-17
+
+- [x] Typed panel fields commit on focus loss before a canvas click selects another object; Escape drops typed edits and externally changed values replace stale buffers.
+- [x] Direct Selection Escape cancels anchor/handle/segment/object drag states using the current tool APIs.
+- [x] Filled Pencil paths preserve Stroke None. Liquify segment expansion is capped.
+- [x] Arithmetic handles signed operands, negative picas and mixed multiplication/division; input/depth caps reject excessive expressions.
+
+The [upstream audit](vectnor/UPSTREAM_AUDIT.md) records source pins, verification and deferred guide/widget cancellation. Scores and estimates are unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | minor | Optional Alt/Option smoothing from Pencil/Paintbrush borrows the saved Smooth tool, preserves Cmd selection priority and restores the original tool on release/cancel. Scores unchanged. |
 | 2026-10-12 | minor | Pencil/Paintbrush Keep selected is configurable and saved per tool; previews remain selected, completed/continued strokes follow the setting with one undo step. Scores unchanged. |

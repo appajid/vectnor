@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -88,10 +88,19 @@ failure/cleanup tests (#1625); actual SMB verification is pending. Chart CSV kee
 rather than display-rounded values (#1485). Native `.vcnr`/`vectnor` identity is unchanged. See the
 [upstream audit](vectnor/UPSTREAM_AUDIT.md). No format score change is claimed.
 
+## Local file-safety follow-up — 2026-10-17
+
+File Info dates change only when saving succeeds, including background saves with intervening edits.
+Replacement staging is owner-only on Unix, retains target permissions and preserves the original on
+failure. Export prefixes/suffixes remain filename text inside the export folder. Embedded DIB PNG/JPEG
+headers are size-checked before pixel decode. `ruzstd` 0.9.1 fixes the documented decompression bomb.
+[Source pins and platform limits](vectnor/UPSTREAM_AUDIT.md). Native format identity and scores are unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |
 | 2026-10-12 | minor | Native document extension changed to `.vcnr`; save/open filters, file associations, recovery, examples and documentation agree. Stable `vectnor` format header and parity scores unchanged. |
