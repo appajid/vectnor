@@ -127,9 +127,15 @@ pub fn replace_range_styled(runs: &mut Vec<TextRun>, start: usize, end: usize, i
     if a > b {
         std::mem::swap(&mut a, &mut b);
     }
+    // Taken before the splice: deleting all of the text leaves no run for `normalize` to take the
+    // style from, and the next typed text would get the default one (#2119).
+    let keep = insertion_style(runs, a, b);
     let i = split_at(runs, a);
     let j = split_at(runs, b);
     runs.splice(i..j, insert.iter().cloned());
+    if runs.is_empty() {
+        runs.push(TextRun { text: String::new(), style: keep, inline: None });
+    }
     normalize(runs);
     a + insert.iter().map(|r| r.text.len()).sum::<usize>()
 }
@@ -268,4 +274,44 @@ pub fn paragraph_at(s: &str, i: usize) -> Range<usize> {
     let a = s[..i].rfind('\n').map(|p| p + 1).unwrap_or(0);
     let b = s[i..].find('\n').map(|p| i + p).unwrap_or(s.len());
     a..b
+}
+
+/// Move over one Unicode grapheme, keeping Indic syllables, combining marks and emoji intact.
+pub fn prev_cluster(s: &str, i: usize) -> usize {
+    use unicode_segmentation::GraphemeCursor;
+    let i = floor_char(s, i);
+    // Full contiguous text needs no more chunks; an unavailable boundary falls back to the start.
+    GraphemeCursor::new(i, s.len(), true).prev_boundary(s, 0).ok().flatten().unwrap_or(0)
+}
+
+/// Move to the next Unicode grapheme boundary (Delete and Right).
+pub fn next_cluster(s: &str, i: usize) -> usize {
+    use unicode_segmentation::GraphemeCursor;
+    let i = floor_char(s, i);
+    // Full contiguous text needs no more chunks; an unavailable boundary falls back to the end.
+    GraphemeCursor::new(i, s.len(), true).next_boundary(s, 0).ok().flatten().unwrap_or(s.len())
+}
+
+#[cfg(test)]
+mod cluster_tests {
+    use super::*;
+    #[test]
+    fn unicode_editing_clusters_keep_indic_marks_and_emoji_together() {
+        for text in ["कि", "क्ष", "కి", "క్ష", "a\u{301}", "👩‍👩‍👧‍👦"] {
+            assert_eq!(next_cluster(text, 0), text.len(), "{text:?}");
+            assert_eq!(prev_cluster(text, text.len()), 0, "{text:?}");
+        }
+        assert_eq!(next_cluster("हिन्दी", "हि".len()), "हिन्दी".len());
+        assert_eq!(prev_cluster("हिन्दी", "हिन्दी".len()), "हि".len());
+    }
+    #[test]
+    fn cluster_navigation_clamps_untrusted_byte_offsets() {
+        for text in ["", "a", "कि क्ष", "👩‍👩‍👧‍👦b"] {
+            for at in (0..=text.len()).chain([usize::MAX]) {
+                let (left, right) = (prev_cluster(text, at), next_cluster(text, at));
+                assert!(text.is_char_boundary(left) && text.is_char_boundary(right));
+                assert!(left <= floor_char(text, at) && right >= floor_char(text, at));
+            }
+        }
+    }
 }

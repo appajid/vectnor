@@ -143,7 +143,15 @@ pub fn specs() -> Vec<CommandSpec> {
             has_selection,
             |s, _| clip_edit(s, true)
         ),
-        cmd!("object.isolate", "Enter Isolation Mode", [], None, "{id}", has_doc, isolate),
+        cmd!(
+            "object.isolate",
+            "Enter Isolation Mode",
+            [],
+            None,
+            "{id?} isolate a visible, unlocked group or layer outside template layers (default: first selected object)",
+            has_doc,
+            isolate
+        ),
         cmd!("object.exitIsolation", "Exit Isolation Mode", [], None, "{}", has_doc, exit_isolation),
         cmd!(
             "object.setProps",
@@ -719,10 +727,16 @@ fn isolate(s: &mut Session, p: &Value) -> Result<Value> {
         .or_else(|| s.active().and_then(|d| d.selection.objects.first().copied()))
         .ok_or_else(|| bad("object.isolate", "missing id"))?;
     let st = s.doc_mut()?;
+    if st.doc.ancestry(id).is_some_and(|a| a.iter().any(|i| st.doc.node(*i).is_some_and(Node::is_template))) {
+        return Err(bad("object.isolate", "template layers and their objects cannot be isolated"));
+    }
     if !st.doc.node(id).ok_or(EngineError::NoNode(id))?.is_container() {
         return Err(bad("object.isolate", "only groups and layers can be isolated"));
     }
     let isolation = st.doc.node(id).filter(|n| n.shaper.is_some()).and_then(|n| n.children()).and_then(|c| c.first()).map_or(id, |n| n.id);
+    if !st.doc.is_editable(isolation) {
+        return Err(bad("object.isolate", "the object is hidden or locked"));
+    }
     st.isolation = Some(isolation);
     st.selection.clear();
     st.revision += 1;

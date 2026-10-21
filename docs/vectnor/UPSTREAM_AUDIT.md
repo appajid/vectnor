@@ -1,6 +1,90 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
+> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged)
+
+## 2026-10-21 local update — M0.upstream-indic
+
+Screened **687 PRs updated since `a17ee43`** (2026-10-16 19:11:59 UTC): **394 merged,
+260 open and 33 closed without merge**. Ten public REST pages held 1,000 distinct records and
+crossed the cutoff. Metadata screening is not full source review. Adapted the selected scopes of
+**32 PRs** after checking immutable source postimages against the raw diff's Git blob IDs.
+The [dated snapshot](upstream-audit-2026-10-21.json) preserves authors, exact heads, diff SHA-256,
+69 verified postimages, the grapheme-helper prerequisite and every metadata-screened decision.
+Older snapshots remain unchanged. Retained upstream MIT OR Apache-2.0 attribution.
+
+| PR | State at capture | Author / immutable head | Adapted scope |
+|---|---|---|---|
+| [#1975](https://github.com/storytold/vectorcraft/pull/1975) | merged | @el-j / `4913418d1cac` | Double-click text returns to the invoking tool on Escape; preserve explicit Type tool behavior. |
+| [#2237](https://github.com/storytold/vectorcraft/pull/2237) | merged | @EuanTop / `074651951749` | Native font-family metadata can fall back to localized legacy names; interface remains English. |
+| [#2400](https://github.com/storytold/vectorcraft/pull/2400) | merged | @marcoarnulfo / `68c9d440ab1f` | Transform menu flips use the chosen reference point. |
+| [#2464](https://github.com/storytold/vectorcraft/pull/2464) | merged | @marcoarnulfo / `63b95c8dd3d1` | Deleting all text retains the insertion character style. |
+| [#2501](https://github.com/storytold/vectorcraft/pull/2501) | merged | @dotCooCoo / `b9b681c7487c` | Character/paragraph styles capture and reset default-valued attributes supported by this model. |
+| [#2726](https://github.com/storytold/vectorcraft/pull/2726) | merged | @dotCooCoo / `f5d61f6f27e1` | Trim new/duplicate text-style and library style names; symbol subpatch deferred. |
+| [#2824](https://github.com/storytold/vectorcraft/pull/2824) | merged | @MarekSpodBiedry / `df1bf3fe3216` | Close a dropdown and release focus after keyboard choice; newer Enter-opening prerequisite deferred. |
+| [#2844](https://github.com/storytold/vectorcraft/pull/2844) | merged | @dotCooCoo / `138e9ca46635` | Use a finite control hull for huge or nonfinite Bezier extrema inputs. |
+| [#2884](https://github.com/storytold/vectorcraft/pull/2884) | merged | @nrq6993-a11y / `5906f53ca5a9` | Detect fonts activated while the app stays focused; synthetic font-service fixture only. |
+| [#2931](https://github.com/storytold/vectorcraft/pull/2931) | merged | @MortenHusted / `eba9abc21e14` | CLI/MCP raster scale does not resize vector DXF exports; explicit DXF options remain supported. |
+| [#3230](https://github.com/storytold/vectorcraft/pull/3230) | open | @Silvertree2010 / `13d3ec6891b3` | Measure tool normalizes negative zero angles. |
+| [#3323](https://github.com/storytold/vectorcraft/pull/3323) | open | @Silvertree2010 / `83a7277f248b` | Blank GPL palette Name retains the filename fallback. |
+| [#3331](https://github.com/storytold/vectorcraft/pull/3331) | open | @dotCooCoo / `88989aeb70c2` | Catch a palette-library reader failure and continue listing other libraries. |
+| [#3337](https://github.com/storytold/vectorcraft/pull/3337) | open | @dotCooCoo / `f5c28ef0c91a` | Select bristle strokes by brush type rather than brush name. |
+| [#2602](https://github.com/storytold/vectorcraft/pull/2602) | merged | @dotCooCoo / `5a3e833ec887` | Devanagari cluster-aware text hit testing, including on a path. |
+| [#2670](https://github.com/storytold/vectorcraft/pull/2670) | merged | @dotCooCoo / `2ae992870b13` | ZWNJ keeps the preceding fallback face. |
+| [#2795](https://github.com/storytold/vectorcraft/pull/2795) | merged | @dotCooCoo / `bb7d6b487dff` | Caret placement handles zero-advance ties and soft-wrap stops. |
+| [#3004](https://github.com/storytold/vectorcraft/pull/3004) | merged | @sanyamsingh001 / `c07945b93489` | Grapheme-safe logical/visual caret movement and forward Delete; Backspace retains character semantics. |
+| [#3193](https://github.com/storytold/vectorcraft/pull/3193) | merged | @Matoo125 / `bf6692ae8211` | Checked mesh-grid dimensions before envelope validation. |
+| [#3194](https://github.com/storytold/vectorcraft/pull/3194) | merged | @Matoo125 / `da8e6af7e822` | Refuse malformed mesh point removal without mutation. |
+| [#3163](https://github.com/storytold/vectorcraft/pull/3163) | merged | @Matoo125 / `38e73060a7e8` | Clamp deserialized polygon sides to 3..1000. |
+| [#3224](https://github.com/storytold/vectorcraft/pull/3224) | merged | @Matoo125 / `dd7991cb200b` | Bound EMF pattern tiles globally across nested scenes. |
+| [#3152](https://github.com/storytold/vectorcraft/pull/3152) | merged | @Silvertree2010 / `05017111baa4` | Escape and filter SVG title/description to XML 1.0 characters. |
+| [#2657](https://github.com/storytold/vectorcraft/pull/2657) | merged | @Silvertree2010 / `a631a0df6cea` | Escape CSS font-family strings. |
+| [#3254](https://github.com/storytold/vectorcraft/pull/3254) | open | @Silvertree2010 / `dfe2f5b3ffff` | Quote CSS font names that are not identifiers. |
+| [#2568](https://github.com/storytold/vectorcraft/pull/2568) | merged | @Silvertree2010 / `92647fa5b626` | CSV quoted cells, embedded delimiters/newlines and graph serialization round trip. |
+| [#2610](https://github.com/storytold/vectorcraft/pull/2610) | merged | @Silvertree2010 / `8ca4cd2cbf1b` | Format huge graph axis values without saturating integer casts. |
+| [#3138](https://github.com/storytold/vectorcraft/pull/3138) | merged | @Silvertree2010 / `ec4975f2374f` | Zero-area marquees can intersect paths. |
+| [#2720](https://github.com/storytold/vectorcraft/pull/2720) | merged | @MarekSpodBiedry / `949473f1e392` | Magic Wand stays inside the isolated group/layer. |
+| [#2671](https://github.com/storytold/vectorcraft/pull/2671) | open | @dotCooCoo / `ac75c220280c` | Isolation refuses hidden/locked containers before changing state. |
+| [#2734](https://github.com/storytold/vectorcraft/pull/2734) | open | @dotCooCoo / `a4fd078e7793` | Isolation refuses template-layer ancestry; existing group/layer-only scope retained. |
+| [#2895](https://github.com/storytold/vectorcraft/pull/2895) | merged | @Silvertree2010 / `f2601137ab0d` | Plain feet and feet/inches use distinct unit names. |
+
+Compatibility and limits:
+
+- The existing model lacks newer character fields and hyphenation options; style capture/reset only
+  includes its supported attributes. Existing isolation remains group/layer-only and respects hidden,
+  locked and template ancestors. Magic Wand uses the existing ancestry API.
+- Escape claims the key while text is being edited, a small prerequisite present in the pinned
+  #1975 postimage; this lets the UI apply its tool-switch request before isolation shortcuts.
+- Grapheme helpers use `unicode-segmentation` 1.13.3, already present in the lockfile; adding a direct
+  text-crate dependency introduces no package version change. Left/Right and forward Delete avoid
+  internal grapheme positions; Backspace keeps its existing character deletion behavior.
+- Native font names are document font metadata, not interface translations. No fonts, assets, language
+  catalogs, contributor profiles, community controls or services are added. Synthetic font fixtures use
+  existing licensed font bytes and never inspect Adobe installations.
+- SVG XML filtering is limited to title/description metadata. General text/control sanitization and XML
+  ID work remain deferred. Nested Repeat budgets and broad renderer/import/backend/automation changes
+  require separate compatibility passes; the snapshot lists scoped exclusions.
+- Another chat had partially applied overlapping patches in this checkout. Its writes stopped; a full
+  snapshot was preserved locally, the extra candidates were independently reviewed, and missing or
+  duplicate hunks were repaired in an isolated checkout before reconciliation. Owner policy edits are
+  kept separate. No cross-chat message was sent without authorization.
+
+Verification: **all eight CI gates pass — 5,238 tests passed, zero failed, four existing ignored**.
+The focused UI suite passes all 933 tests. The actual browser application also checks for WASM,
+with the existing unused `ask_update_changed` warning in unchanged `dialogs/missing_links.rs`.
+Native control on port 17993 verifies Hindi grapheme movement 6 → 18 → 6 through real Left/Right
+input in mixed Hindi/Hebrew type, Telugu edit/undo/redo, ZWNJ/ZWJ text and `.vcnr` save/reopen.
+Reopened node JSON and artwork PNG SHA-256 are identical; the reopened document is clean.
+Inspected Canvas, Preferences and About screenshots confirm English UI, Indic text, Vectnor branding,
+Developer: Appaji Ambarisha and Contributors/Models. The test app quit cleanly. Evidence remains local
+under `/tmp/vectnor-pr-review-2026-10-21-vectnor/`.
+
+Performance remains **8/10 budgets before and after** on 50k synthetic paths in the optimized-development
+build: 400% render 22.91 → 21.46 ms (16 ms limit), native open 311.25 → 306.05 ms (300 ms limit).
+The after run follows completed builds/checks and native app exit. Load averages differ (7.9 before,
+3.9 after, 12 cores); these single runs establish neither a speedup nor a regression. The two overruns
+remain work under G15. `dist/Vectnor.app` is refreshed from SHA-256-verified native/CLI binaries.
+
+Scores, estimates and application version stay unchanged. No source, build, PR or hosted app is uploaded.
 
 ## 2026-10-17 local update — M0.upstream-safety
 
@@ -152,6 +236,7 @@ Full CI logs: `/tmp/vectnor-upstream-ci-verified.log`. Native proof: `/tmp/vectn
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](upstream-audit-2026-10-17.json). No upload. |
 | 2026-10-12 | minor | Nine merged upstream fixes selected, pinned, adapted and regression-tested; Pagenor structure comparison documented. |
 

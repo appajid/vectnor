@@ -124,12 +124,12 @@ fn write(doc: &Document, opts: &ExportOptions, native: Option<&[u8]>, id_prefix:
     }
     if !doc.title.is_empty() {
         out.push_str(&w.indent(1));
-        out.push_str(&format!("<title>{}</title>{nl}", xml_escape(&doc.title)));
+        out.push_str(&format!("<title>{}</title>{nl}", xml_text(&doc.title)));
     }
     // File Info's description.
     if !doc.metadata.description.trim().is_empty() {
         out.push_str(&w.indent(1));
-        out.push_str(&format!("<desc>{}</desc>{nl}", xml_escape(&doc.metadata.description)));
+        out.push_str(&format!("<desc>{}</desc>{nl}", xml_text(&doc.metadata.description)));
     }
     let latin1 = opts.encoding == Encoding::Latin1;
     if latin1 {
@@ -2079,4 +2079,20 @@ fn line_start(line: &[Segment], anchor: Option<f64>) -> Option<(f64, f64)> {
         None => first.x,
     };
     Some((x, first.y))
+}
+
+fn xml_text(s: &str) -> String {
+    let s: String = s
+        .chars()
+        .filter_map(|c| match c {
+            '\u{b}' | '\u{c}' => Some(' '),
+            c if valid_xml_value(c.encode_utf8(&mut [0; 4])) => Some(c),
+            _ => None,
+        })
+        .collect();
+    xml_escape(&s)
+}
+
+fn valid_xml_value(s: &str) -> bool {
+    s.chars().all(|c| matches!(c, '\t' | '\n' | '\r' | '\u{20}'..='\u{d7ff}' | '\u{e000}'..='\u{fffd}' | '\u{10000}'..='\u{10ffff}'))
 }

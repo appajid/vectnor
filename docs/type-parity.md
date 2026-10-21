@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (reviewed selection, drawing, style, UI and file-handling fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -18,12 +18,12 @@ against Illustrator's public documentation; **estimated** unless noted.
 
 | Feature | Status | Notes |
 |---|---|---|
-| Indic Unicode text and shaping | partial, regression tested | English-only interface preserves document text. Nine-script matra/conjunct and equal-style run-split checks run with suitable installed/craft-fonts fonts; edit/undo/redo/native round trip is font-independent. Comprehensive IME, caret/selection and editable export fidelity remain unassessed. No new font assets. |
+| Indic Unicode text and shaping | partial, regression tested | English-only interface preserves document text. Nine-script matra/conjunct and equal-style run-split checks run with suitable installed/craft-fonts fonts; edit/undo/redo/native round trip is font-independent. Devanagari hit testing, ZWNJ fallback, zero-advance/wrapped bidi stops and grapheme-safe Left/Right/Delete have focused regressions. Comprehensive IME, selection and editable export fidelity remain unassessed. No new font assets. |
 | Point, area and type-on-a-path type; vertical variants | done / partial | vertical point, area and path type have initial support |
 | Area Type Options (rows, columns, inset, first baseline, Auto Size, Shrink Text to Fit) | done | |
 | Threaded text, Fit Headline, Text Wrap | done | |
 | Type on a Path effects and options; brackets | done | #429 |
-| Character and Paragraph panels, styles with overrides | done | Capture uses documented selection-start keys; Auto leading is explicit, redefinition propagates resets while keeping local overrides, with UI/history/native serialization tests. Mixed-value display for differing paragraphs remains missing. |
+| Character and Paragraph panels, styles with overrides | done | Capture includes supported default-valued attributes; empty text keeps its insertion style. Auto leading is explicit, redefinition propagates resets while keeping local overrides, with UI/history/native serialization tests. Mixed-value display for differing paragraphs remains missing. |
 | OpenType panel, Glyphs panel, alternates | done | Highlight Alternate Glyphs preference unused (#394) |
 | Font menu: samples, live preview, filters, favourites; font matching by any name; Find Font | done | #339 |
 | Variable fonts | partial | named instances as styles; axis sliders missing |
@@ -61,6 +61,7 @@ coverage, not a claim of complete Indic IME/editor/export parity.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |
 | 2026-10-10 | major | First checklist, split out of the parity table's Type core and Type advanced rows |

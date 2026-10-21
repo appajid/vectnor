@@ -1361,3 +1361,22 @@ fn crop_image_trim_cuts_to_the_opaque_pixels_as_they_are() {
     assert_eq!((r["trimmed"].as_bool(), r["width"].as_u64()), (Some(false), Some(30)), "{r}");
     assert_eq!(bounds(&s, img), b);
 }
+
+#[test]
+fn bristle_brush_strokes_select_by_brush_type() {
+    let mut s = session();
+    let round = rect(&mut s, 0.0, 0.0, 10.0, 10.0);
+    let soft = rect(&mut s, 20.0, 0.0, 10.0, 10.0);
+    let nib = rect(&mut s, 40.0, 0.0, 10.0, 10.0);
+    let _plain = rect(&mut s, 60.0, 0.0, 10.0, 10.0);
+    s.execute("brush.apply", &json!({"name": "Bristle Round", "ids": [round.0]})).unwrap();
+    s.execute("brush.apply", &json!({"name": "Bristle Flat Fan", "ids": [soft.0]})).unwrap();
+    s.execute("brush.options", &json!({"name": "Bristle Flat Fan", "newName": "Soft"})).unwrap();
+    s.execute("brush.new", &json!({"type": "calligraphic", "name": "Bristle-like"})).unwrap();
+    s.execute("brush.apply", &json!({"name": "Bristle-like", "ids": [nib.0]})).unwrap();
+    let brush = |s: &Session, id: NodeId| s.doc().unwrap().doc.node(id).and_then(|n| n.appearance.stroke()).and_then(|st| st.brush.clone());
+    assert_eq!(brush(&s, soft).as_deref(), Some("Soft"));
+    assert_eq!(brush(&s, nib).as_deref(), Some("Bristle-like"));
+    assert_eq!(s.execute("select.object.bristleBrushStrokes", &json!({})).unwrap()["count"], 2);
+    assert_eq!(selected(&s), vec![round, soft]);
+}

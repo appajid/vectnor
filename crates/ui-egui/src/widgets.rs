@@ -692,13 +692,18 @@ pub(crate) fn combo<R>(
             if searchable {
                 return searchable_combo(ui, ui.id().with(id), current, width - 4.0, list);
             }
-            egui::ComboBox::from_id_salt(ui.id().with(id))
+            let response = egui::ComboBox::from_id_salt(ui.id().with(id))
                 .selected_text(egui::RichText::new(current).size(12.0))
                 .width(width - 4.0)
                 .height(ui.spacing().combo_height)
-                .show_ui(ui, list)
-                .inner
-                .flatten()
+                .show_ui(ui, list);
+            let button_id = response.response.id;
+            let chosen = response.inner.flatten();
+            if chosen.is_some() {
+                egui::Popup::close_all(ui.ctx());
+                ui.memory_mut(|m| m.surrender_focus(button_id));
+            }
+            chosen
         })
         .inner
 }
@@ -1889,5 +1894,52 @@ mod spinner_modifier_tests {
         assert_eq!(spinner_step(14.0, 1.0, 0.0, true, egui::Modifiers::NONE), 15.0);
         assert_eq!(spinner_step(14.0, 1.0, 0.0, false, egui::Modifiers::COMMAND), 13.9);
         assert_eq!(spinner_step(0.0, 1.0, 0.0, false, egui::Modifiers::SHIFT), 0.0);
+    }
+}
+
+#[cfg(test)]
+mod combo_keyboard_tests {
+    use super::*;
+
+    fn key(key: egui::Key, pressed: bool) -> egui::Event {
+        egui::Event::Key { key, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::NONE }
+    }
+
+    fn frame(ctx: &egui::Context, events: Vec<egui::Event>, picked: &mut Option<usize>) {
+        let mut out = ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| {
+            if let Some(i) = dropdown(ui, "combo-test", "One", &["One", "Two", "Three"], 200.0) {
+                *picked = Some(i);
+            }
+        });
+        out.textures_delta.clear();
+    }
+
+    /// An option picked with the keyboard closes the list (it used to stay open and keep the keys).
+    #[test]
+    fn option_picked_with_space_closes_the_list() {
+        let ctx = egui::Context::default();
+        crate::theme::install_fonts(&ctx);
+        let mut picked = None;
+        frame(&ctx, vec![], &mut picked);
+        frame(&ctx, vec![], &mut picked);
+        // Tab to the combo, open it with Space.
+        for k in [egui::Key::Tab, egui::Key::Space] {
+            frame(&ctx, vec![key(k, true)], &mut picked);
+            frame(&ctx, vec![key(k, false)], &mut picked);
+        }
+        assert!(egui::Popup::is_any_open(&ctx), "Space opens the list");
+        // Tab into the list, then Space picks the option under the focus.
+        for _ in 0..8 {
+            frame(&ctx, vec![key(egui::Key::Tab, true)], &mut picked);
+            frame(&ctx, vec![key(egui::Key::Tab, false)], &mut picked);
+            frame(&ctx, vec![key(egui::Key::Space, true)], &mut picked);
+            frame(&ctx, vec![key(egui::Key::Space, false)], &mut picked);
+            if picked.is_some() {
+                break;
+            }
+        }
+        assert!(picked.is_some(), "an option was picked");
+        frame(&ctx, vec![], &mut picked);
+        assert!(!egui::Popup::is_any_open(&ctx), "the list closes after a keyboard pick");
     }
 }

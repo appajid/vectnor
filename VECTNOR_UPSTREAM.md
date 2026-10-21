@@ -1,6 +1,6 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
+> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
@@ -43,9 +43,18 @@ The [review](docs/vectnor/UPSTREAM_AUDIT.md#2026-10-17-local-update--m0upstream-
 551 metadata-screened updates from 27 candidate diff scopes and 18 reviewed local adaptations. Existing attribution,
 contributor registries, branding and licenses remain intact. No upload.
 
+## Local update — M0.upstream-indic, 2026-10-21
+
+Screened 687 updated PRs since `a17ee43`; adapted selected scopes from 32 (25 merged, seven open
+at capture). [Review and compatibility choices](docs/vectnor/UPSTREAM_AUDIT.md) and
+[immutable source snapshot](docs/vectnor/upstream-audit-2026-10-21.json) record authors and provenance.
+English interface, Indic document support, private repository policy and existing attribution remain.
+No new fonts/assets or upload. Scores and version remain unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream adaptations and compatibility/verification notes; no upload. |

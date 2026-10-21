@@ -1019,6 +1019,12 @@ pub fn menu(app: &mut VectnorApp, ui: &mut Ui) {
         [id] => doc.node(*id).is_some_and(|n| matches!(n.kind, NodeKind::Layer { .. } | NodeKind::Group { .. })),
         _ => false,
     };
+    // Enter Isolation Mode is off for a hidden or locked layer or group, a template layer, and a
+    // layer or group inside one of these.
+    let isolable = one_container
+        && targets.first().is_some_and(|id| {
+            doc.is_editable(*id) && !doc.ancestry(*id).is_some_and(|a| a.iter().any(|i| doc.node(*i).is_some_and(Node::is_template)))
+        });
     let layers_in: Vec<&Node> = targets.iter().filter_map(|id| doc.node(*id)).filter(|n| n.is_layer()).collect();
     let template = layers_in.first().is_some_and(|l| l.is_template());
     // The top-level layers holding the rows, and the others.
@@ -1044,7 +1050,7 @@ pub fn menu(app: &mut VectnorApp, ui: &mut Ui) {
         Some(("Exit Isolation Mode", "object.exitIsolation", json!({}), true, false))
     } else {
         let id = targets.first().map(|i| i.0);
-        Some(("Enter Isolation Mode", "object.isolate", json!({ "id": id }), one_container, false))
+        Some(("Enter Isolation Mode", "object.isolate", json!({ "id": id }), isolable, false))
     });
     items.extend([
         None,

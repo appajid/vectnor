@@ -20,6 +20,8 @@ log = { workspace = true }
 # (which turns on `variable-fonts` too: named instances of variable fonts are instanced).
 subsetter = { version = "0.2", default-features = false, features = ["variable-fonts"] }
 unicode-bidi = "0.3.18"
+# Already locked at 1.13.3; shared Unicode grapheme navigation for Indic text.
+unicode-segmentation = "1.13.3"
 unicode-general-category = "1"
 unicode-script = "0.5"
 # Builds a small variable font for tests (`test_fonts`; no font file is committed). MIT OR

@@ -79,14 +79,14 @@ USAGE:
   vectnor-cli run [--in FILE] [--cmd ID [--params JSON]]... [--export FILE]... [--scale N]
       Headless batch: open FILE (any readable format) or start a new document, run commands in
       order, export each FILE in the format its extension picks (see Writable formats). Prints one
-      JSON result per step.
+      JSON result per step. --scale affects raster pixels only, not vector drawing units.
 
   vectnor-cli commands
       Print the command catalogue as JSON.
 
   vectnor-cli convert IN OUT [--scale N] [--artboard I | --range R] [--outline-text] [--replace-lossy]
       Open IN (any readable format) and export OUT in the format its extension picks (see Writable
-      formats). --artboard is 0-based, --range 1-based (\"1-3,5\"); a PDF gets every artboard
+      formats). --scale affects raster pixels only. --artboard is 0-based, --range 1-based (\"1-3,5\"); a PDF gets every artboard
       unless one of them is given, EPS the bounds of the art, the other formats the first artboard.
       Live effects are kept, and hidden layers and objects (written hidden in SVG and PSD), with
       SVG's data-* attributes; --outline-text writes SVG text as paths. OUT may not be IN when reading
@@ -232,10 +232,19 @@ fn convert(args: &[String]) -> Result<(), String> {
     h.call("app.open", json!({"path": input})).map_err(|e| format!("open {input}: {e}"))?;
     // A conversion keeps hidden layers and objects, written hidden, where the format can (SVG,
     // PSD).
-    let params = json!({"path": output, "scale": scale, "artboard": artboard, "range": range, "outlineText": outline_text, "hiddenLayers": true, "acknowledgeLoss": replace_lossy});
+    let params = json!({"path": output, "artboard": artboard, "range": range, "outlineText": outline_text, "hiddenLayers": true, "acknowledgeLoss": replace_lossy});
+    let params = with_pixel_scale(params, &output, scale);
     let r = h.call("engine.execute", json!({"command": "document.export", "params": params})).map_err(|e| format!("export {output}: {e}"))?;
     outln!("{r}");
     Ok(())
+}
+
+/// Pixel scaling applies only to raster output; DXF has a different drawing-unit scale.
+fn with_pixel_scale(mut params: Value, path: &str, scale: f64) -> Value {
+    if vectnor_engine::cmd::fileio::writable_format(None, Some(path)).is_ok_and(|f| f.raster) {
+        params["scale"] = json!(scale);
+    }
+    params
 }
 
 fn info(args: &[String]) -> Result<(), String> {
@@ -324,7 +333,7 @@ fn run(args: &[String]) -> Result<(), String> {
                 r
             }
             Step::Export(path) => {
-                let r = h.call("app.export", json!({"path": path, "scale": scale})).map_err(|e| format!("export {path}: {e}"))?;
+                let r = h.call("app.export", with_pixel_scale(json!({"path": path}), &path, scale)).map_err(|e| format!("export {path}: {e}"))?;
                 emit(json!({"step": "export", "result": r}))?;
                 r
             }

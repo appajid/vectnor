@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -41,6 +41,8 @@ partial one, and it blocks beta, not alpha.
 from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall clock with 4–6 agents.
 
 ## G1 Interaction fidelity
+
+- **Completed locally (2026-10-21):** Double-click Type/Escape restoration, keyboard dropdown closure, Transform reference flips, zero-area marquees and isolation guards corrected. Broader modifier/widget fidelity remains. [Audit](vectnor/UPSTREAM_AUDIT.md).
 
 - **Completed locally (2026-10-17):** Direct Selection Escape, filled Pencil stroke None, field focus commits and signed/mixed field arithmetic. Guide/widget cancellation and broader modifiers remain; [audit](vectnor/UPSTREAM_AUDIT.md).
 
@@ -85,6 +87,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G8 Hardening at scale
 
+- **Completed locally (2026-10-21):** Mesh size validation, polygon count clamps, huge curve bounds, bounded nested EMF tiles, CSV quoting and SVG metadata/font escaping corrected. General importer depth and XML ID work remain open. [Audit](vectnor/UPSTREAM_AUDIT.md).
+
 - **Completed locally (2026-10-17):** save failure dates/private Unix staging, export filename containment, bounded scatter ticks/Liquify work, pre-decode DIB dimensions, patched Zstandard decoder and MCP message/result/envelope guards. Cross-importer depth, ID allocation/batch rollback and desktop control scheduling remain open; [audit](vectnor/UPSTREAM_AUDIT.md).
 
 - **Missing:** a corpus of real-world SVG/PDF/EPS files; more Affinity versions and platforms (51 pinned files
@@ -103,6 +107,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Estimate:** 8–15 h.
 
 ## G4 Advanced type
+
+- **Completed locally (2026-10-21):** Indic cluster hit testing, ZWNJ fallback and grapheme-safe Left/Right/Delete receive focused regressions; empty-text style and default style resets corrected. Comprehensive IME/export parity remains unassessed. [Audit](vectnor/UPSTREAM_AUDIT.md).
 
 - **Completed locally (2026-10-13):** character-style capture target keys and explicit Auto-leading resets, with preserved local overrides and native round-trip/history regression coverage. Indic document text remains required.
 
@@ -176,6 +182,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G15 Performance budgets and a GPU renderer
 
+- **Measured locally (2026-10-21):** reviewed Indic/editing/export changes retain 8/10 optimized-development budgets. 400% render21.46ms (16ms limit) and native open306.05ms (300ms limit) remain over. Differing load averages and single runs do not establish a speed change. [Audit](vectnor/UPSTREAM_AUDIT.md).
+
 - **Measured locally (2026-10-17):** the reviewed file/tool safety update passes 8/10 optimized-development 50k-path budgets before/after. The same 400% render (21.60 ms vs 16 ms) and native open (321.04 ms vs 300 ms) budgets remain over; load average is unknown, so no speedup is claimed. [Evidence](vectnor/UPSTREAM_AUDIT.md).
 
 - **Missing:** an idle-machine run of `vectnor-cli perf` (last: 2026-10-01 on a loaded machine, 290 ms for
@@ -218,6 +226,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |

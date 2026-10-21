@@ -62,20 +62,40 @@ impl Cell {
     }
 }
 
+fn split_unquoted(s: &str, sep: char) -> Vec<&str> {
+    let mut parts = vec![];
+    let mut quoted = false;
+    let mut start = 0;
+    for (i, ch) in s.char_indices() {
+        if ch == '"' {
+            quoted = !quoted;
+        } else if ch == sep && !quoted {
+            parts.push(s.get(start..i).unwrap_or_default());
+            start = i + ch.len_utf8();
+        }
+    }
+    parts.push(s.get(start..).unwrap_or_default());
+    parts
+}
+
+fn cell(c: &str) -> Cell {
+    let c = c.trim();
+    match c.strip_prefix('"').and_then(|c| c.strip_suffix('"')) {
+        Some(inner) => Cell { text: inner.replace("\"\"", "\""), quoted: true },
+        None => Cell { text: c.trim_matches('"').to_string(), quoted: false },
+    }
+}
+
 fn parse_csv(csv: &str) -> (Vec<String>, Vec<String>, Vec<Vec<Option<f64>>>) {
-    let rows: Vec<Vec<Cell>> = csv
-        .lines()
+    // Records end at line breaks outside quotes; a record is tab-separated if it has a tab outside quotes.
+    let rows: Vec<Vec<Cell>> = split_unquoted(csv, '\n')
+        .into_iter()
         .map(|l| l.trim_end_matches('\r'))
         .filter(|l| !l.trim().is_empty())
         .map(|l| {
-            let sep = if l.contains('\t') { '\t' } else { ',' };
-            l.split(sep)
-                .map(|c| {
-                    let c = c.trim();
-                    let quoted = c.len() >= 2 && c.starts_with('"') && c.ends_with('"');
-                    Cell { text: c.trim_matches('"').to_string(), quoted }
-                })
-                .collect()
+            let tabs = split_unquoted(l, '\t');
+            let parts = if tabs.len() > 1 { tabs } else { split_unquoted(l, ',') };
+            parts.into_iter().map(cell).collect()
         })
         .collect();
     let Some(first) = rows.first() else { return (vec![], vec![], vec![]) };
@@ -107,23 +127,25 @@ fn parse_csv(csv: &str) -> (Vec<String>, Vec<String>, Vec<Vec<Option<f64>>>) {
 }
 
 fn to_csv(g: &GraphSpec) -> String {
-    // Always a header row (empty first cell), so a first data row starting with a blank isn't read as one.
     let cells = g.cells();
     let width = cells.iter().map(Vec::len).max().unwrap_or(0).max(g.series.len());
     let mut out = String::from(",");
-    out.push_str(&(0..width).map(|s| g.series.get(s).cloned().unwrap_or_default()).collect::<Vec<_>>().join(","));
+    // Quote a label holding a separator, quote or line break (inner quotes doubled), or one with
+    // surrounding spaces; `always` also quotes blank and numeric labels so they stay labels.
+    let field = |c: &str, always: bool| {
+        let special = c.contains([',', '\t', '"', '\n', '\r']) || c != c.trim();
+        if special || (always && (c.trim().is_empty() || c.trim().parse::<f64>().is_ok())) {
+            format!("\"{}\"", c.replace('"', "\"\""))
+        } else {
+            c.to_string()
+        }
+    };
+    out.push_str(&(0..width).map(|s| field(g.series.get(s).map(String::as_str).unwrap_or_default(), false)).collect::<Vec<_>>().join(","));
     out.push('\n');
     let labelled = !g.categories.is_empty();
     for (i, r) in cells.iter().enumerate() {
         if labelled {
-            // An empty label, one that reads as a number or one with spaces around it goes in quotes, so it reads back
-            // as the same label.
-            let c = g.categories.get(i).map(String::as_str).unwrap_or_default();
-            if c.trim().is_empty() || c.trim().parse::<f64>().is_ok() || c != c.trim() {
-                out.push_str(&format!("\"{c}\""));
-            } else {
-                out.push_str(c);
-            }
+            out.push_str(&field(g.categories.get(i).map(String::as_str).unwrap_or_default(), true));
             out.push(',');
         }
         out.push_str(&r.iter().map(|v| v.map(|v| v.to_string()).unwrap_or_default()).collect::<Vec<_>>().join(","));
@@ -175,7 +197,9 @@ fn apply_data(g: &mut GraphSpec, p: &Value) -> bool {
 
 fn fmt_value(v: f64) -> String {
     if (v - v.round()).abs() < 1e-9 {
-        format!("{}", v.round() as i64)
+        // Beyond the i64 range the cast would saturate; every f64 that large is a whole number, so
+        // `{:.0}` prints its exact digits.
+        if v.abs() < 9e18 { format!("{}", v.round() as i64) } else { format!("{v:.0}") }
     } else {
         format!("{:.2}", v).trim_end_matches('0').trim_end_matches('.').to_string()
     }
@@ -1159,6 +1183,16 @@ mod tests {
     use vectnor_doc::{GraphKind, GraphSpec, NodeKind};
 
     use crate::{NodeId, Session};
+
+    #[test]
+    fn fmt_value_does_not_saturate_beyond_i64() {
+        assert_eq!(super::fmt_value(1e19), "10000000000000000000");
+        assert_eq!(super::fmt_value(2e19), "20000000000000000000");
+        assert_eq!(super::fmt_value(-2e19), "-20000000000000000000");
+        assert_eq!(super::fmt_value(42.0), "42");
+        assert_eq!(super::fmt_value(-0.0), "0");
+        assert_eq!(super::fmt_value(2.5), "2.5");
+    }
 
     fn graph(s: &mut Session, ty: &str) -> NodeId {
         let csv = ",2024,2025\nQ1,3,2\nQ2,5,4\nQ3,-1,6";
@@ -2302,5 +2336,28 @@ mod tests {
             .collect();
         assert!(ticks.len() <= 10_000 && ticks.len() >= 5000, "{}", ticks.len());
         assert!(ticks.iter().copied().fold(f64::MIN, f64::max) > 199.0, "the last category is ticked");
+    }
+    #[test]
+    fn labels_with_commas_quotes_and_newlines_round_trip_through_csv() {
+        let mut s = Session::new();
+        s.execute("file.new", &json!({"width": 800, "height": 800})).unwrap();
+        let series = json!(["Revenue, USD", "Say \"hi\"", "a\tb"]);
+        let categories = json!(["Doe, Jane", "2024", " padded ", "two\nlines"]);
+        let rows = json!([[1, 2, 3], [4, null, 6], [7, 8, 9], [10, 11, 12]]);
+        let r = s
+            .execute(
+                "graph.create",
+                &json!({"type": "column", "x": 20, "y": 20, "width": 300, "height": 200, "series": series, "categories": categories, "rows": rows}),
+            )
+            .unwrap();
+        let id = r["id"].as_u64().unwrap();
+        let before = s.execute("graph.setData", &json!({"id": id})).unwrap();
+        assert_eq!(before["series"], series);
+        assert_eq!(before["categories"], categories);
+        s.execute("graph.setData", &json!({"id": id, "csv": before["csv"]})).unwrap();
+        let after = s.execute("graph.setData", &json!({"id": id})).unwrap();
+        assert_eq!(after["series"], before["series"], "{}", before["csv"]);
+        assert_eq!(after["categories"], before["categories"], "{}", before["csv"]);
+        assert_eq!(after["rows"], before["rows"], "{}", before["csv"]);
     }
 }

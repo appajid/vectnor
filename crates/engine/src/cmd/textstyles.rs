@@ -133,11 +133,48 @@ fn to_attrs<T: Serialize>(v: &T) -> Map<String, Value> {
     m
 }
 
-/// Captured character styles set Auto leading explicitly. A missing style attribute instead
-/// leaves the text's existing leading alone, unlike a run's omitted Auto value.
-fn char_attrs(v: &CharStyle) -> Map<String, Value> {
+/// Every character attribute of `v` as a JSON map, without the style name: those the run's JSON
+/// leaves out at their defaults (Auto leading and kerning, no OpenType features, Roman baseline
+/// alignment…) are written out. A style captured from text sets them all; an attribute missing
+/// from a style instead leaves the text's own value alone.
+pub fn char_attrs(v: &CharStyle) -> Map<String, Value> {
     let mut m = to_attrs(v);
-    m.insert("leading".into(), json!(v.leading));
+    for (k, x) in [
+        ("font_version", json!(v.font_version)),
+        ("leading", json!(v.leading)),
+        ("kerning", json!(v.kerning)),
+        ("features", json!(v.features)),
+        ("overprint_fill", json!(v.overprint_fill)),
+        ("overprint_stroke", json!(v.overprint_stroke)),
+        ("stroke_cap", json!(v.stroke_cap)),
+        ("stroke_join", json!(v.stroke_join)),
+        ("stroke_miter_limit", json!(v.stroke_miter_limit)),
+        ("stroke_dash", json!(v.stroke_dash)),
+        ("position", json!(v.position)),
+        ("small_caps", json!(v.small_caps)),
+        ("charAlign", json!(v.char_align)),
+    ] {
+        m.insert(k.into(), x);
+    }
+    m
+}
+
+/// Every paragraph attribute of `v` as a JSON map, without the style name: those the paragraph's
+/// JSON leaves out at their defaults (the Every-line Composer, no tab
+/// stops, Auto direction…) are written out, as [`char_attrs`] does for characters.
+pub fn para_attrs(v: &ParaStyle) -> Map<String, Value> {
+    let mut m = to_attrs(v);
+    for (k, x) in [
+        ("composer", json!(v.composer)),
+        ("tabs", json!(v.tabs)),
+        ("mojikumi", json!(v.mojikumi)),
+        ("direction", json!(v.direction)),
+        ("leading_model", json!(v.leading_model)),
+        ("burasagari", json!(v.burasagari)),
+        ("kinsoku", json!(v.kinsoku)),
+    ] {
+        m.insert(k.into(), x);
+    }
     m
 }
 
@@ -187,13 +224,19 @@ fn with_attrs<T: Serialize + DeserializeOwned>(base: &T, attrs: &Map<String, Val
 }
 
 /// `cur` after its style changed from `old` to `new`: attributes still equal to the old style's
-/// value (or not set by it) take the new value; overrides stay. Unchanged if the style doesn't
-/// round-trip through JSON.
-fn restyle<T: Serialize + DeserializeOwned + Clone>(cur: &T, old: &Map<String, Value>, new: &Map<String, Value>) -> T {
-    let Some(mut m) = to_map(cur) else { return cur.clone() };
-    // Runs omit Auto leading from JSON; it still matches a style's explicit null.
-    if old.get("leading") == Some(&Value::Null) {
-        m.entry("leading").or_insert(Value::Null);
+/// value (or not set by it) take the new value; overrides stay. `attrs` lists every attribute of
+/// `cur` ([`char_attrs`], [`para_attrs`]), so one at its default matches a style that sets the
+/// default. Unchanged if the style doesn't round-trip through JSON.
+fn restyle<T: Serialize + DeserializeOwned + Clone>(
+    cur: &T,
+    attrs: fn(&T) -> Map<String, Value>,
+    old: &Map<String, Value>,
+    new: &Map<String, Value>,
+) -> T {
+    let Some(full) = to_map(cur) else { return cur.clone() };
+    let mut m = attrs(cur);
+    if let Some(name) = full.get("style_name") {
+        m.insert("style_name".into(), name.clone());
     }
     for (k, v) in new {
         if old.get(k).is_none_or(|o| m.get(k) == Some(o)) {
@@ -246,7 +289,7 @@ fn update_users(d: &mut Document, kind: Kind, name: &str, old: &Map<String, Valu
             Kind::Char => {
                 for r in &mut t.runs {
                     if r.style.style_name == target {
-                        r.style = restyle(&r.style, old, new);
+                        r.style = restyle(&r.style, char_attrs, old, new);
                         changed = true;
                     }
                 }
@@ -254,7 +297,7 @@ fn update_users(d: &mut Document, kind: Kind, name: &str, old: &Map<String, Valu
             Kind::Para => {
                 for pa in t.para_styles_mut() {
                     if pa.style_name == target {
-                        *pa = restyle(pa, old, new);
+                        *pa = restyle(pa, para_attrs, old, new);
                         changed = true;
                     }
                 }
@@ -279,7 +322,7 @@ fn selection_attrs(s: &Session, p: &Value, kind: Kind) -> Result<Option<Map<Stri
     Ok(Some(match kind {
         Kind::Char => char_attrs(&vectnor_text::edit::style_at(&t.runs, at)),
         // The paragraph at `start`.
-        Kind::Para => to_attrs(t.para_at(t.paragraphs_in(at, at).start)),
+        Kind::Para => para_attrs(t.para_at(t.paragraphs_in(at, at).start)),
     }))
 }
 
@@ -307,7 +350,7 @@ fn attrs_param(p: &Value, kind: Kind, verb: &str) -> Result<Option<Map<String, V
             let c = kind.cmd(verb);
             let full = match kind {
                 Kind::Char => char_attrs(&with_attrs(&CharStyle::default(), m, &c)?),
-                Kind::Para => to_attrs(&with_attrs(&ParaStyle::default(), m, &c)?),
+                Kind::Para => para_attrs(&with_attrs(&ParaStyle::default(), m, &c)?),
             };
             Ok(Some(m.keys().filter_map(|k| full.get(k).map(|v| (k.clone(), v.clone()))).collect()))
         }
@@ -341,10 +384,13 @@ fn new(s: &mut Session, p: &Value, kind: Kind) -> Result<Value> {
     let d = &s.doc()?.doc;
     let base = if kind == Kind::Char { "Character Style" } else { "Paragraph Style" };
     let name = match str_param(p, "name") {
-        Some(n) => n.to_string(),
+        Some(n) => n.trim().to_string(),
         None => (1..).map(|i| format!("{base} {i}")).find(|n| kind.attrs(d, n).is_none()).unwrap_or_else(|| base.to_string()),
     };
-    if name.trim().is_empty() || kind.attrs(d, &name).is_some() {
+    if name.is_empty() {
+        return Err(bad(&c, "give the style a name"));
+    }
+    if kind.attrs(d, &name).is_some() {
         return Err(bad(&c, format!("a style named `{name}` already exists")));
     }
     let n2 = name.clone();
@@ -461,10 +507,12 @@ fn duplicate(s: &mut Session, p: &Value, kind: Kind) -> Result<Value> {
     let name = name_param(p, kind, "duplicate")?.to_string();
     let d = &s.doc()?.doc;
     let attrs = kind.attrs(d, &name).ok_or_else(|| bad(&kind.cmd("duplicate"), format!("no style `{name}`")))?;
+    // `new` trims the name, so the copy is named from the trimmed one.
+    let stem = name.trim();
     let copy = (1..)
-        .map(|i| if i == 1 { format!("{name} copy") } else { format!("{name} copy {i}") })
+        .map(|i| if i == 1 { format!("{stem} copy") } else { format!("{stem} copy {i}") })
         .find(|n| kind.attrs(d, n).is_none())
-        .unwrap_or_else(|| format!("{name} copy"));
+        .unwrap_or_else(|| format!("{stem} copy"));
     new(s, &json!({ "name": copy, "attrs": attrs }), kind)
 }
 
@@ -597,6 +645,29 @@ mod tests {
         assert_eq!(s.doc().unwrap().doc.char_styles.iter().find(|d| d.name == "Pink").unwrap().attrs["fill"], fill);
     }
 
+    /// New Character Style and New Paragraph Style trim the name they are given, as a rename
+    /// trims `to`; the trimmed name is the one compared with the styles there are.
+    #[test]
+    fn new_styles_trim_their_names_as_a_rename_does() {
+        let (mut s, _) = session_with_text("Body text");
+        for p in ["charStyle", "paraStyle"] {
+            assert_eq!(s.execute(&format!("{p}.new"), &json!({"name": "  Body \t"})).unwrap()["name"], "Body", "{p}");
+            let list = s.execute(&format!("{p}.list"), &json!({})).unwrap();
+            let names: Vec<&str> = list["styles"].as_array().unwrap().iter().filter_map(|x| x["name"].as_str()).collect();
+            assert_eq!(names[1..], ["Body"], "{p}");
+            let e = s.execute(&format!("{p}.new"), &json!({"name": " Body"})).unwrap_err().to_string();
+            assert!(e.contains("a style named `Body` already exists"), "{p}: {e}");
+            let e = s.execute(&format!("{p}.new"), &json!({"name": " \t "})).unwrap_err().to_string();
+            assert!(e.contains("give the style a name"), "{p}: {e}");
+            assert_eq!(s.execute(&format!("{p}.duplicate"), &json!({"name": "Body"})).unwrap()["name"], "Body copy", "{p}");
+        }
+        // A style whose name has spaces around it, as a saved file can hold, is copied under the
+        // trimmed name, numbered past the copies there are.
+        std::sync::Arc::make_mut(&mut s.doc_mut().unwrap().doc).char_styles.push(TextStyleDef { name: " Old ".into(), attrs: Map::new() });
+        s.execute("charStyle.new", &json!({"name": "Old copy"})).unwrap();
+        assert_eq!(s.execute("charStyle.duplicate", &json!({"name": " Old "})).unwrap()["name"], "Old copy 2");
+    }
+
     /// #1001: attributes their JSON leaves out at the defaults (Auto leading and kerning, no
     /// mojikumi) are still attributes a style can set, and a style captured with one applies to
     /// text at the default, is duplicated and comes back out of a library.
@@ -679,6 +750,77 @@ mod tests {
             assert!(!s.doc().unwrap().doc.char_styles[0].attrs.contains_key("leading"));
             assert_eq!(ids.map(|id| runs(&s, id)[0].style.leading), [Some(28.0), None, Some(42.0)]);
         }
+    }
+
+    /// The attribute names a style of type `T` can set, without the style name.
+    fn settable<T: DeserializeOwned>() -> std::collections::BTreeSet<String> {
+        attr_names::<T>().into_iter().filter(|&n| n != "style_name").map(String::from).collect()
+    }
+
+    /// New and Redefine capture every paragraph attribute. A paragraph style redefined from a
+    /// paragraph at the defaults gives its paragraphs the defaults back where they had the old
+    /// definition's values, and `setAttrs` with a default value does too; local overrides, and
+    /// attributes `setAttrs` leaves out, stay.
+    #[test]
+    fn para_style_redefined_to_the_defaults_updates_its_paragraphs() {
+        use vectnor_doc::Composer;
+        let (mut s, source) = session_with_text("Source");
+        let [linked, local] =
+            ["Linked", "Local"].map(|text| s.execute("text.create", &json!({"x": 10, "y": 90, "text": text})).unwrap()["id"].as_u64().unwrap());
+        let ids = [source, linked, local];
+        let para = |s: &Session, id: u64| match &s.doc().unwrap().doc.node(NodeId(id)).unwrap().kind {
+            NodeKind::Text(t) => t.para_at(0).clone(),
+            _ => panic!("not text"),
+        };
+        let limits = |s: &Session| ids.map(|id| para(s, id).left_indent);
+        let composers = |s: &Session| ids.map(|id| para(s, id).composer);
+        let defined = |s: &Session, i: usize| s.doc().unwrap().doc.para_styles[i].attrs.keys().cloned().collect::<std::collections::BTreeSet<_>>();
+        s.execute("text.setFormat", &json!({"ids": ids, "leftIndent": 2, "composer": "singleLine"})).unwrap();
+        s.execute("paraStyle.new", &json!({"name": "Body", "id": source})).unwrap();
+        s.execute("paraStyle.apply", &json!({"name": "Body", "ids": ids})).unwrap();
+        s.execute("text.setFormat", &json!({"ids": [local], "leftIndent": 4})).unwrap();
+        s.execute("text.setFormat", &json!({"ids": [source], "leftIndent": 0, "composer": "everyLine"})).unwrap();
+        s.execute("paraStyle.redefine", &json!({"name": "Body", "id": source})).unwrap();
+        assert_eq!((limits(&s), composers(&s)), ([0.0, 0.0, 4.0], [Composer::EveryLine; 3]));
+        assert!(ids.iter().all(|&id| para(&s, id).style_name.as_deref() == Some("Body")));
+        assert_eq!(defined(&s, 0), settable::<ParaStyle>(), "Redefine captures every attribute");
+        s.execute("paraStyle.new", &json!({"name": "Copy", "id": local})).unwrap();
+        assert_eq!(defined(&s, 1), settable::<ParaStyle>(), "New captures every attribute");
+        // Style options: a default value reaches the users too; an attribute left out stays as it is.
+        s.execute("paraStyle.setAttrs", &json!({"name": "Body", "attrs": {"left_indent": 3, "composer": "singleLine"}})).unwrap();
+        assert_eq!((limits(&s), composers(&s)), ([3.0, 3.0, 4.0], [Composer::SingleLine; 3]));
+        s.execute("paraStyle.setAttrs", &json!({"name": "Body", "attrs": {"composer": "everyLine"}})).unwrap();
+        assert_eq!((limits(&s), composers(&s)), ([3.0, 3.0, 4.0], [Composer::EveryLine; 3]));
+        assert_eq!(Value::Object(s.doc().unwrap().doc.para_styles[0].attrs.clone()), json!({"composer": "everyLine"}));
+    }
+
+    /// The same for character styles: Auto kerning and the Roman baseline alignment, which the
+    /// run's JSON leaves out, are captured and reach the style's users.
+    #[test]
+    fn char_style_redefined_to_the_defaults_updates_its_text() {
+        use vectnor_doc::CharAlign;
+        let (mut s, source) = session_with_text("Source");
+        let [linked, local] =
+            ["Linked", "Local"].map(|text| s.execute("text.create", &json!({"x": 10, "y": 90, "text": text})).unwrap()["id"].as_u64().unwrap());
+        let ids = [source, linked, local];
+        let kerning = |s: &Session| ids.map(|id| runs(s, id)[0].style.kerning);
+        let aligns = |s: &Session| ids.map(|id| runs(s, id)[0].style.char_align);
+        let defined = |s: &Session, i: usize| s.doc().unwrap().doc.char_styles[i].attrs.keys().cloned().collect::<std::collections::BTreeSet<_>>();
+        s.execute("text.setFormat", &json!({"ids": ids, "kerning": 40, "charAlign": "emBoxCenter"})).unwrap();
+        s.execute("charStyle.new", &json!({"name": "Body", "id": source})).unwrap();
+        s.execute("charStyle.apply", &json!({"name": "Body", "ids": ids})).unwrap();
+        s.execute("text.setFormat", &json!({"ids": [local], "kerning": 60})).unwrap();
+        s.execute("text.setFormat", &json!({"ids": [source], "kerning": "auto", "charAlign": "romanBaseline"})).unwrap();
+        s.execute("charStyle.redefine", &json!({"name": "Body", "id": source})).unwrap();
+        assert_eq!((kerning(&s), aligns(&s)), ([None, None, Some(60.0)], [CharAlign::RomanBaseline; 3]));
+        assert_eq!(defined(&s, 0), settable::<CharStyle>(), "Redefine captures every attribute");
+        s.execute("charStyle.new", &json!({"name": "Copy", "id": local})).unwrap();
+        assert_eq!(defined(&s, 1), settable::<CharStyle>(), "New captures every attribute");
+        s.execute("charStyle.setAttrs", &json!({"name": "Body", "attrs": {"kerning": 10, "charAlign": "emBoxTop"}})).unwrap();
+        assert_eq!((kerning(&s), aligns(&s)), ([Some(10.0), Some(10.0), Some(60.0)], [CharAlign::EmBoxTop; 3]));
+        s.execute("charStyle.setAttrs", &json!({"name": "Body", "attrs": {"charAlign": "romanBaseline"}})).unwrap();
+        assert_eq!((kerning(&s), aligns(&s)), ([Some(10.0), Some(10.0), Some(60.0)], [CharAlign::RomanBaseline; 3]));
+        assert_eq!(Value::Object(s.doc().unwrap().doc.char_styles[0].attrs.clone()), json!({"charAlign": "romanBaseline"}));
     }
 
     #[test]

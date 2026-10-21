@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -96,10 +96,15 @@ failure. Export prefixes/suffixes remain filename text inside the export folder.
 headers are size-checked before pixel decode. `ruzstd` 0.9.1 fixes the documented decompression bomb.
 [Source pins and platform limits](vectnor/UPSTREAM_AUDIT.md). Native format identity and scores are unchanged.
 
+## Local format follow-up — 2026-10-21
+
+Graph CSV preserves quoted delimiters/newlines and huge axis labels. SVG title/description filters XML controls and CSS font-family names are escaped/quoted. CLI/MCP raster scale leaves vector DXF drawing units intact. Checked mesh dimensions, polygon counts and a global EMF tile budget bound malformed work. These do not establish general XML/importer parity. [Pinned PR audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | minor | Nine reviewed upstream fixes adapted: Shape Builder seams/cutting, EPS angle hangs, renderer safety, saved views, MCP no-replay, stroke visibility, DXF closed splines and stable generated sources. Pagenor structure/provenance conventions aligned; scores unchanged. |

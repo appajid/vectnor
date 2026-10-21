@@ -6,6 +6,7 @@
 
 use egui::{Sense, Ui, vec2};
 use serde_json::{Map, Value, json};
+use vectnor_engine::cmd::textstyles;
 
 use super::character::{text_editing, text_style};
 use super::{pstate, selection_len, set_pstate};
@@ -54,21 +55,14 @@ fn styles(app: &mut VectnorApp, kind: Kind) -> Vec<(String, Map<String, Value>, 
         .unwrap_or_default()
 }
 
-/// The selection's style name (Normal when none) and its attributes, if text is selected.
+/// The selection's style name (Normal when none) and every one of its attributes, written as a
+/// style holds them, if text is selected.
 fn current(app: &VectnorApp, kind: Kind) -> Option<(Option<String>, Map<String, Value>)> {
     let (c, p) = text_style(app)?;
-    let v = match kind {
-        Kind::Char => serde_json::to_value(&c),
-        Kind::Para => serde_json::to_value(&p),
-    }
-    .ok()?;
-    let mut m = v.as_object()?.clone();
-    // A character style can explicitly set Auto, which the run's JSON leaves out.
-    if kind == Kind::Char {
-        m.entry("leading").or_insert(Value::Null);
-    }
-    let name = m.remove("style_name").and_then(|v| v.as_str().map(str::to_string));
-    Some((name, m))
+    Some(match kind {
+        Kind::Char => (c.style_name.clone(), textstyles::char_attrs(&c)),
+        Kind::Para => (p.style_name.clone(), textstyles::para_attrs(&p)),
+    })
 }
 
 /// Parameters targeting the selection: the Type tool's selected characters (paragraph styles: the
