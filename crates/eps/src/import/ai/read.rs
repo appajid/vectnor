@@ -103,7 +103,16 @@ pub(crate) fn slot_frame(name: Option<&str>) -> usize {
 pub fn read(data: &[u8]) -> Result<Structure, String> {
     let mut r = Reader::new(data);
     r.run()?;
-    r.finish()
+    r.finish(false)
+}
+
+/// Read frame identities for text recovery only. Unsupported artwork still prevents a normal
+/// document import; callers must never use this result's artwork. Syntax and resource limits
+/// remain enforced, and text is recovered only when it matches the page unambiguously.
+pub(crate) fn read_for_text(data: &[u8]) -> Result<Structure, String> {
+    let mut r = Reader::new(data);
+    r.run()?;
+    r.finish(true)
 }
 
 #[derive(Clone, Debug)]
@@ -1481,12 +1490,12 @@ impl<'a> Reader<'a> {
         }
     }
 
-    fn finish(mut self) -> Result<Structure, String> {
+    fn finish(mut self, text_only: bool) -> Result<Structure, String> {
         if !self.unknown.is_empty() {
             let ops: Vec<String> = self.unknown.iter().map(|o| format!("`{o}`")).collect();
             self.unsupported.insert(format!("operators Vectnor doesn't know ({})", ops.join(", ")));
         }
-        if !self.unsupported.is_empty() {
+        if !text_only && !self.unsupported.is_empty() {
             let list: Vec<&str> = self.unsupported.iter().map(String::as_str).collect();
             return Err(format!("it has {}, which Vectnor doesn't read from it yet", join_and(&list)));
         }

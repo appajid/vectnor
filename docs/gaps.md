@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (direct AI editing-data opening; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -62,6 +62,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Estimate:** 60–90 h; splits well by tool across agents.
 
 ## G9 Illustrator `.ai` and EPS files from real users
+
+- **Text-frame recovery (2026-10-22):** readable AI text frames can now be restored even when unrelated unsupported artwork requires PDF fallback. Synthetic two-frame artwork formerly imported five text objects; now it imports two with their original paragraphs and styles. Unreadable/ambiguous frame identities and broader real-file coverage remain open. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22).
 
 - **Improved locally (2026-10-22):** complete `.ai`/`.ait` editing data opens before the optional PDF drawing, avoiding false rejection when PDF margins differ from the native artboard. One user-supplied file and synthetic differing-page cases checked locally; broader fidelity, missing fonts and the gaps below remain. [Evidence](vectnor/AI_IMPORT.md).
 
@@ -236,6 +238,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

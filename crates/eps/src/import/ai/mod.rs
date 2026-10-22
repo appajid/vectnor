@@ -27,6 +27,7 @@ use std::io::Read as _;
 use super::lex::find;
 use crate::ps;
 
+pub(crate) use read::read_for_text;
 pub use read::{Structure, read};
 pub(crate) use read::{slot_frame, slot_of};
 

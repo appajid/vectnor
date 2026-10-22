@@ -36,6 +36,8 @@ use super::Imported;
 use super::ai::{self, Structure, slot_of};
 use super::ate::{Story, Texts};
 
+mod text_frames;
+
 /// The notes that say the import left out something the file has (see [`is_loss`]).
 const TEXT_LEFT_OUT: &str = "text objects on hidden layers or hidden objects couldn't be read, so they are left out";
 /// The same for a file without a page to take shown type from.
@@ -794,7 +796,17 @@ struct Frame<'a> {
 /// nothing is compared. `outlined`: the page's type was read as outlines, so it has none to put in
 /// the text objects.
 fn build(data: &[u8], visible: Option<&Document>, page: Page, outlined: bool) -> Result<(Document, Vec<String>), String> {
-    let Structure { mut doc, to_doc, bbox, artboard, template, hidden_unread, slot_names, warnings } = ai::read(data)?;
+    build_structure(data, ai::read(data)?, visible, page, outlined)
+}
+
+fn build_structure(
+    data: &[u8],
+    structure: Structure,
+    visible: Option<&Document>,
+    page: Page,
+    outlined: bool,
+) -> Result<(Document, Vec<String>), String> {
+    let Structure { mut doc, to_doc, bbox, artboard, template, hidden_unread, slot_names, warnings } = structure;
     let (mut shown, mut hidden) = (vec![], vec![]);
     let mut frame = None;
     if let Some(visible) = visible {
@@ -1040,6 +1052,13 @@ pub fn layered_ai(private: &[u8], visible: Document, warnings: Vec<String>, outl
         }
         Err(why) => {
             let mut all = warnings;
+            let mut visible = visible;
+            if !outlined {
+                let restored = text_frames::recover(&data, &mut visible);
+                if restored > 0 {
+                    all.push(format!("{restored} original text frames restored from AI editing data; other artwork uses the PDF part"));
+                }
+            }
             all.push(format!("{LAYERS_UNREAD} from its editing data ({why}): they come from its PDF part"));
             (visible, all)
         }

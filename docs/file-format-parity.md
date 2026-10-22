@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (direct AI editing-data opening; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -48,6 +48,23 @@ private editing data. Vectnor:
 ### Illustrator's private editing data
 
 the app's own editing copy of a file (an EPS after its `%%EOF`, a `.ai`'s `AIPrivateData` streams, Zstandard or zlib, the EPS's in ASCII85) is not documented as a whole. Vectnor reads its structure: layers and sublayers (names, order, visibility, lock, printing, preview, dimming, colour), groups as they were nested, compound paths, clipping groups and layer clipping, object names, hidden and locked objects, fills and strokes (grey, CMYK, RGB, named and spot colours, global process colours as global swatches at their tint), linear and radial gradients, pattern fills with their patterns as pattern swatches (#1025), opacity, blend modes, isolation and knockout, embedded images with their alpha channel, guides, and every artboard where it is. An object with several fills or strokes, effects or a brush comes in as its drawn look (a group named after it). Type is made from the file's text document, whole and editable, shown or not: point type, area type (a story in several frames as threaded type) and type on a path, with its characters, fonts, size, leading, tracking, scaling, baseline shift, fill and stroke (grey, RGB or CMYK), alignment, indents and paragraph spacing; the page's drawing of it (often in pieces) is left out. Where the text document can't say (a frame of another kind, or a document that doesn't agree with the page), type that shows comes from the page into its text object's place (no group around it), and hidden type is left out with a note. Kerning, underline and the other character and paragraph options aren't read yet. A `.ai` saved without PDF compatibility (a placeholder page) opens from its editing data alone, its point type, area type and type on a path made from the text document. Symbols, pattern fills whose pattern it can't read, placed files and anything else it doesn't read make the file come in as its page (on a layer that doesn't show, they are left out of that layer), with a warning saying what. For EPS and page-assisted recovery, the layers' art is also compared with the page (by lightness, so colours written as their CMYK equivalents compare alike, and by whether a pixel is inked at all); the page is used when they differ by more than 5%, where one draws an object the other doesn't (away from type, whose lines may be laid out afresh), and when an EPS whose page is its art's box has art printed outside it (#735). `textAs: "outlines"` opens a `.ai` whose type shows from its PDF part, which has the outlines; `editingData: false` opens any of them as its page or PDF part only, for print pipelines (#735). A file whose import left something out (hidden text, art or layers) is never written over by an export or Save As to its own path unless `acknowledgeLoss: true` (`convert --replace-lossy`), so the original keeps what the document lacks. Where a `.ai` can't be read that way (or its layers are turned off in the import options), we read its PDF-compatible part, so Illustrator-only live objects arrive as appearance, and plain groups arrive ungrouped: that part draws each object on its own and marks only layers, clipping groups and groups with opacity, blending or a mask (those come back). Art outside the artboards isn't in that part at all (Illustrator's PDF part leaves it out), so it doesn't open; the import says so in a note (#472). That part also has no paragraphs: area type is written line by line, and comes back as area type only where its font is installed and lays the lines out with the same breaks, else as a point type object per line (#508). Art off the page that a PDF does draw opens on the pasteboard.
+
+### Original text-frame recovery during artwork fallback
+
+If unsupported artwork forces the PDF fallback, Vectnor separately reads the original AI
+text stories and frame identities. Complete, unambiguous matches restore one editable text
+object per original frame, with its paragraph breaks, area/point type and character runs.
+Separate original frames stay separate. This uses the original editing data, rather than
+joining nearby lines into an assumed paragraph.
+
+Recovery is bounded and conservative: one matching artboard, contiguous text fragments in
+one graphics context, matching complete text and orientation, and unique frame ownership.
+Unread source frames, ambiguous/mismatched text, another crop or artboard, threaded/path-type fallback, masks or
+intervening artwork retain their existing page objects. Direct native AI import continues
+to handle supported threaded/path type. Original-frame recovery requires readable editing
+data; PDF-only text cannot reliably reveal the original boxes. Reopen the original `.ai`
+to benefit; earlier `.vcnr` conversions do not retain the discarded AI frame metadata.
+See [tests and limitations](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22).
 
 ### Local AI opening check — 2026-10-22
 
@@ -124,6 +141,7 @@ EPS readline treats CRLF as one terminator, preserving counted metadata and raw/
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

@@ -59,3 +59,65 @@ No speedup or regression is claimed.
 
 Local evidence, including the supplied file and generated native copy, is under `/tmp/vectnor-ai-import-2026-10-22/`.
 No file from that folder is included in the commit.
+
+
+## Original text frames — 2026-10-22
+
+Status: local implementation and verification complete. No upload.
+
+A synthetic AI file with two original area-text frames reproduced the reported fragmentation:
+the previous bundled importer produced five text objects when an unrelated unsupported
+symbol forced the PDF fallback. The updated importer produces two original frames, including
+multiline content and styled character runs. Source frame identities, text and styles come
+from the AI editing data. The PDF fallback continues to carry unsupported non-text artwork.
+
+The text-recovery reader tolerates unsupported artwork only to extract known original text
+frames; it is never used as a whole-document import. Syntax, nesting, decompression and other
+reader limits remain enforced. Additional caps bound recovery bytes, nodes, text, candidate
+pairs and string-comparison work. Replacement requires complete text agreement, matching
+orientation and a single matching artboard. Fragments must be contiguous siblings in one
+graphics context. Every plausible source frame claims its fragments, including frames that
+cannot themselves be restored, so overlapping identities cannot consume a separate box.
+
+Ambiguous, incomplete or mismatched text remains unchanged. If any source text frame
+cannot be read, frame recovery is withheld so its story cannot absorb another original frame. Recovery across groups/masks,
+intervening artwork, multiple artboards or different crops, and fallback threaded/path type
+remain outside this change. Supported direct native AI text/thread/path import is unchanged.
+When original editing data is absent or unreadable, the precise original boxes cannot be
+reliably reconstructed from printed fragments alone. Existing `.vcnr` conversions need the
+original AI file reopened; their discarded source metadata cannot be recreated.
+
+Tests cover multiline area and point frames, mixed styles, separate/overlapping originals,
+unread frames sharing a story,
+Indic text and joiners, mismatches, crop differences, threading, rotated fragments and
+separate graphics contexts. An integration test keeps unsupported-symbol fallback while
+restoring the original paragraph. Mutated AI text-document fuzzing exercises recovery.
+
+Public behavior reference: [point, paragraph and area text](https://helpx.adobe.com/illustrator/using/tool-techniques/type-tool.html).
+No Adobe software, installations, prologs, samples or fonts are accessed or added. The earlier
+owner-supplied single-line AI does not reproduce this multiline report; the affected file
+has been requested for case-specific verification. No real-file fidelity claim is made here.
+
+Verification:
+
+- Synthetic AI opening changes five fragmented text objects into the two original area frames;
+  the first retains three styled character runs. Unsupported non-text artwork and its warning
+  remain on the fallback route.
+- Native Type-tool selection spans the first frame's full 42-byte text across old line
+  boundaries. Telugu editing, undo/redo and the separate second frame are verified.
+- `.vcnr` save/reopen keeps the complete layer JSON, text, frame kinds and styles; rendered
+  artwork PNG SHA-256 is identical and the reopened document is clean. Canvas and reopened
+  screenshots were inspected. Both native test instances quit cleanly.
+- The earlier supplied single-line AI produces identical CLI information before and after.
+  It remains a regression check, rather than evidence for the reported multiline file.
+- All eight CI gates pass: 5,276 tests passed, zero failed, four existing ignored. This includes
+  eight new EPS tests and the new mutated-text recovery property. The separate browser WASM
+  check passes, with the pre-existing `missing_links.rs` unused-function warning.
+- The SHA-256-verified local app/CLI bundle was refreshed, version 0.9.0 unchanged. No upload.
+- The 50k-path baseline overlapped initial compilation and passed six of ten budgets; its
+  timings are not suitable for comparison. The final trial after builds and GUI exit passes
+  nine of ten at load 6.8/12 cores: zoom 21.34 ms exceeds the 16 ms budget; native open is
+  294.37 ms against 300 ms. The earlier after trial had open 304.12 ms and zoom 21.28 ms.
+  These single trials do not establish a speedup/regression, and parity scores remain unchanged.
+
+Verification evidence: `/tmp/vectnor-ai-text-2026-10-22/` (local only).

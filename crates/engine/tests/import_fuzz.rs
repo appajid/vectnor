@@ -1869,6 +1869,25 @@ proptest! {
         survive("mutated EPS editing data", || vectnor_eps::import(&bytes).ok().map(|r| r.document))?;
     }
 
+    /// Original text frames recovered even when unrelated artwork needs the PDF fallback:
+    /// malformed text dictionaries must remain bounded and leave a usable page or an error.
+    #[test]
+    fn ai_text_frame_recovery_never_panics(cut in 0usize..2_000, edits in prop::collection::vec((0usize..2_000, any::<u8>()), 0..10)) {
+        use vectnor_testkit::ai;
+        let mut text = text_document_text().into_bytes();
+        for (at, value) in edits {
+            let len = text.len();
+            if let Some(b) = text.get_mut(at % len) { *b = value; }
+        }
+        text.truncate(cut);
+        let text = ascii85(&text);
+        let body = format!("{}%AI11_BeginTextDocument\n/AI11TextDocument : /ASCII85Decode ,\n{text}\n%AI11_EndTextDocument\n",
+            ai::layer("Art", "/AI11Text : 0 /StoryIndex , 0 /FrameIndex , ;\n/SymbolInstance : (Missing) /SymbolRef , ;\n"));
+        let editing = ai::editing_data(100.0, 100.0, &body).replace("%%EndComments", "%AI3_TemplateBox: 50 50 50 50\n%%EndComments");
+        let file = ai::ai_with_page_size(editing.as_bytes(), "BT /F1 14 Tf 61 65 Td (Hi) Tj 0 -17 Td (there) Tj ET", 100.0, 100.0);
+        survive("AI text frame fallback", || vectnor_engine::cmd::fileio::load("frames.ai", &file).ok().map(|l| l.doc))?;
+    }
+
     /// A `.ai` whose editing data is damaged or hostile.
     #[test]
     fn ai_editing_data_never_panics(cut in 0usize..3_000, edits in prop::collection::vec((0usize..3_000, prop::sample::select(vec!['0', '9', '-', '.', ' ', '\n', '(', ')', '/', ':', ';', '[', ']', '%', 'q', 'Q', 'W', 'u', 'U', 'L', 'k', 'x'])), 0..12), damage in prop::collection::vec((0usize..4_000, any::<u8>()), 0..4)) {

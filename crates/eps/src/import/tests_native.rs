@@ -749,3 +749,51 @@ fn shown_type_the_page_draws_in_pieces_comes_whole_from_the_text_document() {
     assert_eq!(all, ["Letters"], "{:?}", r.warnings);
     assert!(!r.warnings.iter().any(|w| w.contains("page's type")), "{:?}", r.warnings);
 }
+
+#[test]
+fn unsupported_art_does_not_split_a_readable_original_text_frame() {
+    use std::sync::Arc;
+    let frame = format!("<< /0 << /0 [ 0 0 ] /1 << /0 [ {} ] >> /2 << /0 1 >> >> >>", canvas_rect(10.0, 10.0, 90.0, 90.0));
+    let doc = document_of(&[frame], &[story("First line\\rSecond line\\r", &[0], "/0 0", "/1 14.0")]);
+    let art = native_with_text(&layer("Art", true, &(text_object(0) + "/SymbolInstance : (Unsupported) /SymbolRef , ;\n")), &doc);
+    let mut page = vectnor_doc::Document::new(100.0, 100.0);
+    for (s, x, y) in [("First", 12.0, 30.0), ("line", 50.0, 30.0), ("Second line", 12.0, 50.0)] {
+        let id = page.alloc_id();
+        let t = vectnor_doc::TextObject::point(vectnor_geom::Point::new(x, y), s, vectnor_doc::CharStyle::default());
+        Arc::make_mut(&mut page.layers[0]).children_mut().unwrap().push(Arc::new(Node::new(id, NodeKind::Text(Box::new(t)))));
+    }
+    assert!(crate::ai_alone(&private(&art)).is_err(), "unsupported artwork still forbids a whole-document native import");
+    let (done, notes) = crate::layered_ai(&private(&art), page, vec![], false);
+    let texts = text_of(&done.layers[0]);
+    assert_eq!(texts.len(), 1, "{notes:?}");
+    assert_eq!(texts[0].plain_text(), "First line\nSecond line");
+    assert!(matches!(texts[0].kind, vectnor_doc::TextKind::Area { .. }));
+    assert!(notes.iter().any(|n| n.contains("1 original text frames restored")), "{notes:?}");
+    assert!(notes.iter().any(|n| n.contains("symbols")), "{notes:?}");
+}
+
+#[test]
+fn an_unread_frame_never_collapses_into_the_readable_frame_of_its_story() {
+    use std::sync::Arc;
+    let frames: Vec<String> = [(12.0, 70.0), (12.0, 50.0)]
+        .into_iter()
+        .map(|(x, y)| {
+            let p = canvas(x, y);
+            format!("<< /0 << /2 << /2 [ 1 0 0 1 {} {} ] >> >> >>", p.0, p.1)
+        })
+        .collect();
+    // Multiple point frames are not a supported threaded story. Its second frame must not
+    // disappear into the first just because their printed fragments spell the whole story.
+    let doc = document_of(&frames, &[story("First\\rSecond\\r", &[0, 1], "/0 0", "/1 14 /4 false /5 20")]);
+    let art =
+        native_with_text(&layer("Art", true, &(frame_object(0, 0) + &frame_object(0, 1) + "/SymbolInstance : (Missing) /SymbolRef , ;\n")), &doc);
+    let mut page = vectnor_doc::Document::new(100.0, 100.0);
+    for (s, y) in [("First", 30.0), ("Second", 50.0)] {
+        let id = page.alloc_id();
+        let t = vectnor_doc::TextObject::point(vectnor_geom::Point::new(12.0, y), s, vectnor_doc::CharStyle::default());
+        Arc::make_mut(&mut page.layers[0]).children_mut().unwrap().push(Arc::new(Node::new(id, NodeKind::Text(Box::new(t)))));
+    }
+    let before = page.clone();
+    let (done, _) = crate::layered_ai(&private(&art), page, vec![], false);
+    assert_eq!(done, before);
+}

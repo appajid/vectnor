@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -61,10 +61,19 @@ coverage, not a claim of complete Indic IME/editor/export parity.
 
 Bengali Backspace and replacement text in one frame, typed text/editing keys/Enter/IME ordering, AltGr typing without command activation and middle-frame thread release receive focused coverage. Half-form tests build positive/negative fixtures in memory from existing OFL bytes and require actual shaping capability. No new font file or interface translation. Comprehensive Indic IME/export parity remains unassessed. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
 
+## AI original text frames
+
+The AI fallback importer can recover an original multiline area/point text frame and its
+styled runs, rather than retaining one object per printed line or fragment. Distinct source
+frames remain distinct. Complete text, orientation, context and unique ownership must agree;
+uncertain cases remain unchanged. [Evidence and limits](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22).
+This is an import improvement; type-core/advanced scores and remaining hours are unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
