@@ -224,6 +224,14 @@ fn release(s: &mut Session, _: &Value) -> Result<Value> {
                     refresh_bounds(t);
                 }
             }
+            let end_style = story.last().map_or_else(|| style.clone(), |r| r.style.clone());
+            let last_para = paras.last().cloned().unwrap_or_default();
+            for id in keep.iter().skip(1) {
+                if let Some(NodeKind::Text(t)) = d.node_mut(*id).map(|n| &mut n.kind) {
+                    t.runs = vec![TextRun { text: String::new(), style: end_style.clone(), inline: None }];
+                    t.set_all_paras(last_para.clone());
+                }
+            }
             if let Some(first) = keep.first()
                 && let Some(NodeKind::Text(t)) = d.node_mut(*first).map(|n| &mut n.kind)
             {
@@ -307,5 +315,24 @@ mod tests {
         s.execute("text.thread.releaseSelection", &json!({})).unwrap();
         assert_eq!(text(&s, b), "");
         assert_eq!(text(&s, a), TEXT.repeat(4), "the story returns to the remaining frame");
+    }
+
+    #[test]
+    fn release_from_a_longer_thread_keeps_the_story_once() {
+        let (mut s, a, b) = setup();
+        let c = s.execute("text.create", &json!({"x":10,"y":100,"text":"","area":{"width":150,"height":40}})).unwrap()["id"].as_u64().unwrap();
+        s.execute("select.set", &json!({"ids":[a,b,c]})).unwrap();
+        s.execute("text.thread.create", &json!({})).unwrap();
+        let thread = s.doc().unwrap().doc.text_threads[0].clone();
+        let middle = thread[1].0;
+        s.execute("select.set", &json!({"ids":[middle]})).unwrap();
+        s.execute("text.thread.releaseSelection", &json!({})).unwrap();
+        assert!(text(&s, middle).is_empty());
+        let story: String = s.doc().unwrap().doc.text_threads[0].iter().map(|id| text(&s, id.0)).collect();
+        assert_eq!(story, TEXT.repeat(4));
+        s.execute("edit.undo", &json!({})).unwrap();
+        assert_eq!(s.doc().unwrap().doc.text_threads[0], thread);
+        s.execute("edit.redo", &json!({})).unwrap();
+        assert!(text(&s, middle).is_empty());
     }
 }

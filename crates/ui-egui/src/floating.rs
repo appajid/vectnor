@@ -27,7 +27,7 @@ use serde_json::{Value, json};
 
 use crate::state::{DockTab, FloatingPanels, UiState, all_panels};
 use crate::theme::{self, Tokens};
-use crate::{VectnorApp, dock, icons, panels};
+use crate::{VectnorApp, dock, icons, panels, widgets};
 
 /// Height of a floating group's title bar (its grip and ×).
 pub const TITLE: f32 = 14.0;
@@ -646,7 +646,7 @@ pub(crate) fn docked_columns(app: &mut VectnorApp, ui: &mut egui::Ui) -> Vec<Rec
                 // The open panels share the column's height, each at least `MIN_TALL`: more than fit
                 // scroll, with the column.
                 let tall = ((ui.available_height() - n * STRIP - (n - 1.0) * GAP - 24.0 * open) / open).max(MIN_TALL);
-                egui::ScrollArea::vertical().id_salt(("dock-column-scroll", first)).auto_shrink([false, false]).show(ui, |ui| {
+                widgets::panel_scroll(ui, egui::ScrollArea::vertical().id_salt(("dock-column-scroll", first)).auto_shrink([false, false]), |ui| {
                     ui.spacing_mut().item_spacing = Vec2::ZERO;
                     let width = ui.available_width();
                     let top = ui.cursor().top();

@@ -1,0 +1,3582 @@
+{
+  "review_date": "2026-10-22",
+  "task": "M0.upstream-workflow",
+  "baseline": "fcfa46a",
+  "upstream": "https://github.com/storytold/vectorcraft",
+  "capture": {
+    "captured_at": "2026-10-22T11:47:26.211755+00:00",
+    "cutoff": "2026-10-21T08:05:34Z",
+    "pages": 4,
+    "distinct_records": 400,
+    "updated_records": 329,
+    "states": {
+      "open": 106,
+      "merged": 211,
+      "closed": 12
+    },
+    "verification_page": 5,
+    "verification_page_updated_records": 0
+  },
+  "review_scope": "Only PRs targeting this upstream repository. Metadata screening is not complete source review. Selected scopes are adapted, including one regression-only PR.",
+  "candidate_diff_scopes": 40,
+  "selected_count": 19,
+  "selected_states": {
+    "merged": 18,
+    "open": 1
+  },
+  "compatibility": "No new dependency, font file, translation catalog, asset or contributor profile. Source/postimage helpers are fitted to current Node masks, single brush rename, thread.create and thumbnail UI. Version and parity scores unchanged.",
+  "deferred": {
+    "cdr_3123": "Open proposal; scoped new crate, parser boundaries, dependency/license/corpus and engine registration. About 6100 diff lines introduce a new untrusted-input importer; full compatibility, fuzzing and native file validation deferred. No CDR support added.",
+    "cdr_2890": "Open competing import/export architecture, about5400 lines and UI/format/dependency changes. Deferred; no code copied.",
+    "save_export_3372_3481_3608": "Depend on newer file-picker selected-type/extension replacement and overwrite-confirmation contracts absent here; defer together to avoid silent overwrite changes.",
+    "paragraph_3523_3537_3539": "Depend on newer paragraph visitation/mixed-value helpers; no hyphenation-model expansion imported.",
+    "recolor_3476": "Depends on newer modal row-height machinery; broader dialog compatibility deferred.",
+    "other": "Large renderer, importer/backend, platform, docking, scripting and new-feature changes require separate compatibility passes. Interface translations, community/promotional/service integrations and publication changes excluded by owner scope."
+  },
+  "previous_adaptations_rechecked": [
+    {
+      "pr": 3230,
+      "sha256": "628aba724eecab209e6450b0636c47383996685f48d941c133ab56226cfaa3f2",
+      "code_lines": 37,
+      "head": "89c14487774b5a6c61beb7c82780575614c97e74",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    },
+    {
+      "pr": 3323,
+      "sha256": "f2d937b80b91eb79f6c936db6008dc1d7736a2f71964cdae67e9da82400e4b27",
+      "code_lines": 30,
+      "head": "acee6cccd802cf76085f8b52f7128f37e86a1b4f",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    },
+    {
+      "pr": 3331,
+      "sha256": "618ff65acee5d8308ef485f0296680f55894db809a12b0067354358a13779f6d",
+      "code_lines": 66,
+      "head": "8712be97b0f2b59bf6c3481d6f210e4b3c4502ab",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    },
+    {
+      "pr": 3337,
+      "sha256": "61388a95ccc32344d2ecb376fd9c3a88ccfa75ffd8d592a196493a2c10214add",
+      "code_lines": 70,
+      "head": "4bcd14c9c2a953b302e4f281618f4bcd3dd3eddd",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    },
+    {
+      "pr": 3254,
+      "sha256": "00b428c9b11f26fe6361fb10c350f3ce204bcf01eb01be24cc597442f75d430a",
+      "code_lines": 44,
+      "head": "7c8e772b461ea95dbf8a453c68a5ad2a5852c148",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    },
+    {
+      "pr": 2671,
+      "sha256": "7900cc698ea1e95e935d14c3101ff53caa80b3faef661a6a0b8ff4641564365f",
+      "code_lines": 183,
+      "head": "b1abc73e1679b2fb7a34e7d0b9a41894cfb281d8",
+      "state": "merged",
+      "decision": "already_adapted_scope_retained_not_counted_again"
+    }
+  ],
+  "selected": [
+    {
+      "pr": 3382,
+      "url": "https://github.com/storytold/vectorcraft/pull/3382",
+      "title": "Type: a character typed with AltGr while editing text runs no command",
+      "author": "dotCooCoo",
+      "state": "merged",
+      "head": "76058fb1b557a8fd4ce6f795b45283b1d0fe6ca3",
+      "base": "ecb7ac1fc675a0b98e4304566c05cc06b1e35972",
+      "merge_commit": "ba047ee5f709a701d89e993ab3a6ee75eb1ae643",
+      "updated_at": "2026-10-21T16:50:19Z",
+      "diff_sha256": "5ae2447a837d3b5e06ab97273ea78ea3bffbea30248cddd1e147863de29d9dfd",
+      "scope": "AltGr characters typed while editing text do not also run command chords.",
+      "verified_postimages": [
+        {
+          "pr": 3382,
+          "path": "crates/ui-egui/src/shortcuts.rs",
+          "blob": "2a6d864e166386bb3b8f4f85b5aab60e09749db0",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/76058fb1b557a8fd4ce6f795b45283b1d0fe6ca3/crates/ui-egui/src/shortcuts.rs"
+        }
+      ]
+    },
+    {
+      "pr": 2636,
+      "url": "https://github.com/storytold/vectorcraft/pull/2636",
+      "title": "Type: a Backspace and the text typed after it in one frame apply in order",
+      "author": "dotCooCoo",
+      "state": "open",
+      "head": "2adce89eb1aade17b81c155a6b393c2384eaf384",
+      "base": "cb0a7d9b31522dd57742b4cfe4550f2ec0a5e5c3",
+      "merge_commit": "bd1ccabfdea62bfd4674abb7ca86895c7f090e9f",
+      "updated_at": "2026-10-22T10:36:00Z",
+      "diff_sha256": "89085fec5c34c301283a13c4d393f6ce835d4803a0d1793f30429e1b0cdb117a",
+      "scope": "Process typed text, IME, editing keys, Enter and clipboard events in their received order; fitted to current shortcut router, with command-chord text suppression from the pinned postimage.",
+      "verified_postimages": [
+        {
+          "pr": 2636,
+          "path": "crates/ui-egui/src/canvas.rs",
+          "blob": "b9b3fa89d526d50568720ba9c9be1f1a238a8871",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/2adce89eb1aade17b81c155a6b393c2384eaf384/crates/ui-egui/src/canvas.rs"
+        },
+        {
+          "pr": 2636,
+          "path": "crates/ui-egui/src/panels/character.rs",
+          "blob": "e9e37c1fd3d5126af934b5db08d40c76c5e5e8ef",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/2adce89eb1aade17b81c155a6b393c2384eaf384/crates/ui-egui/src/panels/character.rs"
+        },
+        {
+          "pr": 2636,
+          "path": "crates/ui-egui/src/shortcuts.rs",
+          "blob": "4d52f0bd98d02aa78590899ebf11ecc6b66800cd",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/2adce89eb1aade17b81c155a6b393c2384eaf384/crates/ui-egui/src/shortcuts.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3376,
+      "url": "https://github.com/storytold/vectorcraft/pull/3376",
+      "title": "Tests: the half-form test uses only a fallback face that forms Ka's half form (#2670)",
+      "author": "dotCooCoo",
+      "state": "merged",
+      "head": "da197ba75c1b59a35db25e4c25eba24816421208",
+      "base": "f9e289410d84b932d564e38fc1d8cafb2f86f812",
+      "merge_commit": "ecb7ac1fc675a0b98e4304566c05cc06b1e35972",
+      "updated_at": "2026-10-21T16:50:03Z",
+      "diff_sha256": "92144cc156c7612e697c82db61b851d46ca8d871bba86e7909fae1cc56b701e1",
+      "scope": "Half-form test selects only a capable fallback face; build positive/negative GSUB fixtures in code from an existing OFL font.",
+      "verified_postimages": [
+        {
+          "pr": 3376,
+          "path": "crates/text/src/test_fonts.rs",
+          "blob": "78b240d686050201afbf8aa550eaf390b9416528",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/da197ba75c1b59a35db25e4c25eba24816421208/crates/text/src/test_fonts.rs"
+        },
+        {
+          "pr": 3376,
+          "path": "crates/text/src/tests_joiners.rs",
+          "blob": "6c23cedff23aff2fcdf304fdf659c4f27b66ccf7",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/da197ba75c1b59a35db25e4c25eba24816421208/crates/text/src/tests_joiners.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3409,
+      "url": "https://github.com/storytold/vectorcraft/pull/3409",
+      "title": "Threaded text: releasing a frame from a longer thread no longer duplicates its text",
+      "author": "lehni",
+      "state": "merged",
+      "head": "23dbf5d214aa9fde6563369cc4a3c7e91297b510",
+      "base": "e6db3421ce13c394e1ddd276d90bfaae00d37420",
+      "merge_commit": "10d78516f649ac8fabe4e4328827db6dac6c090e",
+      "updated_at": "2026-10-21T16:55:18Z",
+      "diff_sha256": "0f4fe0bcdb89fb3db03e1caaa1a8963d20b6aaedc72f229b2dac82242237d1e3",
+      "scope": "Releasing a middle threaded-text frame preserves one story; regression uses existing thread.create because thread.add is absent.",
+      "verified_postimages": [
+        {
+          "pr": 3409,
+          "path": "crates/engine/src/cmd/threads.rs",
+          "blob": "9c92c278c645f948857fb665f3786d7aeea376e3",
+          "url": "https://raw.githubusercontent.com/lehni/vectorcraft/23dbf5d214aa9fde6563369cc4a3c7e91297b510/crates/engine/src/cmd/threads.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3385,
+      "url": "https://github.com/storytold/vectorcraft/pull/3385",
+      "title": "Brushes: renaming or deleting a brush updates every stroke that uses it",
+      "author": "dotCooCoo",
+      "state": "merged",
+      "head": "4b56ce44a161f1613d3f4b5b7c9fd03e93bd33a7",
+      "base": "8f2e2740c36cc02629dd7adb91189cdfd0b646a5",
+      "merge_commit": "3b3eba6ae1c938b0dec4cac1f71cc3ea97afef62",
+      "updated_at": "2026-10-21T16:56:39Z",
+      "diff_sha256": "3038929a2f4b1d62045f37ae798a8ba5cd17145f554ea853664f2766f1572a4b",
+      "scope": "Brush rename/delete reaches masks, symbols, pattern tiles and retained pattern originals, graphic styles and brush art. Graph designs are absent; existing single-rename contract retained.",
+      "verified_postimages": [
+        {
+          "pr": 3385,
+          "path": "crates/engine/src/cmd/brushsym.rs",
+          "blob": "ed9e0e639ed1553b492178f9a2f0ba80f4429cd0",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/4b56ce44a161f1613d3f4b5b7c9fd03e93bd33a7/crates/engine/src/cmd/brushsym.rs"
+        },
+        {
+          "pr": 3385,
+          "path": "crates/engine/src/tests_brushsym.rs",
+          "blob": "5d16e01b0287005ddf5246fed648797b47124c3e",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/4b56ce44a161f1613d3f4b5b7c9fd03e93bd33a7/crates/engine/src/tests_brushsym.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3206,
+      "url": "https://github.com/storytold/vectorcraft/pull/3206",
+      "title": "Fix #3188: arranging art inside a clipping mask keeps the clipping path at the bottom",
+      "author": "Taha-Mahmoodi",
+      "state": "merged",
+      "head": "4fdb3e1f9b297082dd0bd6eb5d61d97b547b61d7",
+      "base": "5a12b47e4d9cfaf81811cc6f5b01985aa76fb118",
+      "merge_commit": "c2f2a49a32c12f403de8d75f19d093db2960ad9a",
+      "updated_at": "2026-10-21T12:00:39Z",
+      "diff_sha256": "9d353fd4ebcdfa86b534c2ec1974961b54754a42d2575f391c06239d5f33bb30",
+      "scope": "Arrange art inside a clipped group/layer without moving the bottom clipping path.",
+      "verified_postimages": [
+        {
+          "pr": 3206,
+          "path": "crates/engine/src/cmd/object.rs",
+          "blob": "7522106c478e023123b0130e0409279eff7121fc",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/4fdb3e1f9b297082dd0bd6eb5d61d97b547b61d7/crates/engine/src/cmd/object.rs"
+        },
+        {
+          "pr": 3206,
+          "path": "crates/engine/src/tests_clip.rs",
+          "blob": "2cc16daee0e32ef04c804dc056fe13a68453afa7",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/4fdb3e1f9b297082dd0bd6eb5d61d97b547b61d7/crates/engine/src/tests_clip.rs"
+        },
+        {
+          "pr": 3206,
+          "path": "crates/engine/src/tests_layerclip.rs",
+          "blob": "21c694d3eda6d7a0303b2b5bf0a2797137b605ad",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/4fdb3e1f9b297082dd0bd6eb5d61d97b547b61d7/crates/engine/src/tests_layerclip.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3614,
+      "url": "https://github.com/storytold/vectorcraft/pull/3614",
+      "title": "Fix EPS counted metadata reads after CRLF line endings",
+      "author": "bflatastic",
+      "state": "merged",
+      "head": "76399175ebb30dd8163794ced848c0afd725d847",
+      "base": "a98ca041967e382d522eab77018c7267f18861b5",
+      "merge_commit": "2f27759bcc142ec2eed8647b9167da6d8abfbc83",
+      "updated_at": "2026-10-22T11:37:12Z",
+      "diff_sha256": "3e3f4f3d2ff7e397fbc76582b3c177ee5305e6687c84d78ecac2881873f8ea51",
+      "scope": "EPS readline consumes CRLF as one terminator, preserving counted and binary payload alignment.",
+      "verified_postimages": [
+        {
+          "pr": 3614,
+          "path": "crates/eps/src/import/data.rs",
+          "blob": "e666e8321a21c5fbaf5683232ca492b34ec0fdf4",
+          "url": "https://raw.githubusercontent.com/storytold/vectorcraft/76399175ebb30dd8163794ced848c0afd725d847/crates/eps/src/import/data.rs"
+        },
+        {
+          "pr": 3614,
+          "path": "crates/eps/src/import/tests.rs",
+          "blob": "5ace00ac29540a21cc4681890b76bcfe4a51eff2",
+          "url": "https://raw.githubusercontent.com/storytold/vectorcraft/76399175ebb30dd8163794ced848c0afd725d847/crates/eps/src/import/tests.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3240,
+      "url": "https://github.com/storytold/vectorcraft/pull/3240",
+      "title": "Fix EPS writer emitting inf for huge finite numbers",
+      "author": "Silvertree2010",
+      "state": "merged",
+      "head": "2b0d71dbea0433136a1e35cdc3586542e279361b",
+      "base": "c1a823b34d134d45e79fef5abbf8255ea5e69a9b",
+      "merge_commit": "0e7cb4afd0f26ee5350b0ae6dd616fb51d153ab4",
+      "updated_at": "2026-10-21T08:43:31Z",
+      "diff_sha256": "3a80edeba42354e5e2eb2d65009c2e48e4d5dddcb914e284d8d61660241a9f25",
+      "scope": "EPS number serialization avoids accidental inf for huge finite values; format numeric-range validation is separate.",
+      "verified_postimages": [
+        {
+          "pr": 3240,
+          "path": "crates/eps/src/ps.rs",
+          "blob": "dc2ba9a69c3f3045fe0463cc6a3d6e4159e1988d",
+          "url": "https://raw.githubusercontent.com/Silvertree2010/vectorcraft/2b0d71dbea0433136a1e35cdc3586542e279361b/crates/eps/src/ps.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3284,
+      "url": "https://github.com/storytold/vectorcraft/pull/3284",
+      "title": "M3.57: preserve fractional CSS gradient stop positions",
+      "author": "MMexicann",
+      "state": "merged",
+      "head": "97d133d9d408271414e987caf04a655c9a204cb6",
+      "base": "d5682167ecd79600358ac198da5ddb1ad0543bc8",
+      "merge_commit": "153bcb2ec79246a983e7dbdde26513a644c0ad4a",
+      "updated_at": "2026-10-21T08:43:46Z",
+      "diff_sha256": "a29962ba6fa57e0d1364c41381a5c7061ae8147679378e91345384bd79a7d5b6",
+      "scope": "Preserve fractional CSS gradient-stop percentages.",
+      "verified_postimages": [
+        {
+          "pr": 3284,
+          "path": "crates/color/src/palette_io.rs",
+          "blob": "eed4d5a9423a34d6263b922aacdb2e854690cfaf",
+          "url": "https://raw.githubusercontent.com/MMexicann/vectorcraft/97d133d9d408271414e987caf04a655c9a204cb6/crates/color/src/palette_io.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3340,
+      "url": "https://github.com/storytold/vectorcraft/pull/3340",
+      "title": "Pencil: Edit selected paths within 0 turns editing off",
+      "author": "dotCooCoo",
+      "state": "merged",
+      "head": "ba8c1e042c3d5eb4fa330e815b98435fb7392afe",
+      "base": "f0667469e5d52ba90a1986fd2e25c5262b7c92f7",
+      "merge_commit": "906da779ff701c2ac0f728f238a468f1aa506343",
+      "updated_at": "2026-10-21T09:21:44Z",
+      "diff_sha256": "cefcdbdc20cd926436696eac2a4423d3d7f1bdfd412d68f6e534e89c17eb4d0c",
+      "scope": "Zero Edit Selected Paths/Close Paths distances disable endpoint continuation/automatic closure for Pencil/Paintbrush.",
+      "verified_postimages": [
+        {
+          "pr": 3340,
+          "path": "crates/tools/src/draw2/gesture.rs",
+          "blob": "891038839b96e0da8613aeb724e09f4b54c9438e",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/ba8c1e042c3d5eb4fa330e815b98435fb7392afe/crates/tools/src/draw2/gesture.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3257,
+      "url": "https://github.com/storytold/vectorcraft/pull/3257",
+      "title": "Persist Polygon and Star counts after exact-size placement",
+      "author": "FractalEncrypt",
+      "state": "merged",
+      "head": "b9fa08f9e6eb2c2e649b0a732a3749a2b3b79c52",
+      "base": "e2547c933d7f0115d4256f889735bff5d468f111",
+      "merge_commit": "69e73564d27b6ffad541f5f1b1587611845803ae",
+      "updated_at": "2026-10-21T09:21:38Z",
+      "diff_sha256": "2c4adec9d1e6f5659d8c89054f2bb35159cb64c7c6ae3c429c447cf2897993ae",
+      "scope": "Remember Polygon/Star exact-size counts through the existing tool.setOption command.",
+      "verified_postimages": [
+        {
+          "pr": 3257,
+          "path": "crates/ui-egui/src/dialogs/shapes.rs",
+          "blob": "c8e2dd535d01781f3e0b194ba1b77c8a2ba595a4",
+          "url": "https://raw.githubusercontent.com/FractalEncrypt/vectorcraft/b9fa08f9e6eb2c2e649b0a732a3749a2b3b79c52/crates/ui-egui/src/dialogs/shapes.rs"
+        },
+        {
+          "pr": 3257,
+          "path": "crates/ui-egui/src/dialogs/tools.rs",
+          "blob": "9087cc80d4105fbc39e9f7c6b1139fd029c156ba",
+          "url": "https://raw.githubusercontent.com/FractalEncrypt/vectorcraft/b9fa08f9e6eb2c2e649b0a732a3749a2b3b79c52/crates/ui-egui/src/dialogs/tools.rs"
+        },
+        {
+          "pr": 3257,
+          "path": "crates/ui-egui/src/toolbar.rs",
+          "blob": "1bfa8c2eddec6e843981d13998532b4fcec32f4d",
+          "url": "https://raw.githubusercontent.com/FractalEncrypt/vectorcraft/b9fa08f9e6eb2c2e649b0a732a3749a2b3b79c52/crates/ui-egui/src/toolbar.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3348,
+      "url": "https://github.com/storytold/vectorcraft/pull/3348",
+      "title": "Draw from centre (Alt) now applies to the typed size of a rectangle or ellipse (#3309)",
+      "author": "MarekSpodBiedry",
+      "state": "merged",
+      "head": "cde39698ffa7aa9dbfec4493e5f293ceb9492096",
+      "base": "b597b5bbe02f4efad73f68f66311ca0451b1adf0",
+      "merge_commit": "36d7f3b3b64485775c95bddbf1fde410194b5764",
+      "updated_at": "2026-10-21T10:29:52Z",
+      "diff_sha256": "66ccc5fb3345c4041313eef254cbd92b696e6e201f761c2d5f48e3d71f7c776e",
+      "scope": "Alt-click exact-size rectangles and ellipses use the clicked centre.",
+      "verified_postimages": [
+        {
+          "pr": 3348,
+          "path": "crates/tools/src/shape.rs",
+          "blob": "2ac761417d18a7ac089c9a73bba0fbd2149079c8",
+          "url": "https://raw.githubusercontent.com/MarekSpodBiedry/vectorcraft/cde39698ffa7aa9dbfec4493e5f293ceb9492096/crates/tools/src/shape.rs"
+        },
+        {
+          "pr": 3348,
+          "path": "crates/ui-egui/src/dialogs/shapes.rs",
+          "blob": "b0a3a1fd0b91cfccca15c077190bec3c0bc6860a",
+          "url": "https://raw.githubusercontent.com/MarekSpodBiedry/vectorcraft/cde39698ffa7aa9dbfec4493e5f293ceb9492096/crates/ui-egui/src/dialogs/shapes.rs"
+        },
+        {
+          "pr": 3348,
+          "path": "crates/ui-egui/src/dialogs/tools.rs",
+          "blob": "1947742ac82a221d4b9b4a3dfd8d22028cc333dd",
+          "url": "https://raw.githubusercontent.com/MarekSpodBiedry/vectorcraft/cde39698ffa7aa9dbfec4493e5f293ceb9492096/crates/ui-egui/src/dialogs/tools.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3502,
+      "url": "https://github.com/storytold/vectorcraft/pull/3502",
+      "title": "Fix #3455: Home recent reopen focuses existing document",
+      "author": "nrq6993-a11y",
+      "state": "merged",
+      "head": "e4db022f494af12f0c5241c9df2de6f5dd2fc2a5",
+      "base": "e5b732baf577cd1fe11b4d18f7e9e00a7d6b3e32",
+      "merge_commit": "15b041be81faeb871d2735cef8fff38625e9b507",
+      "updated_at": "2026-10-22T04:09:01Z",
+      "diff_sha256": "649bd229fdfec2dcd5b46508e2e81c0ec25665fd6918f48d872a572f1234fe60",
+      "scope": "Welcome recent thumbnails and Open Recent activate an existing tab, preserving unsaved edits, instead of opening another copy.",
+      "verified_postimages": [
+        {
+          "pr": 3502,
+          "path": "crates/ui-egui/src/canvas.rs",
+          "blob": "9895f1c56342591c840e04e5783e18b66ca2a477",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/e4db022f494af12f0c5241c9df2de6f5dd2fc2a5/crates/ui-egui/src/canvas.rs"
+        },
+        {
+          "pr": 3502,
+          "path": "crates/ui-egui/src/io.rs",
+          "blob": "7290da43b457cf0f9329dbccc01362887d8be6e3",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/e4db022f494af12f0c5241c9df2de6f5dd2fc2a5/crates/ui-egui/src/io.rs"
+        },
+        {
+          "pr": 3502,
+          "path": "crates/ui-egui/src/menus.rs",
+          "blob": "022c85ba43c384f0f41119cc2d3f3b6079efdea6",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/e4db022f494af12f0c5241c9df2de6f5dd2fc2a5/crates/ui-egui/src/menus.rs"
+        },
+        {
+          "pr": 3502,
+          "path": "crates/ui-egui/src/tests_home.rs",
+          "blob": "86785557f0f80a6b63f3d64e92bb48fcdc9ec34d",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/e4db022f494af12f0c5241c9df2de6f5dd2fc2a5/crates/ui-egui/src/tests_home.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3460,
+      "url": "https://github.com/storytold/vectorcraft/pull/3460",
+      "title": "Live Paint: the Live Paint tools and livePaint.fill skip hidden faces",
+      "author": "dotCooCoo",
+      "state": "merged",
+      "head": "4bd55029e8d607e7b45fb8822fdfb5d47b00730c",
+      "base": "9effb4e44ec7d198ca66b3cee3962ff2731957eb",
+      "merge_commit": "19c7d61f8af95e257ad2b422ce40db99ce12eabf",
+      "updated_at": "2026-10-21T19:12:49Z",
+      "diff_sha256": "5a498b916ecc3c2db40ca51a27c71d4958a6a826f9e2ee765561a87a0213da9b",
+      "scope": "Live Paint face picking/filling skips hidden faces. Existing edge-picking contract retained.",
+      "verified_postimages": [
+        {
+          "pr": 3460,
+          "path": "crates/engine/src/cmd/buildcmds.rs",
+          "blob": "0d00134046082fcc81d6bf0cbaa234fa3f32b30d",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/4bd55029e8d607e7b45fb8822fdfb5d47b00730c/crates/engine/src/cmd/buildcmds.rs"
+        },
+        {
+          "pr": 3460,
+          "path": "crates/engine/src/tests_build.rs",
+          "blob": "f55297312adcf1cda88c8515cca59ce9cc725f9d",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/4bd55029e8d607e7b45fb8822fdfb5d47b00730c/crates/engine/src/tests_build.rs"
+        },
+        {
+          "pr": 3460,
+          "path": "crates/tools/src/builder.rs",
+          "blob": "ebc6490e98a44671918ddb211a5b4e347f0d197c",
+          "url": "https://raw.githubusercontent.com/dotCooCoo/vectorcraft/4bd55029e8d607e7b45fb8822fdfb5d47b00730c/crates/tools/src/builder.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3406,
+      "url": "https://github.com/storytold/vectorcraft/pull/3406",
+      "title": "Data Recovery: the recovery folders are owner-only on Unix",
+      "author": "oracola91",
+      "state": "merged",
+      "head": "d8e876b721fc687932ba000f59ca20e13bde226b",
+      "base": "5fc175a5ef57fe6760272eddafbc5b25b653375f",
+      "merge_commit": "0a1c4cdd8741882d6c32a5d711b38f469a1e149c",
+      "updated_at": "2026-10-21T16:50:50Z",
+      "diff_sha256": "f8e0dbb5c659a37125f826b3fbac98d96fa4ed3c5b2a59ad5cfba2669b822196",
+      "scope": "Create recovery folders owner-only on Unix while preserving modes of pre-existing chosen folders.",
+      "verified_postimages": [
+        {
+          "pr": 3406,
+          "path": "crates/engine/src/cmd/recovery.rs",
+          "blob": "85650327a8fb0ea0038174e3dd7a8393bdafd118",
+          "url": "https://raw.githubusercontent.com/oracola91/vectorcraft/d8e876b721fc687932ba000f59ca20e13bde226b/crates/engine/src/cmd/recovery.rs"
+        },
+        {
+          "pr": 3406,
+          "path": "crates/engine/src/tests_recovery.rs",
+          "blob": "e22d29d86a25c6de0ce498f78211ffa66eb3f386",
+          "url": "https://raw.githubusercontent.com/oracola91/vectorcraft/d8e876b721fc687932ba000f59ca20e13bde226b/crates/engine/src/tests_recovery.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3518,
+      "url": "https://github.com/storytold/vectorcraft/pull/3518",
+      "title": "Fix #3395: color book library tabs use file name",
+      "author": "nrq6993-a11y",
+      "state": "merged",
+      "head": "3d4d34fc15e1c030f8805a29073dd0fcb546a038",
+      "base": "15b041be81faeb871d2735cef8fff38625e9b507",
+      "merge_commit": "ae13bd7dee4ec4ed5c276a4722b635d5e8851265",
+      "updated_at": "2026-10-22T04:27:01Z",
+      "diff_sha256": "9d72f2fcad65df32494933da7c0ab08e80b1477c22a89f575d486a0a200b6e95",
+      "scope": "Color-book library tab names follow ordinary file basenames; existing copy behavior retained.",
+      "verified_postimages": [
+        {
+          "pr": 3518,
+          "path": "crates/engine/src/cmd/swatchlib.rs",
+          "blob": "36c67f696bc175db4bc1b4d48350c41a6ea7c0a5",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/3d4d34fc15e1c030f8805a29073dd0fcb546a038/crates/engine/src/cmd/swatchlib.rs"
+        },
+        {
+          "pr": 3518,
+          "path": "crates/engine/src/tests_swatchlib.rs",
+          "blob": "7b17fa5867d6c76d7c4b020df4e909d9185ee4c7",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/3d4d34fc15e1c030f8805a29073dd0fcb546a038/crates/engine/src/tests_swatchlib.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3534,
+      "url": "https://github.com/storytold/vectorcraft/pull/3534",
+      "title": "Type on a Path hits filled paths without a stroke (#3505)",
+      "author": "nrq6993-a11y",
+      "state": "merged",
+      "head": "8735170a34221a4a2c6c00dd561e91984c61e287",
+      "base": "0414a13ace937237b9ff42efff79806e7e7b602a",
+      "merge_commit": "388c653cd10651e8c29ad1b024881b61ac8785e8",
+      "updated_at": "2026-10-22T08:02:51Z",
+      "diff_sha256": "5dc51224e9a9d52118b125c3a14dba4d16149f228116317526bc06814010f323",
+      "scope": "Regression coverage only: filled paths without stroke accept Type on Path/Area Type on their outline, not inside the fill; current implementation already matches.",
+      "verified_postimages": [
+        {
+          "pr": 3534,
+          "path": "crates/tools/src/text_tests.rs",
+          "blob": "f5ebcad01dbf3008e1909dec22983da908ef635f",
+          "url": "https://raw.githubusercontent.com/nrq6993-a11y/vectorcraft/8735170a34221a4a2c6c00dd561e91984c61e287/crates/tools/src/text_tests.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3550,
+      "url": "https://github.com/storytold/vectorcraft/pull/3550",
+      "title": "Fix #3093: panel scroll bars take a column of their own instead of covering controls",
+      "author": "Taha-Mahmoodi",
+      "state": "merged",
+      "head": "a8bdf5043f946f3ccd9e50d1ae145253fd6976c5",
+      "base": "c60ad8dcfa7509a42101a1dcb54e8a47e93b25da",
+      "merge_commit": "423bc7170547ac76093b75cdf5e3208986568197",
+      "updated_at": "2026-10-22T09:43:14Z",
+      "diff_sha256": "3bde8e4f85eaa26b80cf9607fd52225dc896194b3e01acca8de0ffe41c2f79d3",
+      "scope": "Properties/flyout/docked-column scrollbars reserve a column, using a small scroll-style prerequisite from the same postimage. New shared-panel docking module absent and excluded.",
+      "verified_postimages": [
+        {
+          "pr": 3550,
+          "path": "crates/ui-egui/src/dock.rs",
+          "blob": "13e12f33b1af8f9e4c3128dcb58d4bd9d6f6a5ee",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/a8bdf5043f946f3ccd9e50d1ae145253fd6976c5/crates/ui-egui/src/dock.rs"
+        },
+        {
+          "pr": 3550,
+          "path": "crates/ui-egui/src/floating.rs",
+          "blob": "9efe0789d66051efdebfaa1ebf253e809948c60a",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/a8bdf5043f946f3ccd9e50d1ae145253fd6976c5/crates/ui-egui/src/floating.rs"
+        },
+        {
+          "pr": 3550,
+          "path": "crates/ui-egui/src/panel_docking.rs",
+          "blob": "c1808694ef143694d893c80b4366e3c67a1c4a16",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/a8bdf5043f946f3ccd9e50d1ae145253fd6976c5/crates/ui-egui/src/panel_docking.rs"
+        },
+        {
+          "pr": 3550,
+          "path": "crates/ui-egui/src/widgets.rs",
+          "blob": "0036de7b6d24311ce47f1dcb56d11d8b60c3f03a",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/a8bdf5043f946f3ccd9e50d1ae145253fd6976c5/crates/ui-egui/src/widgets.rs"
+        }
+      ]
+    },
+    {
+      "pr": 3554,
+      "url": "https://github.com/storytold/vectorcraft/pull/3554",
+      "title": "Fix #3443: the Layers list's scroll bar no longer covers the rows' selection marks",
+      "author": "Taha-Mahmoodi",
+      "state": "merged",
+      "head": "7141932dfb273e22679a19d6b5803603afe72bfa",
+      "base": "bbc9bd3de2ec59301a121fdf2ac43e268992f29b",
+      "merge_commit": "22c83b5951f4dad23ecde2f2b386123cc7b5bc17",
+      "updated_at": "2026-10-22T09:52:02Z",
+      "diff_sha256": "005f52e2578357686c46d5c591090b632a03fa1e6e415751311acd4d755e0141",
+      "scope": "Layers scrollbar reserves its own column and avoids selection/target marks.",
+      "verified_postimages": [
+        {
+          "pr": 3554,
+          "path": "crates/ui-egui/src/dock.rs",
+          "blob": "0b845cfe41b30d35bf4113a692e5ce95f2defeb7",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/7141932dfb273e22679a19d6b5803603afe72bfa/crates/ui-egui/src/dock.rs"
+        },
+        {
+          "pr": 3554,
+          "path": "crates/ui-egui/src/panels/layers.rs",
+          "blob": "fc3be37210b139427757878947dc172bdf426aa7",
+          "url": "https://raw.githubusercontent.com/Taha-Mahmoodi/vectorcraft/7141932dfb273e22679a19d6b5803603afe72bfa/crates/ui-egui/src/panels/layers.rs"
+        }
+      ]
+    }
+  ],
+  "screened": [
+    {
+      "pr": 3612,
+      "url": "https://github.com/storytold/vectorcraft/pull/3612",
+      "title": "Fix #3370: stepping a number field stops at its bounds: a stroke weight at 0, a miter limit at 1",
+      "state": "open",
+      "updated_at": "2026-10-22T11:44:52Z",
+      "head": "661f3051a3fbe77ad5d4eb74286742f052848e83",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3613,
+      "url": "https://github.com/storytold/vectorcraft/pull/3613",
+      "title": "Fix #3544: an SVG of one artboard on its own has the artboard's name as its title",
+      "state": "open",
+      "updated_at": "2026-10-22T11:44:34Z",
+      "head": "c85dadb205256c9e57a8e81c73aed9817a0b98f0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3548,
+      "url": "https://github.com/storytold/vectorcraft/pull/3548",
+      "title": "AF.5: Affinity import — strokes, text decoration, text placement, outline effects, CMYK photos",
+      "state": "open",
+      "updated_at": "2026-10-22T11:44:32Z",
+      "head": "120f679150ea36d62e274fb6cb5157aeaeb6a470",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3561,
+      "url": "https://github.com/storytold/vectorcraft/pull/3561",
+      "title": "Type: colour emoji fonts with bitmap glyphs draw and export",
+      "state": "open",
+      "updated_at": "2026-10-22T11:44:13Z",
+      "head": "00a9e45da3ebed17bed8569d90da559fa9121fbc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3611,
+      "url": "https://github.com/storytold/vectorcraft/pull/3611",
+      "title": "Fix #3545: draw_path and draw_shape with a paint the engine refuses leave the document unchanged",
+      "state": "open",
+      "updated_at": "2026-10-22T11:37:41Z",
+      "head": "d187f976b6b8531c53e1df5963ef4ff7370a7087",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3614,
+      "url": "https://github.com/storytold/vectorcraft/pull/3614",
+      "title": "Fix EPS counted metadata reads after CRLF line endings",
+      "state": "merged",
+      "updated_at": "2026-10-22T11:37:12Z",
+      "head": "76399175ebb30dd8163794ced848c0afd725d847",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3610,
+      "url": "https://github.com/storytold/vectorcraft/pull/3610",
+      "title": "Fix EPS counted metadata reads after CRLF line endings",
+      "state": "closed",
+      "updated_at": "2026-10-22T11:34:21Z",
+      "head": "66946212df202896882921e1db5cf7b08e4d1079",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3608,
+      "url": "https://github.com/storytold/vectorcraft/pull/3608",
+      "title": "Export: a typed extension of a format the export doesn't write is replaced",
+      "state": "merged",
+      "updated_at": "2026-10-22T11:22:57Z",
+      "head": "cbf2d9cc433f6b886b1512a39120e0f20b915915",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3609,
+      "url": "https://github.com/storytold/vectorcraft/pull/3609",
+      "title": "Gradient mesh: each tessellated quad shades between its corner colours, no banding",
+      "state": "merged",
+      "updated_at": "2026-10-22T11:17:54Z",
+      "head": "00fe2be46948e721f5ff2544f0190316f2138004",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3272,
+      "url": "https://github.com/storytold/vectorcraft/pull/3272",
+      "title": "Consume open-path fills when outlining strokes",
+      "state": "open",
+      "updated_at": "2026-10-22T11:16:40Z",
+      "head": "911e078d7bbb906bcdf5c686155bb726b06b60b6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2011,
+      "url": "https://github.com/storytold/vectorcraft/pull/2011",
+      "title": "Wire VectorCraft to CollabCraft for Open, Save and Share", "provenance_marker": "brand-ok: exact upstream PR title retained as provenance",
+      "state": "open",
+      "updated_at": "2026-10-22T11:10:44Z",
+      "head": "133d7c092679693e22387f9204afeff07cbb052b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3123,
+      "url": "https://github.com/storytold/vectorcraft/pull/3123",
+      "title": "CDR.1: add bounded native CorelDRAW import",
+      "state": "open",
+      "updated_at": "2026-10-22T11:04:06Z",
+      "head": "98042a1e4500431bc7cf635a31e82d3b428366db",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2832,
+      "url": "https://github.com/storytold/vectorcraft/pull/2832",
+      "title": "Character: Anti-aliasing Method sets how a type object's edges are drawn as pixels",
+      "state": "open",
+      "updated_at": "2026-10-22T11:01:55Z",
+      "head": "23d250d6ee2968ca9f61cc7d79f780f6f892c732",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3308,
+      "url": "https://github.com/storytold/vectorcraft/pull/3308",
+      "title": "Keep artwork anchored during panel, ruler and window layout changes",
+      "state": "open",
+      "updated_at": "2026-10-22T10:53:11Z",
+      "head": "62193c3cd7ac87332af86af30be035801600e64d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3583,
+      "url": "https://github.com/storytold/vectorcraft/pull/3583",
+      "title": "README: the app icon above the title",
+      "state": "merged",
+      "updated_at": "2026-10-22T10:50:26Z",
+      "head": "fe8b8c8106e92323f5142f4aa22fa985db42e8ba",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2636,
+      "url": "https://github.com/storytold/vectorcraft/pull/2636",
+      "title": "Type: a Backspace and the text typed after it in one frame apply in order",
+      "state": "open",
+      "updated_at": "2026-10-22T10:36:00Z",
+      "head": "2adce89eb1aade17b81c155a6b393c2384eaf384",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3560,
+      "url": "https://github.com/storytold/vectorcraft/pull/3560",
+      "title": "Package: File › Package collects and writes the package on the background thread",
+      "state": "merged",
+      "updated_at": "2026-10-22T10:30:40Z",
+      "head": "052bbb14b48e7c21af2a8feea2b026737bd602d9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3476,
+      "url": "https://github.com/storytold/vectorcraft/pull/3476",
+      "title": "Fix Recolor Artwork Edit overflow with large palettes",
+      "state": "merged",
+      "updated_at": "2026-10-22T10:17:48Z",
+      "head": "e56e40dd85c2fbdca603b0c5022d84b9c6526268",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3391,
+      "url": "https://github.com/storytold/vectorcraft/pull/3391",
+      "title": "chore(deps): bump the cargo-dependencies group across 2 directories with 22 updates",
+      "state": "open",
+      "updated_at": "2026-10-22T10:12:22Z",
+      "head": "fcbb95b4437e2f0bfb924bddf91bf332b216ec68",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3557,
+      "url": "https://github.com/storytold/vectorcraft/pull/3557",
+      "title": "Artboards: the active artboard follows the Artboard tool after Paste, Cut and tool.setOption",
+      "state": "merged",
+      "updated_at": "2026-10-22T10:07:13Z",
+      "head": "5d4cac31cfcd30952059a6f702270c2926a3f28c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2731,
+      "url": "https://github.com/storytold/vectorcraft/pull/2731",
+      "title": "Paragraph: Reset Panel also resets the Mojikumi Set and tab stops",
+      "state": "open",
+      "updated_at": "2026-10-22T10:03:17Z",
+      "head": "7a4bcb42f9ef1fffd5c34990b28e01a5778d2fcc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3496,
+      "url": "https://github.com/storytold/vectorcraft/pull/3496",
+      "title": "Place: Link keeps a placed PDF or .ai linked to its file",
+      "state": "open",
+      "updated_at": "2026-10-22T09:58:14Z",
+      "head": "95cf25d1fd215e28157c795db2ef2192043358ed",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3554,
+      "url": "https://github.com/storytold/vectorcraft/pull/3554",
+      "title": "Fix #3443: the Layers list's scroll bar no longer covers the rows' selection marks",
+      "state": "merged",
+      "updated_at": "2026-10-22T09:52:02Z",
+      "head": "7141932dfb273e22679a19d6b5803603afe72bfa",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3553,
+      "url": "https://github.com/storytold/vectorcraft/pull/3553",
+      "title": "Add editable DWG import for Open and Place",
+      "state": "open",
+      "updated_at": "2026-10-22T09:44:57Z",
+      "head": "e40078628802151f7092c6bd88df8e9a84dc19d9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2979,
+      "url": "https://github.com/storytold/vectorcraft/pull/2979",
+      "title": "Fix #2691: double-click opens Rectangular and Polar Grid tool options",
+      "state": "open",
+      "updated_at": "2026-10-22T09:43:50Z",
+      "head": "df9532c8c269acb1f52728c586e2f4bbac74f700",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3551,
+      "url": "https://github.com/storytold/vectorcraft/pull/3551",
+      "title": "Fix #2452: panning or zooming over detailed art no longer hit-tests it every frame",
+      "state": "merged",
+      "updated_at": "2026-10-22T09:43:19Z",
+      "head": "6ee972c4da5f7486ba23c07f847dcd44da12fbac",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3550,
+      "url": "https://github.com/storytold/vectorcraft/pull/3550",
+      "title": "Fix #3093: panel scroll bars take a column of their own instead of covering controls",
+      "state": "merged",
+      "updated_at": "2026-10-22T09:43:14Z",
+      "head": "a8bdf5043f946f3ccd9e50d1ae145253fd6976c5",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3549,
+      "url": "https://github.com/storytold/vectorcraft/pull/3549",
+      "title": "Fix #2103: arrow keys with the Artboard tool move the selected artboards and their art",
+      "state": "merged",
+      "updated_at": "2026-10-22T09:43:05Z",
+      "head": "b0d5ab3f68137786a0803b31f1e1024194ce2fe1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3105,
+      "url": "https://github.com/storytold/vectorcraft/pull/3105",
+      "title": "G1: Arc drag shows chord length and sweep angle in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-22T09:38:06Z",
+      "head": "59880294e43cd61f1e9c0011246744da3cd8e90b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3538,
+      "url": "https://github.com/storytold/vectorcraft/pull/3538",
+      "title": "Optional raw stroke without Catmull-Rom pre-smoothing",
+      "state": "open",
+      "updated_at": "2026-10-22T09:12:43Z",
+      "head": "6be608953aeafce214532959a4638afbc8b0f25a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2581,
+      "url": "https://github.com/storytold/vectorcraft/pull/2581",
+      "title": "i18n: add Turkish (tr) localization",
+      "state": "merged",
+      "updated_at": "2026-10-22T09:04:18Z",
+      "head": "e33094e11d674faabac4b9062fad91176d116882",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3513,
+      "url": "https://github.com/storytold/vectorcraft/pull/3513",
+      "title": "fix(stroke): preserve extended dash patterns when editing (#3497)",
+      "state": "open",
+      "updated_at": "2026-10-22T09:00:41Z",
+      "head": "6d1bff85967325db98037b5a31ee44c9dd87da43",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2505,
+      "url": "https://github.com/storytold/vectorcraft/pull/2505",
+      "title": "Selection: Marquee Selection by Drag Direction preference (#2449)",
+      "state": "open",
+      "updated_at": "2026-10-22T09:00:39Z",
+      "head": "81206efd16fcbf223b58ba0a351d45062cc8a073",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3489,
+      "url": "https://github.com/storytold/vectorcraft/pull/3489",
+      "title": "Open the spiral tool options dialog",
+      "state": "open",
+      "updated_at": "2026-10-22T08:57:57Z",
+      "head": "d140f9305508d889359d9cb5db57da2314e21cb9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3542,
+      "url": "https://github.com/storytold/vectorcraft/pull/3542",
+      "title": "G4: Mixed Justification dialog fields",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:48:16Z",
+      "head": "5498b62a3de6487af78675eb8183ebfb25cf19f1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3541,
+      "url": "https://github.com/storytold/vectorcraft/pull/3541",
+      "title": "Render: moved stretched type redraws where its strokes reach",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:34:39Z",
+      "head": "a2e7a2a562113203a385b3193c05cac8cae22d05",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3484,
+      "url": "https://github.com/storytold/vectorcraft/pull/3484",
+      "title": "Render: moved type with mitred strokes redraws where its spikes reach",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:33:05Z",
+      "head": "60f4c4f1455f67e3bbc445fb3e48a1b0f3cf458f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3539,
+      "url": "https://github.com/storytold/vectorcraft/pull/3539",
+      "title": "G4: Mixed paragraph kinsoku and mojikumi dropdowns",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:17:21Z",
+      "head": "b833187ff8221bb8a51fee14cfa7efa18f403292",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3537,
+      "url": "https://github.com/storytold/vectorcraft/pull/3537",
+      "title": "G4: Mixed paragraph Hyphenate checkbox",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:16:57Z",
+      "head": "2bf0595f0954109473414d76d657842243054aab",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3534,
+      "url": "https://github.com/storytold/vectorcraft/pull/3534",
+      "title": "Type on a Path hits filled paths without a stroke (#3505)",
+      "state": "merged",
+      "updated_at": "2026-10-22T08:02:51Z",
+      "head": "8735170a34221a4a2c6c00dd561e91984c61e287",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3535,
+      "url": "https://github.com/storytold/vectorcraft/pull/3535",
+      "title": "Type: show recently used fonts in font pickers (#3515)",
+      "state": "merged",
+      "updated_at": "2026-10-22T07:43:09Z",
+      "head": "4ae1b3d51a63cc7d0c215f57c2e43b459f7715d6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3533,
+      "url": "https://github.com/storytold/vectorcraft/pull/3533",
+      "title": "G11: Color Picker and popover Fill/Stroke proxy drags (#3440)",
+      "state": "merged",
+      "updated_at": "2026-10-22T07:42:54Z",
+      "head": "36eed1ac777c0695d6631acfa6dd58b5e165bbc6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3283,
+      "url": "https://github.com/storytold/vectorcraft/pull/3283",
+      "title": "M2.1: compound path pen/join, direct selection drag/multi-select, path split, and copy/cut (#2122, #3405)",
+      "state": "open",
+      "updated_at": "2026-10-22T07:28:01Z",
+      "head": "782d6b117841e77439f4d1b859dd6583fb34d187",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3469,
+      "url": "https://github.com/storytold/vectorcraft/pull/3469",
+      "title": "Rename the Preferences \"Performance & Storage\" category to \"Storage\" (#3410)",
+      "state": "merged",
+      "updated_at": "2026-10-22T07:03:19Z",
+      "head": "b11b41d5f364e97b179a3e5f92e09fbbac9b1cf0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3507,
+      "url": "https://github.com/storytold/vectorcraft/pull/3507",
+      "title": "G11: Open Arc tool options on canvas click",
+      "state": "merged",
+      "updated_at": "2026-10-22T06:50:51Z",
+      "head": "b1befcfa026465bd325b3dea0fcdb48f005d7d5d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3524,
+      "url": "https://github.com/storytold/vectorcraft/pull/3524",
+      "title": "PDF/X-1a and X-3: flattening keeps a CMYK document's inks where it rasterizes (#2160)",
+      "state": "merged",
+      "updated_at": "2026-10-22T05:44:31Z",
+      "head": "945fa338d0cbfe62de4e6f00fea9891cabb2ad1d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3523,
+      "url": "https://github.com/storytold/vectorcraft/pull/3523",
+      "title": "G4: Mixed paragraph composer menu checks",
+      "state": "merged",
+      "updated_at": "2026-10-22T05:22:49Z",
+      "head": "7fa51739627530b92f99bc20976d83194c8ebb8b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2804,
+      "url": "https://github.com/storytold/vectorcraft/pull/2804",
+      "title": "Character: Font Size can measure the cap height, x-height or ICF box",
+      "state": "open",
+      "updated_at": "2026-10-22T05:17:33Z",
+      "head": "73741588dbf8c8751d58ee26eca70a1eab070a71",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3503,
+      "url": "https://github.com/storytold/vectorcraft/pull/3503",
+      "title": "vectorcraft-web: postMessage host bridge (?host=parent)", "provenance_marker": "brand-ok: exact upstream PR title retained as provenance",
+      "state": "open",
+      "updated_at": "2026-10-22T05:16:21Z",
+      "head": "eb747b20653a63486cca72b92031fe67dfc637c9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3520,
+      "url": "https://github.com/storytold/vectorcraft/pull/3520",
+      "title": "Library panels: Locate Library… reads a missing library whose panel isn't persistent",
+      "state": "merged",
+      "updated_at": "2026-10-22T04:41:31Z",
+      "head": "de1182fbe36c0f3021a03def01761568e5ea2490",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3506,
+      "url": "https://github.com/storytold/vectorcraft/pull/3506",
+      "title": "Fix #3494: translatable package status message",
+      "state": "merged",
+      "updated_at": "2026-10-22T04:34:51Z",
+      "head": "fd8459592d2490f85b7fca69fff37c238d1a4a9a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3518,
+      "url": "https://github.com/storytold/vectorcraft/pull/3518",
+      "title": "Fix #3395: color book library tabs use file name",
+      "state": "merged",
+      "updated_at": "2026-10-22T04:27:01Z",
+      "head": "3d4d34fc15e1c030f8805a29073dd0fcb546a038",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3502,
+      "url": "https://github.com/storytold/vectorcraft/pull/3502",
+      "title": "Fix #3455: Home recent reopen focuses existing document",
+      "state": "merged",
+      "updated_at": "2026-10-22T04:09:01Z",
+      "head": "e4db022f494af12f0c5241c9df2de6f5dd2fc2a5",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3512,
+      "url": "https://github.com/storytold/vectorcraft/pull/3512",
+      "title": "UI: an embedder of the egui panels binds their font families without shipping their faces",
+      "state": "merged",
+      "updated_at": "2026-10-22T03:55:03Z",
+      "head": "317ca00cccc76e6ddbc51cc42a4a95e47c01efb1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3014,
+      "url": "https://github.com/storytold/vectorcraft/pull/3014",
+      "title": "G1: Align direct-selected anchors to a key anchor",
+      "state": "open",
+      "updated_at": "2026-10-22T03:53:15Z",
+      "head": "7a6a92a586e28ea6e63baf8d23b598a0df24852b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3277,
+      "url": "https://github.com/storytold/vectorcraft/pull/3277",
+      "title": "Add shared presets and artwork fitting to Artboard Options",
+      "state": "merged",
+      "updated_at": "2026-10-22T03:47:13Z",
+      "head": "438c6194a6ffd2f4de2cde30f6038a79c05d369e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3495,
+      "url": "https://github.com/storytold/vectorcraft/pull/3495",
+      "title": "Register Windows file associations",
+      "state": "open",
+      "updated_at": "2026-10-22T03:10:08Z",
+      "head": "8695ea5bfa7a68f2a1db7f81610ef7b595e5c7c1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3498,
+      "url": "https://github.com/storytold/vectorcraft/pull/3498",
+      "title": "Fix #3480: pattern edit preview honors Overlap stacking",
+      "state": "merged",
+      "updated_at": "2026-10-22T02:33:20Z",
+      "head": "d792e7b2be4a8cde021e8b160cd9c45af8de50e4",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3275,
+      "url": "https://github.com/storytold/vectorcraft/pull/3275",
+      "title": "Make Image Trace palettes movable, fitted and selection-aware",
+      "state": "open",
+      "updated_at": "2026-10-22T02:07:34Z",
+      "head": "fec504d497345353b72b6fb269ae1af9b490357e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3501,
+      "url": "https://github.com/storytold/vectorcraft/pull/3501",
+      "title": "i18n(ja): Keyboard Shortcuts editor and the Print overprint note",
+      "state": "merged",
+      "updated_at": "2026-10-22T01:52:09Z",
+      "head": "22821222723fde14f8d8f7f6504a3c8726d014e9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3479,
+      "url": "https://github.com/storytold/vectorcraft/pull/3479",
+      "title": "Support dragging editable artwork between document tabs",
+      "state": "merged",
+      "updated_at": "2026-10-22T01:47:35Z",
+      "head": "c43ead202fbedc92ccd487f7bcf0de0ceacc58d0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3500,
+      "url": "https://github.com/storytold/vectorcraft/pull/3500",
+      "title": "Artboards: Rename opens on a selected artboard after a Ctrl/Cmd double-click or a paste",
+      "state": "merged",
+      "updated_at": "2026-10-22T01:40:59Z",
+      "head": "152fc18d9b12e6bd44911346eb452de20f295d0c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3499,
+      "url": "https://github.com/storytold/vectorcraft/pull/3499",
+      "title": "Commands: path.create with path data refuses closed given as text, and the grids refuse a count",
+      "state": "merged",
+      "updated_at": "2026-10-22T01:40:43Z",
+      "head": "bfc3f5251a6f48263dc5cb2089d79cc14c705f32",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2749,
+      "url": "https://github.com/storytold/vectorcraft/pull/2749",
+      "title": "Barcodes and QR Codes: a Barcode panel and the vectorcraft-barcode crate", "provenance_marker": "brand-ok: exact upstream PR title retained as provenance",
+      "state": "open",
+      "updated_at": "2026-10-22T01:25:01Z",
+      "head": "2fd9317d85f2bf04390e1e1496ff2ec5d0c936ca",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3273,
+      "url": "https://github.com/storytold/vectorcraft/pull/3273",
+      "title": "Preserve raster coverage of thin curved strokes",
+      "state": "open",
+      "updated_at": "2026-10-22T01:24:45Z",
+      "head": "954e98927e5012affa8b7b55add1e99607e6eb27",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3473,
+      "url": "https://github.com/storytold/vectorcraft/pull/3473",
+      "title": "feat(linux): add KDE Plasma Global Menu and Automatic brightness",
+      "state": "open",
+      "updated_at": "2026-10-22T00:56:29Z",
+      "head": "19ad84b6e2e63a9389ff45016bcc52a4649aea51",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3493,
+      "url": "https://github.com/storytold/vectorcraft/pull/3493",
+      "title": "Fix #3465: Swatch Libraries Other Library lists .ase on Linux",
+      "state": "merged",
+      "updated_at": "2026-10-22T00:39:30Z",
+      "head": "1fbec667ec1ba901d7008364994f8953ec0c1387",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3492,
+      "url": "https://github.com/storytold/vectorcraft/pull/3492",
+      "title": "G11: Copy fill/stroke by dragging between proxies (#3467)",
+      "state": "merged",
+      "updated_at": "2026-10-22T00:39:17Z",
+      "head": "1388b8ec1a914a61142a0bca5711cbe7e76b76c4",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3491,
+      "url": "https://github.com/storytold/vectorcraft/pull/3491",
+      "title": "Tests: the Expand Appearance reply test fails when the reply leaves out the expanded object (#3374)",
+      "state": "merged",
+      "updated_at": "2026-10-22T00:38:21Z",
+      "head": "66655c67c227c4d027ef1bd76f87dbf1228b0e89",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3168,
+      "url": "https://github.com/storytold/vectorcraft/pull/3168",
+      "title": "Type › Typst…: typeset Typst markup (math for scientific figures) as editable vector art",
+      "state": "open",
+      "updated_at": "2026-10-22T00:20:53Z",
+      "head": "f043b6d4f7b8b8437b28e86fd0ee7ae8ac5c40b9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3490,
+      "url": "https://github.com/storytold/vectorcraft/pull/3490",
+      "title": "Library panels: Locate Library… refuses a panel whose library is there",
+      "state": "merged",
+      "updated_at": "2026-10-22T00:14:07Z",
+      "head": "17fbf6ad6a2ac01b91c4c79c10854f10cc2277c9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2883,
+      "url": "https://github.com/storytold/vectorcraft/pull/2883",
+      "title": "ui: Effect Gallery dialog (browse raster filters and apply a stack)",
+      "state": "merged",
+      "updated_at": "2026-10-22T00:14:07Z",
+      "head": "757eaf9afa5b6a06573de90fa5b914b5d80b6c60",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3488,
+      "url": "https://github.com/storytold/vectorcraft/pull/3488",
+      "title": "Export As: a held Enter doesn't confirm the options; exporters get their file",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:52:43Z",
+      "head": "2f893566eeac18af360b0161e48b5a9c6f0c8c8f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3487,
+      "url": "https://github.com/storytold/vectorcraft/pull/3487",
+      "title": "Commands: Transform Each, artboards and more refuse a boolean or number given as text",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:50:35Z",
+      "head": "caa69625088c998d4e31f8ef8c62f914d9fe82e2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2910,
+      "url": "https://github.com/storytold/vectorcraft/pull/2910",
+      "title": "#2882: Paintbrush [ ] bracket keys resize the brush",
+      "state": "open",
+      "updated_at": "2026-10-21T23:41:14Z",
+      "head": "c6ae9f82e6fed15117dacf1bc1f512233f74595f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3387,
+      "url": "https://github.com/storytold/vectorcraft/pull/3387",
+      "title": "Use chrono instead of hand-rolled UTC conversion",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:36:33Z",
+      "head": "163b8ee166257614ed4d883ceefdf195197fc292",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3475,
+      "url": "https://github.com/storytold/vectorcraft/pull/3475",
+      "title": "security: enforce HTTPS on curl downloads (SonarCloud S6506)",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:35:53Z",
+      "head": "3cfa330a97ed7faa09e471983b996269264d402a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3468,
+      "url": "https://github.com/storytold/vectorcraft/pull/3468",
+      "title": "Ellipse pie angles in Transform and Properties (#3451)",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:35:20Z",
+      "head": "6066b4b8c76208d45eb980daa3a10db234f77765",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3423,
+      "url": "https://github.com/storytold/vectorcraft/pull/3423",
+      "title": "Fix Linux file-manager document handoff and bounded regular-file reads",
+      "state": "open",
+      "updated_at": "2026-10-21T23:31:40Z",
+      "head": "dac0d57a55e8dd5e613e77ed4f71cd0035c20e5f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2942,
+      "url": "https://github.com/storytold/vectorcraft/pull/2942",
+      "title": "Honor Preferences › Performance › Real-time Drawing and Editing during tool drags",
+      "state": "open",
+      "updated_at": "2026-10-21T23:28:14Z",
+      "head": "c250476564315655075acc3b68abeddab796439a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3482,
+      "url": "https://github.com/storytold/vectorcraft/pull/3482",
+      "title": "Export: EPS, legacy .ai, EMF/WMF and DXF give one note for images that can't be decoded",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:22:51Z",
+      "head": "e66bca39b28713d5b7368c925d6f298d47aad300",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3486,
+      "url": "https://github.com/storytold/vectorcraft/pull/3486",
+      "title": "Tests: the data set export test fails when its folder cannot be emptied (#3389)",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:22:15Z",
+      "head": "3bb0f07a4bda7e02310f83fdd16532fa6d3cab0e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3258,
+      "url": "https://github.com/storytold/vectorcraft/pull/3258",
+      "title": "Refine open and closed pan cursors with documented provenance",
+      "state": "open",
+      "updated_at": "2026-10-21T23:19:25Z",
+      "head": "d94c971fb1cb97b9d205886d62abb0f35d068952",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3464,
+      "url": "https://github.com/storytold/vectorcraft/pull/3464",
+      "title": "PDF export: a 16-bit PNG is written at 8 bits for PDF 1.3 and 1.4 instead of failing the export",
+      "state": "merged",
+      "updated_at": "2026-10-21T23:07:30Z",
+      "head": "5f6c7b8da9b01ae0b5034eed59217fc2cc197f54",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2537,
+      "url": "https://github.com/storytold/vectorcraft/pull/2537",
+      "title": "Snapping: tangent and perpendicular snapping, View > Snapping (#2530)",
+      "state": "open",
+      "updated_at": "2026-10-21T23:01:58Z",
+      "head": "b0487c59f7d308e6f4105dab2e6bb897a17992a1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2532,
+      "url": "https://github.com/storytold/vectorcraft/pull/2532",
+      "title": "Artboards: canvas menu to lock and unlock artboards (#2531)",
+      "state": "open",
+      "updated_at": "2026-10-21T22:53:47Z",
+      "head": "8a8a1c865981e58a64c0da79ec8ccd4cfe2feed0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3176,
+      "url": "https://github.com/storytold/vectorcraft/pull/3176",
+      "title": "Plug-ins: filters keep data with the document (G17)",
+      "state": "open",
+      "updated_at": "2026-10-21T22:51:41Z",
+      "head": "907c2a643d869f280b5e5b8325dcadd9daeeee8b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2891,
+      "url": "https://github.com/storytold/vectorcraft/pull/2891",
+      "title": "Shortcuts: Enter opens the active tool's options, as its double-click does",
+      "state": "open",
+      "updated_at": "2026-10-21T22:48:25Z",
+      "head": "a664235f43f895301953e8ccc6aa49737b10d3f4",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2480,
+      "url": "https://github.com/storytold/vectorcraft/pull/2480",
+      "title": "SVG: keep CSS classes of imported elements on export (#2414)",
+      "state": "open",
+      "updated_at": "2026-10-21T22:46:28Z",
+      "head": "3e112001aa5412818a46dcf2520021bcdce1eeb2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3375,
+      "url": "https://github.com/storytold/vectorcraft/pull/3375",
+      "title": "Type : Improve Text Selection Highlighting and Canvas Rendering",
+      "state": "open",
+      "updated_at": "2026-10-21T22:44:24Z",
+      "head": "4a77356b4bb2e07715dcf0aeab782a185ac6fd5f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2509,
+      "url": "https://github.com/storytold/vectorcraft/pull/2509",
+      "title": "PDF export: raster effect images get at least 150 ppi (#2485)",
+      "state": "open",
+      "updated_at": "2026-10-21T22:40:12Z",
+      "head": "b7994487da031f595ceb5b67c77e78a5a803fe33",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3483,
+      "url": "https://github.com/storytold/vectorcraft/pull/3483",
+      "title": "G11: Align panel moves ruler guides to artboard (#3463)",
+      "state": "merged",
+      "updated_at": "2026-10-21T22:28:26Z",
+      "head": "c8082facb1c20a2a89ffebf3ae4cfa20e0b86401",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3481,
+      "url": "https://github.com/storytold/vectorcraft/pull/3481",
+      "title": "Save As: the suggested extension typed in another case gets the picked type's",
+      "state": "merged",
+      "updated_at": "2026-10-21T22:20:23Z",
+      "head": "bd9a508d491f6a6ccd7a5609757aeaaf7daf6124",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2926,
+      "url": "https://github.com/storytold/vectorcraft/pull/2926",
+      "title": "Pie widgets: Shift snaps ellipse arc angles to 90° steps",
+      "state": "open",
+      "updated_at": "2026-10-21T22:17:41Z",
+      "head": "ee9ec279439970b8da463f600d6fbb19833043e5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3461,
+      "url": "https://github.com/storytold/vectorcraft/pull/3461",
+      "title": "Canvas: an edit redraws only the area it changed",
+      "state": "merged",
+      "updated_at": "2026-10-21T22:12:44Z",
+      "head": "ede08590a0394138afe05ea5e2105001fc7e960d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3133,
+      "url": "https://github.com/storytold/vectorcraft/pull/3133",
+      "title": "Use standard macOS Settings, Hide and Minimize shortcuts",
+      "state": "open",
+      "updated_at": "2026-10-21T21:54:58Z",
+      "head": "fa055850a26e01dae6259cf04ad413adbbe3ec99",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2539,
+      "url": "https://github.com/storytold/vectorcraft/pull/2539",
+      "title": "Blend: Ease In / Ease Out and separate Color Ease in Blend Options (#1124)",
+      "state": "merged",
+      "updated_at": "2026-10-21T21:50:46Z",
+      "head": "92f295d2a2cefa198e615cc4510951cd358e34b9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3268,
+      "url": "https://github.com/storytold/vectorcraft/pull/3268",
+      "title": "Packaging: pin the signing client and appimagetool, and check their hashes",
+      "state": "open",
+      "updated_at": "2026-10-21T21:40:04Z",
+      "head": "d395678a5c66fda5d71fd496a5b9b6487d1b3ea3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3477,
+      "url": "https://github.com/storytold/vectorcraft/pull/3477",
+      "title": "Type: the vertical ruby test passes with craft-fonts' Shippori Mincho",
+      "state": "merged",
+      "updated_at": "2026-10-21T21:39:19Z",
+      "head": "95f503367fe121e4a7a8b45534b95669f9da5db8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3045,
+      "url": "https://github.com/storytold/vectorcraft/pull/3045",
+      "title": "#2548: canvas scroll bars in Full Screen Mode",
+      "state": "open",
+      "updated_at": "2026-10-21T21:31:05Z",
+      "head": "1bf1e4d965b06f9356f32bb91d125040e0e722c0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3436,
+      "url": "https://github.com/storytold/vectorcraft/pull/3436",
+      "title": "Character: Character Direction sets the selected characters left to right or right to left",
+      "state": "merged",
+      "updated_at": "2026-10-21T21:29:04Z",
+      "head": "34cde7c3db604646e33836e6013b254f8f2d6d3d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2295,
+      "url": "https://github.com/storytold/vectorcraft/pull/2295",
+      "title": "Establish 16,383 pt Drawing Area bounds and fix view.fitAll viewport mismatch",
+      "state": "open",
+      "updated_at": "2026-10-21T21:26:02Z",
+      "head": "6de0c8e4da5b33fd58e6096a4fdf7c745aba9abc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3281,
+      "url": "https://github.com/storytold/vectorcraft/pull/3281",
+      "title": "UI.8: collapse dock groups to their tabs",
+      "state": "merged",
+      "updated_at": "2026-10-21T21:14:03Z",
+      "head": "b3268a829d44b067f144fa66f867a54132f3b4cc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2973,
+      "url": "https://github.com/storytold/vectorcraft/pull/2973",
+      "title": "Width tool: Shift-drag moves or scales the whole profile with a point",
+      "state": "open",
+      "updated_at": "2026-10-21T20:58:48Z",
+      "head": "5996f7adf741b3c7b3d08f528d44e99fce26dbc3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3300,
+      "url": "https://github.com/storytold/vectorcraft/pull/3300",
+      "title": "Add optional loopback HTTP MCP transport",
+      "state": "open",
+      "updated_at": "2026-10-21T20:56:04Z",
+      "head": "94ea4d7d12290c4b4b42c127af02822894d2aa0e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3472,
+      "url": "https://github.com/storytold/vectorcraft/pull/3472",
+      "title": "Graph: add Data to the selected chart's context menu (#3462)",
+      "state": "open",
+      "updated_at": "2026-10-21T20:55:28Z",
+      "head": "6292a0d0be1909886adf7fcaa7633595b0f112e6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3280,
+      "url": "https://github.com/storytold/vectorcraft/pull/3280",
+      "title": "UI.6: dock panels into any dock group",
+      "state": "merged",
+      "updated_at": "2026-10-21T20:47:40Z",
+      "head": "9cda8452abb78ac06aa278dd750478c85b5381f0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3279,
+      "url": "https://github.com/storytold/vectorcraft/pull/3279",
+      "title": "UI.7: workspaces keep their layout changes",
+      "state": "merged",
+      "updated_at": "2026-10-21T20:47:16Z",
+      "head": "d6d91c0954f359ff1953c0300b86e0e02375ed89",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3248,
+      "url": "https://github.com/storytold/vectorcraft/pull/3248",
+      "title": "Panels: the icon rail resizes, and an icon can leave the rail and come back",
+      "state": "open",
+      "updated_at": "2026-10-21T20:31:14Z",
+      "head": "62a13465ef94737d9aaa1f195fedae0ad8cedad2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3365,
+      "url": "https://github.com/storytold/vectorcraft/pull/3365",
+      "title": "EPS in Save As, and the Tools panel docks at the right edge too",
+      "state": "open",
+      "updated_at": "2026-10-21T20:28:21Z",
+      "head": "e715fc70d96e102f9c3e482da0a66a2f214cc38f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3466,
+      "url": "https://github.com/storytold/vectorcraft/pull/3466",
+      "title": "Fix Eyedropper styling for highlighted text ranges",
+      "state": "merged",
+      "updated_at": "2026-10-21T20:17:22Z",
+      "head": "a3b2b18cb02fb839fb483ad15f7039c814748896",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2828,
+      "url": "https://github.com/storytold/vectorcraft/pull/2828",
+      "title": "Add AI layer naming with Ollama, pause and resume",
+      "state": "open",
+      "updated_at": "2026-10-21T20:06:44Z",
+      "head": "d00e3a4a5f8a7c6ac4287235448097ff367bfc23",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2526,
+      "url": "https://github.com/storytold/vectorcraft/pull/2526",
+      "title": "Shape Builder: Gap Detection and Tool Options (#2523)",
+      "state": "merged",
+      "updated_at": "2026-10-21T20:03:50Z",
+      "head": "10a178f64a634a6b854c2349841d9417a65d3442",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3457,
+      "url": "https://github.com/storytold/vectorcraft/pull/3457",
+      "title": "Expand stroke: compact plain stroke spines before outlining",
+      "state": "merged",
+      "updated_at": "2026-10-21T19:32:04Z",
+      "head": "dd2f5da98cf69e29249124332b44535227c2e7ea",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2520,
+      "url": "https://github.com/storytold/vectorcraft/pull/2520",
+      "title": "Recolor: recolor.apply takes a model option for the new colour's model (#2170)",
+      "state": "merged",
+      "updated_at": "2026-10-21T19:58:58Z",
+      "head": "62776d5f46d2b48f89126cf5a4f496b502f79011",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2890,
+      "url": "https://github.com/storytold/vectorcraft/pull/2890",
+      "title": "File formats: open, place and export CorelDRAW (.cdr) documents",
+      "state": "open",
+      "updated_at": "2026-10-21T19:15:46Z",
+      "head": "5796c0999e97a1f77916eb924f5d6f3d8bc4d922",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3460,
+      "url": "https://github.com/storytold/vectorcraft/pull/3460",
+      "title": "Live Paint: the Live Paint tools and livePaint.fill skip hidden faces",
+      "state": "merged",
+      "updated_at": "2026-10-21T19:12:49Z",
+      "head": "4bd55029e8d607e7b45fb8822fdfb5d47b00730c",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3432,
+      "url": "https://github.com/storytold/vectorcraft/pull/3432",
+      "title": "i18n: one Cargo feature per interface language, all on by default",
+      "state": "open",
+      "updated_at": "2026-10-21T18:59:30Z",
+      "head": "8098a12c6582b5541415131806c377a7069f66d8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3424,
+      "url": "https://github.com/storytold/vectorcraft/pull/3424",
+      "title": "Erase blend mode (destination-out transparency)",
+      "state": "open",
+      "updated_at": "2026-10-21T18:42:22Z",
+      "head": "c839c2225f0a338cd880b48acf261ff5c16cebb9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 1400,
+      "url": "https://github.com/storytold/vectorcraft/pull/1400",
+      "title": "Write simple rectangles, circles, and ellipses back to SVG as those elements.",
+      "state": "open",
+      "updated_at": "2026-10-21T18:41:46Z",
+      "head": "1420507809404ef182068da3cea5135ad4b3cf1e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3458,
+      "url": "https://github.com/storytold/vectorcraft/pull/3458",
+      "title": "Type: Ruby panel for live text",
+      "state": "open",
+      "updated_at": "2026-10-21T18:40:51Z",
+      "head": "2176dfb5ca841424eb9de07205a9c28eff36565a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3059,
+      "url": "https://github.com/storytold/vectorcraft/pull/3059",
+      "title": "G11: Transform effect dialog adds Objects, Patterns and scale options (#885)",
+      "state": "open",
+      "updated_at": "2026-10-21T18:38:45Z",
+      "head": "242cc76921ad8b5a507b310580fd99ded6453bb8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3456,
+      "url": "https://github.com/storytold/vectorcraft/pull/3456",
+      "title": "G4: Mark Snap to Glyph done in parity docs and test the menu toggle",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:35:58Z",
+      "head": "59f4b753ddfa3eaf82bb9e35d322ec32df2359b1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3174,
+      "url": "https://github.com/storytold/vectorcraft/pull/3174",
+      "title": "Plug-ins: filters read and set effects and stroke styles (G17)",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:35:22Z",
+      "head": "8bc117eb8b1680ff41efa9529b6d1de8d7ab8325",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3109,
+      "url": "https://github.com/storytold/vectorcraft/pull/3109",
+      "title": "G4: Paragraph spacing limit for vertically justified area type",
+      "state": "open",
+      "updated_at": "2026-10-21T18:26:51Z",
+      "head": "5035553ec760005782a85bac64cfb91e420b9767",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3399,
+      "url": "https://github.com/storytold/vectorcraft/pull/3399",
+      "title": "Character panel Tate-chu-yoko marks vertical type as a horizontal block",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:25:35Z",
+      "head": "b45bb3dd5496ad578428c4944b5513b152da379e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3096,
+      "url": "https://github.com/storytold/vectorcraft/pull/3096",
+      "title": "G2: Effect › Artistic › Fresco raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:25:33Z",
+      "head": "74ec2751edeebe8bdcca264a9e416e5a628d5845",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3010,
+      "url": "https://github.com/storytold/vectorcraft/pull/3010",
+      "title": "G2: Effect › Sketch › Torn Edges raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:25:11Z",
+      "head": "5925e6339a2da30e51d7d5b80a81020cbfa71f2f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3421,
+      "url": "https://github.com/storytold/vectorcraft/pull/3421",
+      "title": "i18n(sv): translate 1 new string, use the agreed terms in 148",
+      "state": "open",
+      "updated_at": "2026-10-21T18:12:37Z",
+      "head": "9ecfedda5e9c371bed14e658dc4245c5bdb1112a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3452,
+      "url": "https://github.com/storytold/vectorcraft/pull/3452",
+      "title": "3343: recognize PageMaker .pmd on open with a clear message",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:06:13Z",
+      "head": "1824829931a30ffa798bbe50d103e9c237776d04",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3412,
+      "url": "https://github.com/storytold/vectorcraft/pull/3412",
+      "title": "G4: System Layout spaces every text object in whole points",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:06:11Z",
+      "head": "adbe0566a636dd154a1268c4e7771c1e648d11d1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3453,
+      "url": "https://github.com/storytold/vectorcraft/pull/3453",
+      "title": "Canvas: each update copies the rendered frame whole instead of pixel by pixel",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:06:02Z",
+      "head": "a92f0264c2d7fb1b3e2da0abddb16505cb6934e0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3063,
+      "url": "https://github.com/storytold/vectorcraft/pull/3063",
+      "title": "G2: Effect › Pathfinder › Soft Mix blends overlapping CMYK fills",
+      "state": "merged",
+      "updated_at": "2026-10-21T18:05:43Z",
+      "head": "a5c0c29b252b84577476d6d385b108bf90bea386",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3425,
+      "url": "https://github.com/storytold/vectorcraft/pull/3425",
+      "title": "Clear every fill when the top fill is set to none",
+      "state": "open",
+      "updated_at": "2026-10-21T17:59:44Z",
+      "head": "a5ab393b1fb68dc4b8e12eb85cfd4ad44339bf53",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2708,
+      "url": "https://github.com/storytold/vectorcraft/pull/2708",
+      "title": "i18n: the message scan reads errors made with bad() and error variants, and new ones need rows",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:51:59Z",
+      "head": "a3e7dc9e41120e9efb75c90d5847e5e2398a09f5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3028,
+      "url": "https://github.com/storytold/vectorcraft/pull/3028",
+      "title": "G2: Effect › Artistic › Colored Pencil raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:51:49Z",
+      "head": "0c9a7a89a093e40b218c0f82dcc237d68f1ae3a7",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3415,
+      "url": "https://github.com/storytold/vectorcraft/pull/3415",
+      "title": "Type on a path: right-to-left text that overflows shows its start",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:51:07Z",
+      "head": "83a5978d6ebfa5c98e7504da3a220d88a9bc42fe",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2987,
+      "url": "https://github.com/storytold/vectorcraft/pull/2987",
+      "title": "G5: draw 9-slice guides on selected symbol instances",
+      "state": "open",
+      "updated_at": "2026-10-21T17:48:33Z",
+      "head": "af9405482ffa0b2cc8f67e84281493a7e282f54e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2311,
+      "url": "https://github.com/storytold/vectorcraft/pull/2311",
+      "title": "Print: network printers, Grayscale and queue paper through craft-libs",
+      "state": "open",
+      "updated_at": "2026-10-21T17:44:16Z",
+      "head": "6c6f3e0516093669c40721a2037be104d40eb0da",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3044,
+      "url": "https://github.com/storytold/vectorcraft/pull/3044",
+      "title": "G2: Effect › Artistic › Rough Pastels raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:38:45Z",
+      "head": "3c6d2b371e6d392bd2424b0fa0f818333351083d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3035,
+      "url": "https://github.com/storytold/vectorcraft/pull/3035",
+      "title": "G2: Effect › Artistic › Underpainting raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:38:43Z",
+      "head": "695f7c0d4bdd1c964c533d7e38cad9f22c7977aa",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3032,
+      "url": "https://github.com/storytold/vectorcraft/pull/3032",
+      "title": "G2: Effect › Artistic › Paint Daubs raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:38:41Z",
+      "head": "03bd5e5a53f06c8e5408092ebcd4b5386c248e28",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3038,
+      "url": "https://github.com/storytold/vectorcraft/pull/3038",
+      "title": "G2: Effect › Artistic › Palette Knife raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:38:40Z",
+      "head": "f329f6271dbd203b2e6bb8b63651c92478472ad4",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2853,
+      "url": "https://github.com/storytold/vectorcraft/pull/2853",
+      "title": "Variables: Load Variable Library… reads a variable library's text variables and data sets",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:27Z",
+      "head": "bbe026607f5c18d2038492c32de12862b13947a5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3428,
+      "url": "https://github.com/storytold/vectorcraft/pull/3428",
+      "title": "Commands: a boolean or number given as text is refused",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:25Z",
+      "head": "609c98f458851f8d50978e89f9ba3b8b1ced60a2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3448,
+      "url": "https://github.com/storytold/vectorcraft/pull/3448",
+      "title": "Type: ruby (ふりがな) for live text",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:23Z",
+      "head": "14f804cdee9612e857e314be9b6abd56a078965c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3431,
+      "url": "https://github.com/storytold/vectorcraft/pull/3431",
+      "title": "Text: an embedder of the egui panels may leave the bundled fonts out",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:12Z",
+      "head": "e065467a65723fe61e54260aab680c46221409ad",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3417,
+      "url": "https://github.com/storytold/vectorcraft/pull/3417",
+      "title": "PDF import: letter-spaced text keeps its word spaces",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:02Z",
+      "head": "73cbba8b8d6d89e2313530d0ee3c467265ebd6ba",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3442,
+      "url": "https://github.com/storytold/vectorcraft/pull/3442",
+      "title": "Add lighting presets to 3D effects",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:28:29Z",
+      "head": "2cd7f156fb605f647079d962eef2da3cee90c7c7",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3445,
+      "url": "https://github.com/storytold/vectorcraft/pull/3445",
+      "title": "Document Info: a Repeat Objects category lists the document's repeats",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:26:44Z",
+      "head": "4d1581f3dad14eb2ceda3fe57f37ade535b76282",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3430,
+      "url": "https://github.com/storytold/vectorcraft/pull/3430",
+      "title": "G1: Properties: Edit Clipping Path and Edit Contents for one clip group",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:26:14Z",
+      "head": "4f5f573dedc0bd697834b24182f784add8ba7958",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2970,
+      "url": "https://github.com/storytold/vectorcraft/pull/2970",
+      "title": "Fix #2178: Pathfinder Unite groups disconnected islands for Ungroup",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:25:34Z",
+      "head": "7ceaf900d67d2eba691d7fcdefac51c83c0174f2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3078,
+      "url": "https://github.com/storytold/vectorcraft/pull/3078",
+      "title": "G1: Blob Brush and Eraser show brush diameter while drawing",
+      "state": "open",
+      "updated_at": "2026-10-21T17:14:31Z",
+      "head": "79d2e0602483b8dd8f8e34d48d7d64d719fdf613",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3076,
+      "url": "https://github.com/storytold/vectorcraft/pull/3076",
+      "title": "G4: font menu Variable filter lists variable font families",
+      "state": "open",
+      "updated_at": "2026-10-21T17:14:29Z",
+      "head": "1bfc9f8034fa50efb3550c26e9e8f137206ff813",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3043,
+      "url": "https://github.com/storytold/vectorcraft/pull/3043",
+      "title": "G1: Curvature tool Shift constrains placed and dragged points (#975)",
+      "state": "open",
+      "updated_at": "2026-10-21T17:14:27Z",
+      "head": "4b1d0174bf71353dcba06fe6dda8a4aff977addf",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3411,
+      "url": "https://github.com/storytold/vectorcraft/pull/3411",
+      "title": "G4: Fractional Widths rounds a type object's advances to whole points",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:02:40Z",
+      "head": "398c6316d979626fc10d78c81e208d5a84757cd5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3419,
+      "url": "https://github.com/storytold/vectorcraft/pull/3419",
+      "title": "EPS/.ai editing data: type keeps stacked art styles as live appearance",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:02:39Z",
+      "head": "84d5d8797fddb12dbffffd2edf62d63a7313075e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3292,
+      "url": "https://github.com/storytold/vectorcraft/pull/3292",
+      "title": "Commands: an index of 2^32 or more no longer wraps around on 32-bit builds",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:01:46Z",
+      "head": "c895f640632fce196d37ac9b0ff99058c9a298c9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3139,
+      "url": "https://github.com/storytold/vectorcraft/pull/3139",
+      "title": "G12: Honor Preferences › Devices › Enable Touch Workspace",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:01:00Z",
+      "head": "4e5f5e608bcd3a0f9aff732887d6389abb4238c9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3136,
+      "url": "https://github.com/storytold/vectorcraft/pull/3136",
+      "title": "G4: Paragraph panel indents and spacing show blank when paragraphs differ",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:00:56Z",
+      "head": "cc4836abb754485c99a3a2ee2b40404c9d47e7c1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3101,
+      "url": "https://github.com/storytold/vectorcraft/pull/3101",
+      "title": "G4: Scale Text Attributes bakes object scale into type sizes",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:00:23Z",
+      "head": "56cfb79d2426a53e99a193b5f44650b85eb2c031",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3091,
+      "url": "https://github.com/storytold/vectorcraft/pull/3091",
+      "title": "G1: Live Corners relative corner rounding (#1144)",
+      "state": "merged",
+      "updated_at": "2026-10-21T17:00:18Z",
+      "head": "240d8d4891ba4708075e2d3cc64ba26566d6ee71",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3075,
+      "url": "https://github.com/storytold/vectorcraft/pull/3075",
+      "title": "G5: Pattern brush Key Color eyedropper in Brush Options",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:59:51Z",
+      "head": "b13072b77c40d1e798e44b09c1efd75be9428b2e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3070,
+      "url": "https://github.com/storytold/vectorcraft/pull/3070",
+      "title": "G2: Texturizer Load Texture in effect dialog",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:59:33Z",
+      "head": "cdef620083764500849bb99de9253b5b6f0204ab",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3053,
+      "url": "https://github.com/storytold/vectorcraft/pull/3053",
+      "title": "G1: Cmd+Alt temporarily lends Group Selection",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:59:02Z",
+      "head": "2dcceea8e142d8685ebcb2714bb299d6446a54ec",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3061,
+      "url": "https://github.com/storytold/vectorcraft/pull/3061",
+      "title": "G2: Effect › Pathfinder › Hard Mix live effect",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:58:58Z",
+      "head": "b3a380cfa0a47475b266549912fc678d71d5f2fe",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3026,
+      "url": "https://github.com/storytold/vectorcraft/pull/3026",
+      "title": "G2: Effect › Artistic › Dry Brush raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:58:30Z",
+      "head": "0a3628f62f4c6bf0cd50d1f1aefe7bab464283f9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3000,
+      "url": "https://github.com/storytold/vectorcraft/pull/3000",
+      "title": "Fix #2995: reorder grouped panel tabs by dragging within the tab strip",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:58:15Z",
+      "head": "571ac32362435a82a244010620a4e22dec891a9f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2592,
+      "url": "https://github.com/storytold/vectorcraft/pull/2592",
+      "title": "Artboards: the Artboards panel locks an artboard and the art on it",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:58:12Z",
+      "head": "58066428c6d1e07ce2518873332dce162aa2a874",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3317,
+      "url": "https://github.com/storytold/vectorcraft/pull/3317",
+      "title": "Keyboard Shortcuts: each Align and Distribute button of the Align panel can be given a key",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:58:01Z",
+      "head": "9c2002777865e9dae236c085a235152dd087cd97",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3312,
+      "url": "https://github.com/storytold/vectorcraft/pull/3312",
+      "title": "Brushes: New Brush and Bristle Brush Options take a bristle brush name of at most 31 characters",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:57:44Z",
+      "head": "5e24e59bd32ac4cad2e69abbf833ed40e1bf6cf2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3434,
+      "url": "https://github.com/storytold/vectorcraft/pull/3434",
+      "title": "Place: Word's low, medium and high kashida justification sets Insert Kashidas",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:57:25Z",
+      "head": "1cfeaabb2d3b2cd0275215cef650111a9214c14e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3433,
+      "url": "https://github.com/storytold/vectorcraft/pull/3433",
+      "title": "Tabs: a stop placed or moved on the ruler lands on a whole point",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:57:10Z",
+      "head": "3884cf97041bab3bcb5c920b333fabc660f15164",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3427,
+      "url": "https://github.com/storytold/vectorcraft/pull/3427",
+      "title": "PDF export: PDF and .ai files carry File Info's copyright status, notice and URL",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:56:41Z",
+      "head": "6807e757afb18b6f1e355216a4f3fe6251b44f4f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3385,
+      "url": "https://github.com/storytold/vectorcraft/pull/3385",
+      "title": "Brushes: renaming or deleting a brush updates every stroke that uses it",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:56:39Z",
+      "head": "4b56ce44a161f1613d3f4b5b7c9fd03e93bd33a7",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3422,
+      "url": "https://github.com/storytold/vectorcraft/pull/3422",
+      "title": "Print: JIS B4/B5 and Japanese paper sizes (はがき・封筒・四六判)",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:56:27Z",
+      "head": "32d012f6cc6e020465e5dc5d8c6f18df6f7d2022",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3409,
+      "url": "https://github.com/storytold/vectorcraft/pull/3409",
+      "title": "Threaded text: releasing a frame from a longer thread no longer duplicates its text",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:55:18Z",
+      "head": "23dbf5d214aa9fde6563369cc4a3c7e91297b510",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3408,
+      "url": "https://github.com/storytold/vectorcraft/pull/3408",
+      "title": "Threaded text: type on a path threads, mixed with area type",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:54:55Z",
+      "head": "af2618c9e4197fc0c269c78d53cfdaca64d8e7d1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3402,
+      "url": "https://github.com/storytold/vectorcraft/pull/3402",
+      "title": "Brush Options: Tips shows each colorization method on a sample",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:54:45Z",
+      "head": "5ac70a9b077e971830d3aa313d60f971ed91177e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3398,
+      "url": "https://github.com/storytold/vectorcraft/pull/3398",
+      "title": "G4: No Break keeps marked characters on one line",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:54:24Z",
+      "head": "bbd9f51096be2fb546bf8da52e36044c80c65c18",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3394,
+      "url": "https://github.com/storytold/vectorcraft/pull/3394",
+      "title": "Type: Optical Margin Alignment hangs punctuation in right-to-left paragraphs",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:54:03Z",
+      "head": "7d6eb3246e66345bdcb3bf77a6df5474e6edb680",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3397,
+      "url": "https://github.com/storytold/vectorcraft/pull/3397",
+      "title": "Symbols: F8 opens Symbol Options for a new symbol from the selection",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:53:50Z",
+      "head": "963922beaf80f13ed85d49c551de2686aa3b682b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3390,
+      "url": "https://github.com/storytold/vectorcraft/pull/3390",
+      "title": "Brushes: New Brush asks for the type and opens its Brush Options",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:53:48Z",
+      "head": "b008e836587a39e763812789b014a38d4e26623e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2835,
+      "url": "https://github.com/storytold/vectorcraft/pull/2835",
+      "title": "AI.S1: add resumable AI asset slicing and SVG/PNG export",
+      "state": "open",
+      "updated_at": "2026-10-21T16:53:25Z",
+      "head": "67693194d5c7274bd3c00d70ed9e9fbea6ae1dc1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3388,
+      "url": "https://github.com/storytold/vectorcraft/pull/3388",
+      "title": "Dialogs: sliders step their field's number with the arrow keys",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:53:17Z",
+      "head": "79c464766578c3e1da7df9a54ea0c2a56e8e161d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3369,
+      "url": "https://github.com/storytold/vectorcraft/pull/3369",
+      "title": "Brushes: dragging a brush reorders it within its type",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:52:31Z",
+      "head": "7aa25698d2f493c5f8c44e8902880a02222f39cc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3374,
+      "url": "https://github.com/storytold/vectorcraft/pull/3374",
+      "title": "Effects: expanded, flattened and exported art keeps the random Transform the canvas drew",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:52:25Z",
+      "head": "b7ea047d81d8452b4b4741ac7118ec44df3c1e55",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3438,
+      "url": "https://github.com/storytold/vectorcraft/pull/3438",
+      "title": "Docs: localization parity lists the Dutch, Danish and Indonesian catalogs",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:52:21Z",
+      "head": "7d4ae444b68e6dea6e2b42e7228e9b79a9374fbe",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3368,
+      "url": "https://github.com/storytold/vectorcraft/pull/3368",
+      "title": "Library panels: a persistent panel whose file is gone stays listed as missing",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:52:11Z",
+      "head": "b4fef5dc984b55893d80cebb7f8ac3182ad8fdcc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3418,
+      "url": "https://github.com/storytold/vectorcraft/pull/3418",
+      "title": "ICC: all built-in profiles are checked for aligned sizes and tags",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:51:19Z",
+      "head": "bc3351eaccbc7af7cb0f4830ce0d675d18a8fc03",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3414,
+      "url": "https://github.com/storytold/vectorcraft/pull/3414",
+      "title": "Docs: localization parity row counts match the catalogs on main",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:51:05Z",
+      "head": "bc6ffd9c1e08b0eeea623889ac12b15d3e30db72",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3406,
+      "url": "https://github.com/storytold/vectorcraft/pull/3406",
+      "title": "Data Recovery: the recovery folders are owner-only on Unix",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:50:50Z",
+      "head": "d8e876b721fc687932ba000f59ca20e13bde226b",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3389,
+      "url": "https://github.com/storytold/vectorcraft/pull/3389",
+      "title": "Tests: the data set export test checks the whole file in a folder emptied first (#2969)",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:50:34Z",
+      "head": "04bf2dcab9be5a5d47752e8fc884a2f9cc3b6b95",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3382,
+      "url": "https://github.com/storytold/vectorcraft/pull/3382",
+      "title": "Type: a character typed with AltGr while editing text runs no command",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:50:19Z",
+      "head": "76058fb1b557a8fd4ce6f795b45283b1d0fe6ca3",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3373,
+      "url": "https://github.com/storytold/vectorcraft/pull/3373",
+      "title": "Docs: the document.open pages sentence names the file saved without PDF compatibility",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:50:13Z",
+      "head": "bac132d8d41e80bd3550bfdb1edebdedf6a0344a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3376,
+      "url": "https://github.com/storytold/vectorcraft/pull/3376",
+      "title": "Tests: the half-form test uses only a fallback face that forms Ka's half form (#2670)",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:50:03Z",
+      "head": "da197ba75c1b59a35db25e4c25eba24816421208",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3371,
+      "url": "https://github.com/storytold/vectorcraft/pull/3371",
+      "title": "Preferences: list the languages alphabetically by their own name",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:49:42Z",
+      "head": "48263b339d384de26dae8b59d6ccc6153d698c6e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3372,
+      "url": "https://github.com/storytold/vectorcraft/pull/3372",
+      "title": "Save As: a typed extension of a format the save doesn't write is replaced",
+      "state": "merged",
+      "updated_at": "2026-10-21T16:49:32Z",
+      "head": "1f6a76afa8c8642360a0f0c46a234921fe96bda8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2986,
+      "url": "https://github.com/storytold/vectorcraft/pull/2986",
+      "title": "Print: N-up imposition on a sheet (preview and PDF)",
+      "state": "open",
+      "updated_at": "2026-10-21T16:44:38Z",
+      "head": "7262ef51fe288329c5364d5ab95688c46a13e710",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3016,
+      "url": "https://github.com/storytold/vectorcraft/pull/3016",
+      "title": "G1: Curvature drag re-curves smooth neighbours on existing paths",
+      "state": "open",
+      "updated_at": "2026-10-21T16:44:36Z",
+      "head": "a465231464b73801f9017d1126ef7c719913c3d1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3071,
+      "url": "https://github.com/storytold/vectorcraft/pull/3071",
+      "title": "Export: raster output defaults to the document resolution",
+      "state": "open",
+      "updated_at": "2026-10-21T16:12:30Z",
+      "head": "9c88abb9320c67fe48dba699142eed18153f490c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3319,
+      "url": "https://github.com/storytold/vectorcraft/pull/3319",
+      "title": "Liquify, Puppet Warp, Perspective and Width Profile: a number given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:40Z",
+      "head": "0a02601b5c31174325428912500aecf95a30d3e3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3303,
+      "url": "https://github.com/storytold/vectorcraft/pull/3303",
+      "title": "Paint: a keepModel, fill, stroke, focus or none given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:36Z",
+      "head": "f1961ec60ea975035afb391ab60284f206340043",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3302,
+      "url": "https://github.com/storytold/vectorcraft/pull/3302",
+      "title": "Perspective grid options and presets: a boolean given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:31Z",
+      "head": "d4ef50977c4a47e3eef085432c3decb7d47903e7",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3297,
+      "url": "https://github.com/storytold/vectorcraft/pull/3297",
+      "title": "Perspective, Width, Liquify and Puppet Warp: a boolean given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:26Z",
+      "head": "3caf3b7f1dd5932c26661e68792df61c3b781c1e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3290,
+      "url": "https://github.com/storytold/vectorcraft/pull/3290",
+      "title": "Blends and envelopes: a boolean given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:20Z",
+      "head": "061bc730f6ca6bcc270d510d198ef34be7bfc5a1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3289,
+      "url": "https://github.com/storytold/vectorcraft/pull/3289",
+      "title": "Transform, Align, Object Properties and Live Shape Properties: a boolean given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:15Z",
+      "head": "78a2d3423eba064be80d51179037730d48490999",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3266,
+      "url": "https://github.com/storytold/vectorcraft/pull/3266",
+      "title": "Paths: anchor and drawing commands refuse a number given as text",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:09Z",
+      "head": "705601e3fc7827fd1f87ffc1eec02a2b8fc12132",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3262,
+      "url": "https://github.com/storytold/vectorcraft/pull/3262",
+      "title": "Transform Each, Mosaic, Crop Image, Trim Marks and Rearrange: a boolean given as text is refused",
+      "state": "closed",
+      "updated_at": "2026-10-21T15:19:04Z",
+      "head": "1d91abd242c1640baf856f64a3c3ea7122eebcae",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3113,
+      "url": "https://github.com/storytold/vectorcraft/pull/3113",
+      "title": "G1: Flare tool shows rings path length in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-21T14:21:09Z",
+      "head": "4ea8b494930e2ccf9d2c34117bcbee371c227fbe",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2975,
+      "url": "https://github.com/storytold/vectorcraft/pull/2975",
+      "title": "G12: honor Use Low Resolution Proxy for Linked EPS (#394)",
+      "state": "open",
+      "updated_at": "2026-10-21T13:59:41Z",
+      "head": "99a582e3867a73cbb5950eae9734757adcda1a34",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3315,
+      "url": "https://github.com/storytold/vectorcraft/pull/3315",
+      "title": "Fix #3282: reload documents changed on disk by another app",
+      "state": "open",
+      "updated_at": "2026-10-21T13:11:36Z",
+      "head": "e7d59e68eb51c73bb93d8c2a9f9b8dcf31f8644f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3207,
+      "url": "https://github.com/storytold/vectorcraft/pull/3207",
+      "title": "Build: the wasm check is warning-free; one file-dialog check instead of two",
+      "state": "merged",
+      "updated_at": "2026-10-21T12:00:43Z",
+      "head": "d4df4646ee16e1e25f8bfb073d2d11a1c35a4772",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3208,
+      "url": "https://github.com/storytold/vectorcraft/pull/3208",
+      "title": "Fix #2820: images drawn small redraw from their kept mips while being moved",
+      "state": "merged",
+      "updated_at": "2026-10-21T12:00:41Z",
+      "head": "4e0cbfeede298f0fa652dfa806f8317dc1520e21",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3206,
+      "url": "https://github.com/storytold/vectorcraft/pull/3206",
+      "title": "Fix #3188: arranging art inside a clipping mask keeps the clipping path at the bottom",
+      "state": "merged",
+      "updated_at": "2026-10-21T12:00:39Z",
+      "head": "4fdb3e1f9b297082dd0bd6eb5d61d97b547b61d7",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3200,
+      "url": "https://github.com/storytold/vectorcraft/pull/3200",
+      "title": "Fix #3198: the status bar's fps is the rate the window draws at, not an average of idle bursts",
+      "state": "merged",
+      "updated_at": "2026-10-21T12:00:37Z",
+      "head": "fc644b9a9e1779a53fae27dd2e21e9f507593113",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2963,
+      "url": "https://github.com/storytold/vectorcraft/pull/2963",
+      "title": "chore(deps): bump the cargo-dependencies group across 2 directories with 27 updates",
+      "state": "closed",
+      "updated_at": "2026-10-21T11:57:52Z",
+      "head": "fb08c6b1b64c5225cc819299c7cc763e3fed1ee5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3366,
+      "url": "https://github.com/storytold/vectorcraft/pull/3366",
+      "title": "feat(window): adopt shared craft-window for Linux decorations (depends on craft-libs#217)",
+      "state": "merged",
+      "updated_at": "2026-10-21T11:51:11Z",
+      "head": "17c278e4f1438430d89277acbac4f3ef11394f69",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 1514,
+      "url": "https://github.com/storytold/vectorcraft/pull/1514",
+      "title": "QR Code: shape.qrCode draws a QR Code as one path",
+      "state": "open",
+      "updated_at": "2026-10-21T11:01:38Z",
+      "head": "a31ea88618342c9bd11b542e5836eefd8aa53d61",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2182,
+      "url": "https://github.com/storytold/vectorcraft/pull/2182",
+      "title": "PDF/.ai import: a .ai saved without PDF compatibility is placed and pasted from its editing data",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:59Z",
+      "head": "30203e60a1595c070c54eef0d2bc400333d01d90",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2403,
+      "url": "https://github.com/storytold/vectorcraft/pull/2403",
+      "title": "Artboards: each artboard can have a background color on the canvas",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:56Z",
+      "head": "dda52d0b200f67c0281cc5fe4359d21e0bcbe8bd",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2595,
+      "url": "https://github.com/storytold/vectorcraft/pull/2595",
+      "title": "Use Preview Bounds: objects are measured with their geometry effects",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:54Z",
+      "head": "a5ea3a8002767f155603c114ed2e23f74d2202d2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2497,
+      "url": "https://github.com/storytold/vectorcraft/pull/2497",
+      "title": "Artboard tool: Shift-drag draws an artboard inside another or marquee-selects artboards",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:52Z",
+      "head": "6f95f1cf09c6bca3ce692da94ee78438796f8d64",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2671,
+      "url": "https://github.com/storytold/vectorcraft/pull/2671",
+      "title": "Isolation mode: object.isolate refuses hidden or locked objects and locked guide paths",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:50Z",
+      "head": "b1abc73e1679b2fb7a34e7d0b9a41894cfb281d8",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3329,
+      "url": "https://github.com/storytold/vectorcraft/pull/3329",
+      "title": "Web: a pan or zoom of a heavy document moves the last frame and renders once the view is still",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:35:03Z",
+      "head": "9acfd1ea8ae4b91faeed6244e4131fc34511ef04",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2688,
+      "url": "https://github.com/storytold/vectorcraft/pull/2688",
+      "title": "Part of #2384: imported PDF text keeps its place when the file draws the space beside a wide gap",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:34:49Z",
+      "head": "f009f4f3e5d18302536d9f989922884e1246e21f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2557,
+      "url": "https://github.com/storytold/vectorcraft/pull/2557",
+      "title": "Shape Builder: double-clicking the tool opens Shape Builder Tool Options",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:34:33Z",
+      "head": "1adca4f484c07d663d23182701fa10b6a9d1cec6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 1772,
+      "url": "https://github.com/storytold/vectorcraft/pull/1772",
+      "title": "AI import: a gradient stop naming a process colour leaves its swatch process (#1771)",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:36:02Z",
+      "head": "0d4b5979832129794da4a6402fbf4a2ad32d2c83",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3012,
+      "url": "https://github.com/storytold/vectorcraft/pull/3012",
+      "title": "PDF presets: Press Quality converts to Document CMYK, keeping its numbers (#2950, #1242)",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:33:46Z",
+      "head": "096544db40827cdee928e1a5603bc7ce30847605",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3352,
+      "url": "https://github.com/storytold/vectorcraft/pull/3352",
+      "title": "Pencil and Paintbrush: holding Alt shows the closing loop cursor",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:33:20Z",
+      "head": "f761ae258560888893fe170e3532b609b04eda26",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3364,
+      "url": "https://github.com/storytold/vectorcraft/pull/3364",
+      "title": "Canvas: the pointer's document point follows a wheel scroll or view drag in the same frame",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:33:19Z",
+      "head": "37a8aa4946824bca64ed9f37d44e1c6c364fc557",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3350,
+      "url": "https://github.com/storytold/vectorcraft/pull/3350",
+      "title": "Artboards: Rename gives several selected artboards one name, numbered",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:32:55Z",
+      "head": "bcf8732d6741fba79ff2858362ec74461b524b79",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3345,
+      "url": "https://github.com/storytold/vectorcraft/pull/3345",
+      "title": "Brushes: colorization recolors type in scatter brush art",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:32:35Z",
+      "head": "2c4d0bac92f4084d0fe7538d70ab016f7a59b8e5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3336,
+      "url": "https://github.com/storytold/vectorcraft/pull/3336",
+      "title": "Part of #1816: Snap to Grid lands a moved object by its nearest edge and no longer snaps its center",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:32:22Z",
+      "head": "6a1c8eda466a71e870c989b24a94ed0e832c2cee",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3306,
+      "url": "https://github.com/storytold/vectorcraft/pull/3306",
+      "title": "Pick placed images on their frame with Selection by Path Only",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:32:09Z",
+      "head": "764d04926e3f30fb839e6a90232da14a5a1b441c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2682,
+      "url": "https://github.com/storytold/vectorcraft/pull/2682",
+      "title": "Tests: the engine-language test runs a Japanese frame again",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:31:53Z",
+      "head": "3cd2ae2f1275eee48f2588264da537a00cbe5d1a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2672,
+      "url": "https://github.com/storytold/vectorcraft/pull/2672",
+      "title": "Export: area type that Shrink Text to Fit scales down is written at the size it draws at",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:31:30Z",
+      "head": "68d8a9c755e9cc5f5f4aa42f76aae8b533bfed6b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2596,
+      "url": "https://github.com/storytold/vectorcraft/pull/2596",
+      "title": "i18n: each catalog names the blend spine with one term",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:30:59Z",
+      "head": "9aad69b8f6fdb43d2197fb3449b3d256db4636c2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3355,
+      "url": "https://github.com/storytold/vectorcraft/pull/3355",
+      "title": "Layers: Cmd+Alt+L opens Layer Options for a new layer",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:30:22Z",
+      "head": "0701340720a89ca0791e2b5566d4a03ab21205c3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3351,
+      "url": "https://github.com/storytold/vectorcraft/pull/3351",
+      "title": "Blob Brush: Shift keeps the stroke horizontal or vertical",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:30:05Z",
+      "head": "84833d10cedc1a5dfda18db9df118372f61098f2",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3348,
+      "url": "https://github.com/storytold/vectorcraft/pull/3348",
+      "title": "Draw from centre (Alt) now applies to the typed size of a rectangle or ellipse (#3309)",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:29:52Z",
+      "head": "cde39698ffa7aa9dbfec4493e5f293ceb9492096",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3310,
+      "url": "https://github.com/storytold/vectorcraft/pull/3310",
+      "title": "Type: Optical Margin Alignment hangs punctuation at the ends of type on a path",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:29:37Z",
+      "head": "b0056a127d41089509b032fde0f60cd64b646c0e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3288,
+      "url": "https://github.com/storytold/vectorcraft/pull/3288",
+      "title": "Paragraph: Insert Kashidas justifies Arabic lines with kashidas",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:29:21Z",
+      "head": "1cea163b1105d08eb429faf32cad13004fadfb87",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3295,
+      "url": "https://github.com/storytold/vectorcraft/pull/3295",
+      "title": "Type: the Every-line Composer composes paragraphs that mix type sizes in rectangular area type",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:29:06Z",
+      "head": "3677a1647450dd056e15d80c8a54c670cd3633c0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3287,
+      "url": "https://github.com/storytold/vectorcraft/pull/3287",
+      "title": "Undo groups: library styles and field scrubs close only the group they open",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:28:48Z",
+      "head": "ae41ddb9a503bc52daab28d38e75bfebf5a55c19",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3293,
+      "url": "https://github.com/storytold/vectorcraft/pull/3293",
+      "title": "EPS import: a PostScript error shows what its name means in the interface language",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:28:22Z",
+      "head": "819efd465fc22926579b103b5a2dd63b57d849dc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3294,
+      "url": "https://github.com/storytold/vectorcraft/pull/3294",
+      "title": "Undo groups: a cancel drops only the canceled groups' entries from the journal",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:28:17Z",
+      "head": "5846b00da3ad7f09ffe3b07630c6b06320759e78",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3311,
+      "url": "https://github.com/storytold/vectorcraft/pull/3311",
+      "title": "Graphs: column designs show each column's value where their type has % and two digits",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:28:02Z",
+      "head": "d55a5245fb915defdb8f1d03489a38ae8ce3f9e8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3318,
+      "url": "https://github.com/storytold/vectorcraft/pull/3318",
+      "title": "Tabs: in vertical type the alignments read Top- and Bottom-Justified Tab and the position Y",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:27:49Z",
+      "head": "96592e9e27391c4dba5831394ec9a9b50c8960f5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3322,
+      "url": "https://github.com/storytold/vectorcraft/pull/3322",
+      "title": "Objects on Path: clipping paths and parts of blends, envelopes and repeats stay in place",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:27:38Z",
+      "head": "6041bb3c62c9619c5a4ffe41ff45da4484767533",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3320,
+      "url": "https://github.com/storytold/vectorcraft/pull/3320",
+      "title": "Swatches: a swatch made from a color the app shows keeps that color's model in a CMYK document",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:27:15Z",
+      "head": "54ee0b6251ae2b19c03d6ba3dc3ab73bac8c5203",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3327,
+      "url": "https://github.com/storytold/vectorcraft/pull/3327",
+      "title": "Live Paint: Merge keeps the group's lock, visibility, mask and graphic style link",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:26:57Z",
+      "head": "67448e92457e3c08a1c5da2ca6bc20cf4447425e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3305,
+      "url": "https://github.com/storytold/vectorcraft/pull/3305",
+      "title": "Live Paint: a Live Paint Selection click outside the faces selects the edge it highlights",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:26:47Z",
+      "head": "0ec23d90bc368c08c528ad38463d0da52378cdab",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3177,
+      "url": "https://github.com/storytold/vectorcraft/pull/3177",
+      "title": "UI: FilePick filters own their text, so a dialog's file types can be made at run time",
+      "state": "merged",
+      "updated_at": "2026-10-21T10:26:30Z",
+      "head": "3f729b6481cf97fc45e7f39b70b63bfa869cba45",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3359,
+      "url": "https://github.com/storytold/vectorcraft/pull/3359",
+      "title": "G11 #864: SVG files keep the document's units",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:29Z",
+      "head": "43179d403282ea73990cb69fe8366efb2d99fbdc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3363,
+      "url": "https://github.com/storytold/vectorcraft/pull/3363",
+      "title": "G12: Constrain Angle for the arrow keys, Shift drags and new objects (#394)",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:27Z",
+      "head": "50ee40f05b96110b7380426d0c15c124ffbc1f2b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3362,
+      "url": "https://github.com/storytold/vectorcraft/pull/3362",
+      "title": "G4: hanging punctuation keeps its amounts under Glyph Scaling and burasagari",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:25Z",
+      "head": "342c3e151f7c280f6872c127e3c2f998345befb6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3361,
+      "url": "https://github.com/storytold/vectorcraft/pull/3361",
+      "title": "G4: paragraph Auto Leading drives the Leading field, leading nudge and placeholder fill",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:23Z",
+      "head": "e436e8ad336a565d608f40cfb3602ace1d8827ea",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3360,
+      "url": "https://github.com/storytold/vectorcraft/pull/3360",
+      "title": "G11 #834: bezier drag previews follow the pointer to the release",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:21Z",
+      "head": "78f49d6ae4d300ae76c6d986d3c5d3381a6f176c",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3358,
+      "url": "https://github.com/storytold/vectorcraft/pull/3358",
+      "title": "G11 #885: Transform effect options (Transform Objects, Transform Patterns, Scale Strokes & Effects)",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:19Z",
+      "head": "c3470e1411ddeb550b51447effce2eff6bddcadd",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3357,
+      "url": "https://github.com/storytold/vectorcraft/pull/3357",
+      "title": "G11 #937: Shape Builder cuts art of thousands of segments with lines again",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:17Z",
+      "head": "89219eef5c45d1db8073f6f18a07e6bfa75b5126",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3356,
+      "url": "https://github.com/storytold/vectorcraft/pull/3356",
+      "title": "G11 #722: keep imported PDF text boxes in place",
+      "state": "open",
+      "updated_at": "2026-10-21T09:48:14Z",
+      "head": "7f6e209cec6c064c30ac52d2a75ea36c2e246591",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3204,
+      "url": "https://github.com/storytold/vectorcraft/pull/3204",
+      "title": "Arrange keeps a clip group's clipping path first (#3188)",
+      "state": "closed",
+      "updated_at": "2026-10-21T09:22:11Z",
+      "head": "9a2325eea4cb55e39a485f76e89dfca83c2c7905",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3264,
+      "url": "https://github.com/storytold/vectorcraft/pull/3264",
+      "title": "G1: Hide Guides also hides converted guide paths",
+      "state": "closed",
+      "updated_at": "2026-10-21T09:22:07Z",
+      "head": "dad912747365b9dccbd1e30f49bdf65988f2d92f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3181,
+      "url": "https://github.com/storytold/vectorcraft/pull/3181",
+      "title": "Distribute: selected ruler guides are spaced with the objects",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:22:01Z",
+      "head": "e8bd0ac410c424cb85466fff5cbcbcf1093afeb6",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3246,
+      "url": "https://github.com/storytold/vectorcraft/pull/3246",
+      "title": "G1: selection tools take a clipping path on its outline",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:56Z",
+      "head": "5fd553cc8b8831deafefbc720acd43e4c54bb200",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3215,
+      "url": "https://github.com/storytold/vectorcraft/pull/3215",
+      "title": "G1: a move over a panel waits and resumes on the canvas (#2826)",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:53Z",
+      "head": "923c49eda0569caa61510d545700621ac80a414d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3265,
+      "url": "https://github.com/storytold/vectorcraft/pull/3265",
+      "title": "Tabs: a stop moved past another stays selected",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:49Z",
+      "head": "a304cdb589b1dd85ab3dbccd028dd23f08856b4e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3299,
+      "url": "https://github.com/storytold/vectorcraft/pull/3299",
+      "title": "Variables: the nothing-applied message clears when a later data set applies",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:47Z",
+      "head": "5660a15b7532b37e39a4f6130b894b539279d1a0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3257,
+      "url": "https://github.com/storytold/vectorcraft/pull/3257",
+      "title": "Persist Polygon and Star counts after exact-size placement",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:38Z",
+      "head": "b9fa08f9e6eb2c2e649b0a732a3749a2b3b79c52",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3316,
+      "url": "https://github.com/storytold/vectorcraft/pull/3316",
+      "title": "SVG import: support feBlend filter primitive and transparent backdrops",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:31Z",
+      "head": "de3b94804dd89a1a448c2c4c6fdbdf577f9d6f82",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3333,
+      "url": "https://github.com/storytold/vectorcraft/pull/3333",
+      "title": "Brushes: Hue Shift without a key uses the most-used art color",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:27Z",
+      "head": "787592ff0e4dd44ecc338991ef319462c9430ab3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3330,
+      "url": "https://github.com/storytold/vectorcraft/pull/3330",
+      "title": "Document Info: a Brushes category lists the document's brushes",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:25Z",
+      "head": "1e4ebba1cc9bffe7a0177db756a4c1f09edf3956",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3313,
+      "url": "https://github.com/storytold/vectorcraft/pull/3313",
+      "title": "View: Show Live Paint Gaps highlights the gaps of the selected Live Paint groups",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:24Z",
+      "head": "d80024eff6545f05495169842b0b425b53404260",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3334,
+      "url": "https://github.com/storytold/vectorcraft/pull/3334",
+      "title": "Brushes: Select All Unused selects the brushes the document does not use",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:22Z",
+      "head": "7fbd215e97a3dd6d44953254a12a11f972cd3eca",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3337,
+      "url": "https://github.com/storytold/vectorcraft/pull/3337",
+      "title": "Select: Bristle Brush Strokes selects objects by their brush's type",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:20Z",
+      "head": "4bcd14c9c2a953b302e4f281618f4bcd3dd3eddd",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3339,
+      "url": "https://github.com/storytold/vectorcraft/pull/3339",
+      "title": "Artboards: the panel menu's Convert to Artboards converts the selected objects",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:18Z",
+      "head": "6bce3578ca9b1511d51a08d39c3f8b4a0c0436dc",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3324,
+      "url": "https://github.com/storytold/vectorcraft/pull/3324",
+      "title": "File: Cmd+Alt+N makes a new document without the New Document dialog",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:16Z",
+      "head": "156bd632e61830c4253d0005072b9405a41a5495",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3205,
+      "url": "https://github.com/storytold/vectorcraft/pull/3205",
+      "title": "G1: Anchor Point tool shows move distance in measurement labels while Shift-dragging",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:13Z",
+      "head": "5ebef8282aff03584bdaf616ada59f582f6967f9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3217,
+      "url": "https://github.com/storytold/vectorcraft/pull/3217",
+      "title": "G1: Reshape tool shows Smart Guide offset readouts while reshaping paths",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:11Z",
+      "head": "87686e81f28096b94607c6bdd4b72ccad8aa1299",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3218,
+      "url": "https://github.com/storytold/vectorcraft/pull/3218",
+      "title": "G1: File Place cursor shows placed size in measurement labels while dragging",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:09Z",
+      "head": "32834a9135e30f07f03e6e4a452e7f2667b49fb5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3182,
+      "url": "https://github.com/storytold/vectorcraft/pull/3182",
+      "title": "G1: Area type drag shows width and height in measurement labels",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:07Z",
+      "head": "e76a9c1a45cab52e91e5d35171c81801b6379bba",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3270,
+      "url": "https://github.com/storytold/vectorcraft/pull/3270",
+      "title": "Keep stroke weight in document space on transformed type",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:03Z",
+      "head": "4444450a445af22646bb8605edc27a17b51b9677",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3252,
+      "url": "https://github.com/storytold/vectorcraft/pull/3252",
+      "title": "Keep the swatch link when blending two tints of one swatch (#3234)",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:01Z",
+      "head": "92a9b91255974925e18ad09ab92429cfab76e028",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3269,
+      "url": "https://github.com/storytold/vectorcraft/pull/3269",
+      "title": "Fix Show and Hide Guides (#3219)",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:20:53Z",
+      "head": "d2625ec10845df50ba85e0163840d02e60085084",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3307,
+      "url": "https://github.com/storytold/vectorcraft/pull/3307",
+      "title": "Fix lost diacritics with keyboard-hook IMEs (UniKey/OpenKey)",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:20:49Z",
+      "head": "0782248cffb7f7eab850d002497c588358ea4cce",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3321,
+      "url": "https://github.com/storytold/vectorcraft/pull/3321",
+      "title": "Links: a link on a drive mapped to another share is not followed",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:20:46Z",
+      "head": "6e4fb6e4e7b04c21b2a4edebba33830a2efe980b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3344,
+      "url": "https://github.com/storytold/vectorcraft/pull/3344",
+      "title": "Save for Web: browser previews go only to a folder the current user owns",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:20:44Z",
+      "head": "82a78e3d58eb27631f762668d7df90620bb5acf7",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3335,
+      "url": "https://github.com/storytold/vectorcraft/pull/3335",
+      "title": "Brush Options: Pattern Scale and Art Width have sliders",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:46Z",
+      "head": "14ec7f472fce72ff70a2032ae32d4ca2907b1cd4",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3340,
+      "url": "https://github.com/storytold/vectorcraft/pull/3340",
+      "title": "Pencil: Edit selected paths within 0 turns editing off",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:44Z",
+      "head": "ba8c1e042c3d5eb4fa330e815b98435fb7392afe",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3189,
+      "url": "https://github.com/storytold/vectorcraft/pull/3189",
+      "title": "(3179) Envelope Distort",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:42Z",
+      "head": "53569a883a391c360a9c0d489ddafd549b187baa",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3271,
+      "url": "https://github.com/storytold/vectorcraft/pull/3271",
+      "title": "Exclude retained trace bitmaps from result bounds and highlights",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:37Z",
+      "head": "a5a9371979db457d021608cd4eba6df67be5f1e1",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3341,
+      "url": "https://github.com/storytold/vectorcraft/pull/3341",
+      "title": "Appearance: Cmd+/ adds a new fill and Cmd+Alt+/ adds a new stroke",
+      "state": "merged",
+      "updated_at": "2026-10-21T09:21:15Z",
+      "head": "f43c6ff47d19f1e91ea16cc6f3a280f0787b4d08",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3251,
+      "url": "https://github.com/storytold/vectorcraft/pull/3251",
+      "title": "Warn on export when a font style is drawn in another style (#3229)",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:54Z",
+      "head": "24638c409b8ba136a6607d0ef134fe7cb5c914f7",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3285,
+      "url": "https://github.com/storytold/vectorcraft/pull/3285",
+      "title": "Legacy .ai export: a radial gradient's color stops are written from ramp point 0 to 100",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:52Z",
+      "head": "bda3c14f7291fc4babf6eb4d7fe03df1cfce95a5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3203,
+      "url": "https://github.com/storytold/vectorcraft/pull/3203",
+      "title": "Offset Path's Preview checkbox keeps its last state across opens (#3195)",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:50Z",
+      "head": "9ce5ffd244deb1a8179696f0a36610c8eee3aa6b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3304,
+      "url": "https://github.com/storytold/vectorcraft/pull/3304",
+      "title": "Leave the pattern tile edge and swatch bounds out of exports",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:48Z",
+      "head": "5569ae97a604649504fd46b7602669f0dbd77506",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3284,
+      "url": "https://github.com/storytold/vectorcraft/pull/3284",
+      "title": "M3.57: preserve fractional CSS gradient stop positions",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:46Z",
+      "head": "97d133d9d408271414e987caf04a655c9a204cb6",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3331,
+      "url": "https://github.com/storytold/vectorcraft/pull/3331",
+      "title": "Libraries: a User Defined library file whose reading panics is skipped",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:44Z",
+      "head": "8712be97b0f2b59bf6c3481d6f210e4b3c4502ab",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3286,
+      "url": "https://github.com/storytold/vectorcraft/pull/3286",
+      "title": "Root-argument tests: give the app 30 seconds to exit, not 5",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:42Z",
+      "head": "494343c2749a392f17e0db1271a467a15222b413",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3323,
+      "url": "https://github.com/storytold/vectorcraft/pull/3323",
+      "title": "Keep fallback library name for blank GPL Name line",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:40Z",
+      "head": "acee6cccd802cf76085f8b52f7128f37e86a1b4f",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3230,
+      "url": "https://github.com/storytold/vectorcraft/pull/3230",
+      "title": "Normalise negative zero in Measure tool angle",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:39Z",
+      "head": "89c14487774b5a6c61beb7c82780575614c97e74",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3225,
+      "url": "https://github.com/storytold/vectorcraft/pull/3225",
+      "title": "Encode trailing space as _x20_ in XML ids to keep round trip",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:36Z",
+      "head": "781d68a971e8dbf745758f3533419d3bd027fd36",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3254,
+      "url": "https://github.com/storytold/vectorcraft/pull/3254",
+      "title": "Quote CSS font-family names that are not plain identifiers",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:34Z",
+      "head": "7c8e772b461ea95dbf8a453c68a5ad2a5852c148",
+      "decision": "already_adapted_rechecked"
+    },
+    {
+      "pr": 3240,
+      "url": "https://github.com/storytold/vectorcraft/pull/3240",
+      "title": "Fix EPS writer emitting inf for huge finite numbers",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:43:31Z",
+      "head": "2b0d71dbea0433136a1e35cdc3586542e279361b",
+      "decision": "adapt_selected_scope"
+    },
+    {
+      "pr": 3175,
+      "url": "https://github.com/storytold/vectorcraft/pull/3175",
+      "title": "UI: Classic OG colour scheme, 0.11's look with the desktop's window buttons",
+      "state": "open",
+      "updated_at": "2026-10-21T16:06:25Z",
+      "head": "3bc7b01965c451f32f72fef93e36691578f41f5d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3216,
+      "url": "https://github.com/storytold/vectorcraft/pull/3216",
+      "title": "CI: run cargo xtask ci on pull requests and pushes to main",
+      "state": "open",
+      "updated_at": "2026-10-21T08:30:19Z",
+      "head": "d322d675ef9ec575ebd362b2a4f2f917794acf9d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3263,
+      "url": "https://github.com/storytold/vectorcraft/pull/3263",
+      "title": "Packaging: iPad app (iOS wrapper around the web build)",
+      "state": "open",
+      "updated_at": "2026-10-21T08:30:16Z",
+      "head": "24d2670f3a91d05ead27e0f16f2021c8c950a82d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 2955,
+      "url": "https://github.com/storytold/vectorcraft/pull/2955",
+      "title": "G2: Effect › Sketch › Water Paper raster filter",
+      "state": "merged",
+      "updated_at": "2026-10-21T08:28:41Z",
+      "head": "15babbcacc95daf8471a7a4614d78d9dac6103ef",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3183,
+      "url": "https://github.com/storytold/vectorcraft/pull/3183",
+      "title": "G1: Puppet Warp shows move distance in measurement labels while dragging pins",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:57Z",
+      "head": "5645d5dc5b45045b2fb9acf829bbeceedffdf6e9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3185,
+      "url": "https://github.com/storytold/vectorcraft/pull/3185",
+      "title": "G1: Type-on-a-path bracket drags show path distance in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:55Z",
+      "head": "10c94f057a749a7caf70beda3659490b89f3bf0b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3186,
+      "url": "https://github.com/storytold/vectorcraft/pull/3186",
+      "title": "G1: Dimension tool shows corner angle in measurement labels on hover",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:53Z",
+      "head": "d26410cacf69bcde2f4239c8bb995b4e4caccb78",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3190,
+      "url": "https://github.com/storytold/vectorcraft/pull/3190",
+      "title": "G1: Pencil and Paintbrush show segment distance in measurement labels while drawing",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:51Z",
+      "head": "7cbd6300b63d8dfbdeb05d55e4408cd0f8989281",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3196,
+      "url": "https://github.com/storytold/vectorcraft/pull/3196",
+      "title": "G1: Join tool shows gap distance in measurement labels while scrubbing",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:49Z",
+      "head": "b39e5b1decce813cab6afdcee1248bf603f0d49f",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3201,
+      "url": "https://github.com/storytold/vectorcraft/pull/3201",
+      "title": "G1: Path Eraser shows polyline length in measurement labels while erasing",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:47Z",
+      "head": "704ce5b0c6777fc6e467f90bd12f6d277e87177b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3210,
+      "url": "https://github.com/storytold/vectorcraft/pull/3210",
+      "title": "G1: Join tool shows scrub path length in measurement labels while joining",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:44Z",
+      "head": "e8be06f8ea829cb97fc31e371ba810bc373515c8",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3212,
+      "url": "https://github.com/storytold/vectorcraft/pull/3212",
+      "title": "G1: Perspective plane widget drags show dZ in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:42Z",
+      "head": "e8fe74fc1077bd5033b5809357f7b60f6317dac0",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3214,
+      "url": "https://github.com/storytold/vectorcraft/pull/3214",
+      "title": "G1: Shaper tool shows scribble path length in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:39Z",
+      "head": "eb2c039c18cc1fb0fe2e1bf7895350e0fd95045a",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3227,
+      "url": "https://github.com/storytold/vectorcraft/pull/3227",
+      "title": "G1: Objects on Path tool shows path distance in measurement labels while hovering",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:36Z",
+      "head": "fc903ad5a2cba053e2e87f79b858be1571dd9746",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3228,
+      "url": "https://github.com/storytold/vectorcraft/pull/3228",
+      "title": "G1: Symbol Shifter shows move offset in measurement labels while dragging",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:34Z",
+      "head": "5e6cda4baebd69c1d5549fcc629391f6b90dab1b",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3236,
+      "url": "https://github.com/storytold/vectorcraft/pull/3236",
+      "title": "G1: Magic Wand shows tolerance in measurement labels on click",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:31Z",
+      "head": "fe6f46068920a5096f02bcfd82a35f9feb79b125",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3237,
+      "url": "https://github.com/storytold/vectorcraft/pull/3237",
+      "title": "G1: Intertwine tool shows lasso enclosed area in measurement labels while dragging",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:30Z",
+      "head": "b768f23f054f8d7a647e980b7d919b398069473d",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3238,
+      "url": "https://github.com/storytold/vectorcraft/pull/3238",
+      "title": "G1: Shape Builder shows lasso path length in measurement labels while dragging",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:27Z",
+      "head": "2e62f2081d77a9e025b0a14c01afa9d931c8d80e",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3244,
+      "url": "https://github.com/storytold/vectorcraft/pull/3244",
+      "title": "G1: Symbol Spinner shows drag angle in measurement labels while scrubbing",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:23Z",
+      "head": "3394c386f54f5f0beda5821e3dc16778b8be42bd",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3245,
+      "url": "https://github.com/storytold/vectorcraft/pull/3245",
+      "title": "G1: Touch Type drags show kerning, scale and rotation in measurement labels",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:21Z",
+      "head": "35163c8bf7cd4bff8efdbb69651d42bf413555e3",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3255,
+      "url": "https://github.com/storytold/vectorcraft/pull/3255",
+      "title": "G1: Live Paint Bucket shows face area in measurement labels on hover",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:19Z",
+      "head": "6cbf3363112eab970e416aadfb738450eba0cd78",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3256,
+      "url": "https://github.com/storytold/vectorcraft/pull/3256",
+      "title": "G1: Symbol Screener shows intensity in measurement labels while dragging",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:17Z",
+      "head": "48477c9359b4383f9ef7c1d07c4f8b161dd708c9",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3239,
+      "url": "https://github.com/storytold/vectorcraft/pull/3239",
+      "title": "G1: Symbol Scruncher shows scrub path length in measurement labels while brushing",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:25Z",
+      "head": "46724930ac9505ad1242e64014088008e0852ce5",
+      "decision": "metadata_only_not_adapted"
+    },
+    {
+      "pr": 3213,
+      "url": "https://github.com/storytold/vectorcraft/pull/3213",
+      "title": "G1: Blend tool shows path distance in measurement labels while choosing the second object",
+      "state": "open",
+      "updated_at": "2026-10-21T08:23:41Z",
+      "head": "86c554ef075c2ae35317ddab1c487b1ebfaf8bdd",
+      "decision": "metadata_only_not_adapted"
+    }
+  ]
+}

@@ -174,37 +174,36 @@ pub(crate) fn keep_marked_text(app: &mut VectnorApp) {
 }
 
 /// Typed text and IME events, in the order they came, to the Type tool.
-fn type_text(app: &mut VectnorApp, ctx: &egui::Context) {
+pub(crate) fn is_shortcut_chord(m: egui::Modifiers) -> bool {
+    (m.command || m.ctrl) && !m.alt
+}
+
+pub(crate) fn type_event(app: &mut VectnorApp, e: egui::Event, shortcut_mods: bool) {
     let view = app.view_info();
     // Switching apps mid-composition needs nothing: the macOS IME keeps its marked text and goes
     // on with it when the window comes back (measured with Kotoeri), as the tool does.
-    let events: Vec<egui::Event> =
-        ctx.input(|i| i.events.iter().filter(|e| matches!(e, egui::Event::Text(_) | egui::Event::Ime(_))).cloned().collect());
-    for e in events {
-        // Errors are already reported by the engine's interaction (a failed preview keeps it).
-        let _ = match e {
-            // Keys the IME passed through come as text only when nothing is marked.
-            egui::Event::Text(t) if !app.session.tool_composing() => app.session.tool_text(&t, view),
-            egui::Event::Ime(egui::ImeEvent::Preedit { text, active_range_chars }) => {
-                app.ime_marked = Some(text.clone()).filter(|t| !t.is_empty());
-                app.session.tool_preedit(&text, active_range_chars, view)
-            }
-            // A bare line break confirms the composition (Enter): the marked text, not a newline.
-            egui::Event::Ime(egui::ImeEvent::Commit(t)) if t == "\n" || t == "\r" => {
-                keep_marked_text(app);
-                Ok(vec![])
-            }
-            egui::Event::Ime(egui::ImeEvent::Commit(t)) => {
-                app.ime_marked = None;
-                app.session.tool_text(&t, view)
-            }
-            // `DeleteSurrounding` isn't sent by egui-winit (desktop); the web host has no IME
-            // path to the canvas yet.
-            _ => Ok(vec![]),
-        };
-    }
+    // Errors are already reported by the engine's interaction (a failed preview keeps it).
+    let _ = match e {
+        // Keys the IME passed through come as text only when nothing is marked.
+        egui::Event::Text(t) if !app.session.tool_composing() && !shortcut_mods => app.session.tool_text(&t, view),
+        egui::Event::Ime(egui::ImeEvent::Preedit { text, active_range_chars }) => {
+            app.ime_marked = Some(text.clone()).filter(|t| !t.is_empty());
+            app.session.tool_preedit(&text, active_range_chars, view)
+        }
+        // A bare line break confirms the composition (Enter): the marked text, not a newline.
+        egui::Event::Ime(egui::ImeEvent::Commit(t)) if t == "\n" || t == "\r" => {
+            keep_marked_text(app);
+            Ok(vec![])
+        }
+        egui::Event::Ime(egui::ImeEvent::Commit(t)) => {
+            app.ime_marked = None;
+            app.session.tool_text(&t, view)
+        }
+        // `DeleteSurrounding` isn't sent by egui-winit (desktop); the web host has no IME
+        // path to the canvas yet.
+        _ => Ok(vec![]),
+    };
 }
-
 pub fn handle(app: &mut VectnorApp, ctx: &egui::Context) {
     // Followed before anything returns, so a key typed in a field isn't taken for a paste.
     let textless_paste = ctx.input(|i| app.paste_chord.textless_paste(&i.events));
@@ -232,7 +231,11 @@ pub fn handle(app: &mut VectnorApp, ctx: &egui::Context) {
     let composing = app.session.tool_composing();
     // Tool keys first (Enter/Escape end paths; arrows change polygon sides while dragging).
     let busy = app.session.tool_busy();
+    let enter_types = app.session.tool_wants_text();
     for (k, tk) in [(Key::Enter, ToolKey::Enter), (Key::Escape, ToolKey::Escape)] {
+        if k == Key::Enter && enter_types {
+            continue;
+        }
         if !typing && !composing && ctx.input(|i| i.key_pressed(k)) {
             // A key the tool claims (Esc with a loaded place cursor) is only the tool's.
             let claimed = app.session.tool_claims_key(tk, view);
@@ -281,21 +284,14 @@ pub fn handle(app: &mut VectnorApp, ctx: &egui::Context) {
     if ctx.input(|i| i.key_pressed(Key::Tab)) {
         ctx.memory_mut(|m| m.move_focus(egui::FocusDirection::None));
     }
-    // Type tool editing: text, IME composition and editing keys go to the tool.
+    // Deliver typed text, IME and editing keys in their original event order.
     if app.session.tool_wants_text() {
-        type_text(app, ctx);
-        // Keys of a frame that began composing are the IME's too (a Backspace that empties the
-        // marked text must not delete the committed character before it).
+        ctx.input_mut(drop_typing_presses);
+        crate::panels::character::route_type_input(app, ctx, composing);
         if composing || app.session.tool_composing() {
-            // The IME owns the keyboard until it commits: no editing keys, clipboard or shortcuts.
-            ctx.input_mut(|i| {
-                i.events.retain(|e| !matches!(e, egui::Event::Key { .. } | egui::Event::Copy | egui::Event::Cut | egui::Event::Paste(_)))
-            });
+            ctx.input_mut(|i| i.events.retain(|e| !matches!(e, egui::Event::Key { .. })));
             return;
         }
-        // Editing keys with modifiers and the clipboard (Cmd+A is Select All's, below: the text).
-        crate::panels::character::route_type_input(app, ctx);
-        // Enter was already delivered above as ToolKey::Enter (newline).
         let fire = all_shortcuts().into_iter().filter(|(sc, ..)| sc.modifiers.command).find(|(sc, ..)| ctx.input_mut(|i| consume(i, sc)));
         if let Some((_, id, p)) = fire {
             crate::menus::invoke(app, id, p);
@@ -472,6 +468,21 @@ fn latin(text: &str, physical: Option<Key>) -> String {
 fn digit_of(k: Key) -> Option<u8> {
     const DIGITS: [Key; 10] = [Key::Num0, Key::Num1, Key::Num2, Key::Num3, Key::Num4, Key::Num5, Key::Num6, Key::Num7, Key::Num8, Key::Num9];
     DIGITS.iter().position(|d| *d == k).map(|i| i as u8)
+}
+
+fn drop_typing_presses(i: &mut egui::InputState) {
+    let next = i.events.iter().skip(1).map(Some).chain([None]);
+    let typed: Vec<bool> = i
+        .events
+        .iter()
+        .zip(next)
+        .map(|(e, next)| {
+            matches!(e, egui::Event::Key { pressed: true, modifiers, .. } if modifiers.ctrl && modifiers.alt)
+                && matches!(next, Some(egui::Event::Text(t)) if !t.is_empty())
+        })
+        .collect();
+    let mut typed = typed.into_iter();
+    i.events.retain(|_| !typed.next().unwrap_or(false));
 }
 
 #[cfg(test)]
@@ -809,5 +820,47 @@ mod tests {
                 assert!(parse(c.2).is_some(), "{} has unparsable shortcut {}", c.0, c.2);
             }
         }
+    }
+
+    fn ctrl_alt_press(key: Key, typed: Option<&str>) -> Vec<egui::Event> {
+        let m = Modifiers::CTRL | Modifiers::ALT | Modifiers::COMMAND;
+        let mut v =
+            vec![egui::Event::ModifiersChanged(m), egui::Event::Key { key, physical_key: Some(key), pressed: true, repeat: false, modifiers: m }];
+        v.extend(typed.map(|t| egui::Event::Text(t.into())));
+        v
+    }
+
+    fn text_and_layers(app: &mut VectnorApp, id: u64) -> (String, usize) {
+        let r = app.session.execute("text.getRange", &json!({"id": id})).unwrap();
+        let text = r["runs"].as_array().unwrap().iter().filter_map(|run| run["text"].as_str()).collect();
+        (text, app.session.active().unwrap().doc.layers.len())
+    }
+
+    #[test]
+    fn altgr_characters_typed_in_text_run_no_command() {
+        let mut wrong = vec![];
+        for (key, typed) in [(Key::L, "ł"), (Key::Q, "@"), (Key::E, "€"), (Key::A, "ą"), (Key::Z, "ż")] {
+            let mut app = VectnorApp::new(vectnor_engine::Session::new(), Default::default());
+            app.session.execute("file.new", &json!({"width": 200, "height": 200})).unwrap();
+            app.session.execute("shape.rectangle", &json!({"x": 10, "y": 10, "width": 20, "height": 20})).unwrap();
+            let id = app.session.execute("text.create", &json!({"x": 20, "y": 50, "text": "Hi"})).unwrap()["id"].as_u64().unwrap();
+            app.session.execute("text.setRangeStyle", &json!({"id": id, "tracking": 200, "kerning": -40})).unwrap();
+            app.select_tool("type");
+            app.session.apply_actions(vec![vectnor_tools::Action::Notify("text.editNew".into())]).unwrap();
+            app.session.set_tool_option("select", &json!({"start": 2, "end": 2}));
+            assert!(app.session.tool_wants_text());
+            let layers = text_and_layers(&mut app, id).1;
+            let selected = |app: &VectnorApp| app.session.active().unwrap().selection.objects.len();
+            let before = selected(&app);
+            frame(&mut app, ctrl_alt_press(key, Some(typed)));
+            let r = app.session.execute("text.getRange", &json!({"id": id})).unwrap();
+            let spaced =
+                r["runs"].as_array().unwrap().iter().all(|run| run["style"]["tracking"] == json!(200.0) && run["style"]["kerning"] == json!(-40.0));
+            let got = (text_and_layers(&mut app, id), spaced, selected(&app) == before, app.ui.dialog.is_none(), app.session.tool_wants_text());
+            if got != ((format!("Hi{typed}"), layers), true, true, true, true) {
+                wrong.push(format!("{key:?}: (text, layers), tracking and kerning kept, selection kept, no dialog, still editing = {got:?}"));
+            }
+        }
+        assert!(wrong.is_empty(), "{wrong:#?}");
     }
 }

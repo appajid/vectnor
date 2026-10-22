@@ -162,7 +162,7 @@ impl<L: LibraryFile> Libraries<L> {
             let file = file_name(&path);
             let read = || crate::file_access::unconfined(|| read_file(&path)).ok().and_then(|b| L::read(&b, stem(&file)).ok());
             let Some(lib) = crate::guard::catch_panic(read).ok().flatten() else { continue };
-            let info = LibraryInfo { id: format!("user/{file}"), name: lib.name().to_string(), category: "user" };
+            let info = LibraryInfo { id: format!("user/{file}"), name: library_tab_name(&file, lib.name()), category: "user" };
             self.extra.push(Extra { info, path: Some(path), lib: Arc::new(lib) });
         }
     }
@@ -245,7 +245,7 @@ impl<L: LibraryFile> Libraries<L> {
         if let Some(e) = path.and_then(user) {
             return Ok((e.info.clone(), e.lib.clone()));
         }
-        let info = LibraryInfo { id: format!("loaded/{}", path.unwrap_or(&file)), name: lib.name().to_string(), category: "loaded" };
+        let info = LibraryInfo { id: format!("loaded/{}", path.unwrap_or(&file)), name: library_tab_name(&file, lib.name()), category: "loaded" };
         let lib = Arc::new(lib);
         self.extra.retain(|x| x.info.id != info.id);
         self.extra.push(Extra { info: info.clone(), path: path.map(str::to_string), lib: lib.clone() });
@@ -650,4 +650,14 @@ fn reset_defaults(s: &mut Session, p: &Value) -> Result<Value> {
 /// Drop a link to a swatch not in `live`; true when it did.
 fn unlink_dead(live: &[String], link: &mut Option<String>) -> bool {
     link.as_ref().is_some_and(|n| !live.contains(n)) && link.take().is_some()
+}
+
+fn temporary_library_file_name(name: &str) -> bool {
+    let lower = name.to_ascii_lowercase();
+    lower.contains(".tmp.")
+}
+
+fn library_tab_name(file: &str, lib_name: &str) -> String {
+    let base = file_name(file);
+    if extension(&base) == "acb" && !temporary_library_file_name(&base) { stem(&base).to_string() } else { lib_name.to_string() }
 }

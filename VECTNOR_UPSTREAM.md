@@ -1,12 +1,12 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged)
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
 The supplied source was initially committed as `d8d143e72223590ca4b451b792ca4e52cf68d23d`. Its original upstream revision was not preserved as verified Git ancestry. Subsequent ports compare the actual source and tests instead of assuming that history. The review baseline is `cdca9f872becb0c1b7baef107a2a9dda3035ddbf`.
 
-Developer and maintainer: **Appaji Ambarisha** (`appajid`). Vectnor keeps its own branding, `.vcnr` extension and `vectnor` format header. The repository remains private. Public source/build/site publication requires the owner's explicit authorization.
+Developer and maintainer: **Appaji Ambarisha** (`appajid`). Vectnor keeps its own branding, `.vcnr` extension and `vectnor` format header. The GitHub repository is public following the owner's explicit authorization on 2026-10-22. Local source uploads and build/site publication still require an explicit request.
 
 ## Reviewed adaptations — M0.upstream, 2026-10-12
 
@@ -51,10 +51,20 @@ at capture). [Review and compatibility choices](docs/vectnor/UPSTREAM_AUDIT.md) 
 English interface, Indic document support, private repository policy and existing attribution remain.
 No new fonts/assets or upload. Scores and version remain unchanged.
 
+## Local update — M0.upstream-workflow, 2026-10-22
+
+Screened 329 upstream PR updates since `fcfa46a`; adapted 19 selected scopes (18 merged, one open,
+including one regression-only PR) after 41 Rust postimage blob checks. Six prior adaptations were
+rechecked at rebased merged heads and are not counted again. [Review](docs/vectnor/UPSTREAM_AUDIT.md)
+and [source snapshot](docs/vectnor/upstream-audit-2026-10-22.json) record exact scope and exclusions.
+The two substantial CDR proposals remain deferred; this update adds no CDR support. Keep changes local.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
+| 2026-10-22 | policy | Owner explicitly authorized making appajid/vectnor public; GitHub visibility verified PUBLIC. No local commits pushed. |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream adaptations and compatibility/verification notes; no upload. |

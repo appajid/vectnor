@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -100,10 +100,15 @@ headers are size-checked before pixel decode. `ruzstd` 0.9.1 fixes the documente
 
 Graph CSV preserves quoted delimiters/newlines and huge axis labels. SVG title/description filters XML controls and CSS font-family names are escaped/quoted. CLI/MCP raster scale leaves vector DXF drawing units intact. Checked mesh dimensions, polygon counts and a global EMF tile budget bound malformed work. These do not establish general XML/importer parity. [Pinned PR audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
 
+## Local EPS and palette follow-up — 2026-10-22
+
+EPS readline treats CRLF as one terminator, preserving counted metadata and raw/buffered payloads. Huge finite number formatting avoids accidental inf; numeric range validation is separate. CSS palette gradient stops retain fractional percentages. Synthetic fixtures only. CDR proposals #3123/#2890 remain deferred pending full parser/fuzz/file review, so the existing unsupported CDR row remains accurate. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |

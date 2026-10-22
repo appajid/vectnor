@@ -458,3 +458,47 @@ fn gradient_libraries_are_listed_and_gradient_swatches_rename_and_take_new_gradi
     run(&mut s, "swatch.edit", json!({"name": "Red", "paint": {"color": "#00ff00"}}));
     assert_eq!(doc(&s).swatch("Red").unwrap().paint.color().map(|c| c.to_hex()), Some("#00ff00".into()));
 }
+
+#[test]
+fn color_book_tab_titles_use_the_file_name() {
+    fn acb_bytes(title: &str) -> Vec<u8> {
+        fn acb_str(out: &mut Vec<u8>, s: &str) {
+            let units: Vec<u16> = s.encode_utf16().collect();
+            out.extend((units.len() as u32).to_be_bytes());
+            units.iter().for_each(|u| out.extend(u.to_be_bytes()));
+        }
+        let mut bytes = b"8BCB".to_vec();
+        bytes.extend(1u16.to_be_bytes());
+        bytes.extend(3000u16.to_be_bytes());
+        for s in [title, "Example ", " C", ""] {
+            acb_str(&mut bytes, s);
+        }
+        bytes.extend(1u16.to_be_bytes());
+        bytes.extend(7u16.to_be_bytes());
+        bytes.extend(0u16.to_be_bytes());
+        bytes.extend(0u16.to_be_bytes());
+        acb_str(&mut bytes, "185");
+        bytes.extend(b"TST001");
+        bytes.extend([228, 0, 43]);
+        bytes.extend(b"spflspot");
+        bytes
+    }
+    let dir = temp_dir("acb-name");
+    let user = dir.join("user");
+    let elsewhere = dir.join("elsewhere");
+    std::fs::create_dir_all(&user).unwrap();
+    std::fs::create_dir_all(&elsewhere).unwrap();
+    let on_disk = user.join("Example Solid Coated.acb");
+    std::fs::write(&on_disk, acb_bytes("Internal Book Title")).unwrap();
+    let named = elsewhere.join("Brand Colors.acb");
+    std::fs::write(&named, acb_bytes("Another Internal Title")).unwrap();
+
+    let mut s = session();
+    s.swatch_libraries.set_user_dir(Some(user.to_string_lossy().to_string()));
+    assert_eq!(run(&mut s, "swatch.library.get", json!({ "library": "user/Example Solid Coated.acb" }))["name"], "Example Solid Coated");
+    let loaded = run(&mut s, "swatch.library.load", json!({ "path": named.to_string_lossy() }))["library"].clone();
+    assert_eq!(run(&mut s, "swatch.library.get", json!({ "library": loaded }))["name"], "Brand Colors");
+    let r = run(&mut s, "swatch.library.copyToUser", json!({ "library": loaded }));
+    assert_eq!((r["library"].as_str(), r["name"].as_str(), r["copied"].as_bool()), (Some("user/Brand Colors.acb"), Some("Brand Colors"), Some(true)));
+    let _ = std::fs::remove_dir_all(dir);
+}

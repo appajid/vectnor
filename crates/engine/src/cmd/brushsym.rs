@@ -321,30 +321,10 @@ fn merge(base: &mut Value, patch: &Value) {
     }
 }
 
-fn save_library(s: &mut Session, label: &str, lib: Vec<Brush>, rename: Option<(String, Option<String>)>) -> Result<()> {
+fn save_library(s: &mut Session, label: &str, mut lib: Vec<Brush>, rename: Option<(String, Option<String>)>) -> Result<()> {
     s.edit(label, |d, _| {
-        brush::store(d, &lib);
-        if let Some((from, to)) = rename {
-            let ids: Vec<NodeId> = {
-                let mut v = vec![];
-                d.walk(|n| {
-                    if n.appearance.items.iter().any(|i| matches!(i, AppearanceItem::Stroke(st) if st.brush.as_deref() == Some(from.as_str()))) {
-                        v.push(n.id);
-                    }
-                });
-                v
-            };
-            for id in ids {
-                if let Some(n) = d.node_mut(id) {
-                    for it in &mut n.appearance.items {
-                        if let AppearanceItem::Stroke(st) = it
-                            && st.brush.as_deref() == Some(from.as_str())
-                        {
-                            st.brush = to.clone();
-                        }
-                    }
-                }
-            }
+        if let Some((from, to)) = &rename {
+            rename_brush_strokes(d, &mut lib, from, to.as_deref());
             if brush::current(d).as_deref() == Some(from.as_str()) {
                 match to {
                     Some(t) => d.unknown.insert(brush::CURRENT_KEY.into(), json!(t)),
@@ -352,10 +332,10 @@ fn save_library(s: &mut Session, label: &str, lib: Vec<Brush>, rename: Option<(S
                 };
             }
         }
+        brush::store(d, &lib);
         Ok(())
     })
 }
-
 fn brush_new(s: &mut Session, p: &Value) -> Result<Value> {
     const C: &str = "brush.new";
     let ty = str_param(p, "type").ok_or_else(|| bad(C, "missing `type`"))?;
@@ -1025,4 +1005,59 @@ fn symbol_adjust(s: &mut Session, p: &Value) -> Result<Value> {
         Ok(touched.len())
     })?;
     Ok(json!({ "count": count }))
+}
+
+fn set_stroke_brush(items: &mut [AppearanceItem], from: &str, to: Option<&str>) {
+    for it in items {
+        if let AppearanceItem::Stroke(st) = it
+            && st.brush.as_deref() == Some(from)
+        {
+            st.brush = to.map(str::to_string);
+        }
+    }
+}
+
+fn brush_art_mut(b: &mut Brush) -> Vec<&mut Node> {
+    use vectnor_brush::BrushKind;
+    match &mut b.kind {
+        BrushKind::Scatter(s) => vec![&mut s.art],
+        BrushKind::Art(a) => vec![&mut a.art],
+        BrushKind::Pattern(p) => {
+            std::iter::once(&mut p.side).chain([&mut p.outer_corner, &mut p.inner_corner, &mut p.start, &mut p.end].into_iter().flatten()).collect()
+        }
+        BrushKind::Calligraphic(_) | BrushKind::Bristle(_) => vec![],
+    }
+}
+
+fn rename_brush_strokes(d: &mut Document, lib: &mut [Brush], from: &str, to: Option<&str>) {
+    let trees = d.layers.iter_mut().chain(d.symbols.iter_mut().map(|s| &mut s.art));
+    let patterns = d.patterns.iter_mut().chain(d.pattern_edit.iter_mut().filter_map(|pe| pe.original.as_mut()));
+    for n in trees.chain(patterns.flat_map(|p| &mut p.art)) {
+        if paints_with(n, from) {
+            set_brush_in(Arc::make_mut(n), from, to);
+        }
+    }
+    for g in &mut d.graphic_styles {
+        set_stroke_brush(&mut g.appearance.items, from, to);
+    }
+    for n in lib.iter_mut().flat_map(brush_art_mut) {
+        set_brush_in(n, from, to);
+    }
+}
+
+fn paints_with(n: &Node, name: &str) -> bool {
+    n.appearance.items.iter().any(|i| matches!(i,AppearanceItem::Stroke(st) if st.brush.as_deref()==Some(name)))
+        || n.mask.as_ref().is_some_and(|m| paints_with(&m.art, name))
+        || n.children().is_some_and(|cs| cs.iter().any(|c| paints_with(c, name)))
+}
+fn set_brush_in(n: &mut Node, from: &str, to: Option<&str>) {
+    set_stroke_brush(&mut n.appearance.items, from, to);
+    if let Some(mask) = n.mask.as_mut().filter(|m| paints_with(&m.art, from)) {
+        set_brush_in(Arc::make_mut(&mut mask.art), from, to);
+    }
+    for c in n.children_mut().into_iter().flatten() {
+        if paints_with(c, from) {
+            set_brush_in(Arc::make_mut(c), from, to);
+        }
+    }
 }

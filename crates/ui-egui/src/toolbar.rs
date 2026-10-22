@@ -1373,4 +1373,49 @@ pub(crate) mod tests {
         app.session.prefs.show_tool_tips = true;
         assert!(hovered_texts(&mut app, &ctx, 30.0, star).contains(&tip), "on again");
     }
+
+    #[test]
+    fn polygon_and_star_canvas_counts_persist_without_new_toolbar_dialogs() {
+        for (tool, key, count) in [("polygon", "sides", 3), ("star", "points", 7)] {
+            let mut app = VectnorApp::new(Session::new(), Default::default());
+            app.run("file.new", json!({"width":300,"height":300})).unwrap();
+            app.select_tool(tool);
+            assert!(open_options(&mut app, tool).is_err(), "upstream toolbar opening behavior stays unchanged");
+            assert!(app.ui.dialog.is_none());
+            let objects =
+                |app: &VectnorApp| app.session.active().unwrap().doc.layers.iter().map(|l| l.children().map_or(0, |c| c.len())).sum::<usize>();
+            crate::dialogs::open_tool_dialog(&mut app, tool, json!({"x":120,"y":130}));
+            let d = app.ui.dialog.as_mut().unwrap();
+            assert!(d.fields.contains_key(if tool == "polygon" { "radius" } else { "radius1" }));
+            d.fields.insert(key.into(), json!(count));
+            crate::dialogs::confirm(&mut app).unwrap();
+            assert_eq!(objects(&app), 1, "deliberate exact-size placement");
+            assert_eq!(app.session.tool_options()[key], count);
+            for round in 0..3 {
+                if round == 2 {
+                    app.select_tool("ellipse");
+                    app.select_tool(tool);
+                }
+                let view = app.view_info();
+                for (kind, x, y) in [
+                    (vectnor_tools::PointerKind::Down, 50.0, 50.0),
+                    (vectnor_tools::PointerKind::Drag, 90.0, 90.0),
+                    (vectnor_tools::PointerKind::Up, 90.0, 90.0),
+                ] {
+                    app.session.pointer(&vectnor_tools::PointerEvent::new(kind, x, y), view).unwrap();
+                }
+                assert_eq!(objects(&app), round + 2);
+                let st = app.session.active().unwrap();
+                let node = st.doc.node(*st.selection.objects.first().unwrap()).unwrap();
+                assert_eq!(node.path_data().unwrap().anchor_count(), if tool == "polygon" { 3 } else { 14 });
+            }
+            crate::dialogs::open_tool_dialog(&mut app, tool, json!({"x":140,"y":150}));
+            let d = app.ui.dialog.as_mut().unwrap();
+            assert_eq!(d.fields[key], count, "reopening uses the chosen count");
+            d.fields.insert(key.into(), json!(9));
+            crate::dialogs::cancel(&mut app);
+            assert_eq!(objects(&app), 4);
+            assert_eq!(app.session.tool_options()[key], count, "Cancel keeps the count");
+        }
+    }
 }

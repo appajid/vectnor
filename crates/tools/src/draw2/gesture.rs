@@ -124,6 +124,9 @@ impl GestureTool {
 
     /// The selected open path whose end is near `p`.
     fn find_extend(&self, cx: &ToolContext, p: Point) -> Option<(NodeId, bool)> {
+        if self.edit_within <= 0.0 {
+            return None;
+        }
         let tol = cx.tol(self.edit_within);
         for id in &cx.selection.objects {
             let Some(pd) = cx.doc.node(*id).and_then(|n| n.path_data()) else { continue };
@@ -167,7 +170,7 @@ impl GestureTool {
                 if !self.began {
                     return vec![];
                 }
-                let near = pts.len() > 2 && pts[0].distance(pts[pts.len() - 1]) <= cx.tol(self.close_within);
+                let near = self.close_within > 0.0 && pts.len() > 2 && pts[0].distance(pts[pts.len() - 1]) <= cx.tol(self.close_within);
                 let closed = (m.alt && !self.alt_to_smooth) || (self.extend.is_none() && near);
                 vec![Action::Preview("path.freehand".into(), self.freehand_params(closed)), Action::Commit]
             }
@@ -460,5 +463,54 @@ mod tests {
         let mut b = GestureTool::new("blobBrush");
         b.key(&cx, ToolKey::BracketRight, Mods::default());
         assert_eq!(b.options()["size"], 11.0);
+    }
+
+    #[test]
+    fn edit_selected_paths_within_0_draws_a_new_path_from_an_end() {
+        let (mut d, _) = doc_with_rect();
+        let l = d.layers[0].id;
+        let id = d.alloc_id();
+        let line = vectnor_geom::PathData::from_bezpath(&vectnor_geom::BezPath::from_vec(vec![
+            vectnor_geom::PathEl::MoveTo(Point::new(300.0, 300.0)),
+            vectnor_geom::PathEl::LineTo(Point::new(400.0, 300.0)),
+        ]));
+        d.insert(Some(l), 1, vectnor_doc::Node::path(id, line, vectnor_doc::Appearance::default_art())).unwrap();
+        let mut s = Selection::default();
+        s.set([id]);
+        let p = paint();
+        let cx = cx(&d, &s, &p);
+        for tool in ["pencil", "paintbrush"] {
+            let mut t = GestureTool::new(tool);
+            for (within, extends) in [(12.0, true), (0.0, false)] {
+                t.set_option("editWithin", &json!(within));
+                for (x, end) in [(400.0, "end"), (300.0, "start")] {
+                    let acts = drag(&mut t, &cx, &[(x, 300.0), (x + 20.0, 350.0), (x, 380.0)], Mods::default());
+                    let Some(Action::Preview(_, v)) = acts.last().and_then(|a| a.first()) else { panic!("{tool}: {acts:?}") };
+                    if extends {
+                        assert_eq!(v["extend"], json!({"id": id.0, "end": end}), "{tool} from the {end}");
+                    } else {
+                        assert!(v.get("extend").is_none() && v.get("redraw").is_none(), "{tool} from the {end}: {v}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn close_paths_within_0_leaves_a_stroke_that_ends_at_its_start_open() {
+        let (d, _) = doc_with_rect();
+        let s = Selection::default();
+        let p = paint();
+        let cx = cx(&d, &s, &p);
+        for tool in ["pencil", "paintbrush"] {
+            let mut t = GestureTool::new(tool);
+            for (within, closes) in [(15.0, true), (0.0, false)] {
+                t.set_option("closeWithin", &json!(within));
+                let acts = drag(&mut t, &cx, &[(310.0, 330.0), (360.0, 350.0), (330.0, 390.0), (310.0, 330.0)], Mods::default());
+                let Some(Action::Preview(_, v)) = acts.last().and_then(|a| a.first()) else { panic!("{tool}: {acts:?}") };
+                assert_eq!(v["points"][0], v["points"][3], "{tool}");
+                assert_eq!(v["closed"], json!(closes), "{tool} at {within} px");
+            }
+        }
     }
 }

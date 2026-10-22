@@ -71,9 +71,8 @@ pub fn path_contains(path: &PathData, rule: FillRule, p: Point) -> bool {
 
 /// The face of `group` under `p` (front-most).
 pub fn face_at(group: &Node, p: Point) -> Option<&Arc<Node>> {
-    faces(group).into_iter().rev().find(|f| f.path_data().is_some_and(|pd| path_contains(pd, FillRule::NonZero, p)))
+    front_face(faces(group).into_iter(), p)
 }
-
 /// The edge of `group` nearest to `p` within `tol`.
 pub fn edge_near(group: &Node, p: Point, tol: f64) -> Option<&Arc<Node>> {
     let mut best: Option<(f64, &Arc<Node>)> = None;
@@ -92,7 +91,7 @@ pub fn edge_near(group: &Node, p: Point, tol: f64) -> Option<&Arc<Node>> {
 pub fn live_paint_at(doc: &Document, p: Point) -> Option<NodeId> {
     let mut hit = None;
     doc.walk(|n| {
-        if is_live_paint(n) && doc.is_visible(n.id) && face_at(n, p).is_some() {
+        if is_live_paint(n) && doc.is_visible(n.id) && visible_face_at(n, p).is_some() {
             hit = Some(n.id);
         }
     });
@@ -604,7 +603,7 @@ enum LpHover {
 
 fn lp_hover(cx: &ToolContext, cache: &mut RegionCache, p: Point, edge: bool) -> LpHover {
     if let Some(g) = live_paint_at(cx.doc, p).and_then(|id| cx.doc.node(id)) {
-        let part = if edge { edge_near(g, p, cx.tol(4.0)) } else { face_at(g, p) };
+        let part = if edge { edge_near(g, p, cx.tol(4.0)) } else { visible_face_at(g, p) };
         return part.and_then(|n| n.path_data()).map(|pd| LpHover::Part(pd.to_bezpath())).unwrap_or_default();
     }
     if edge {
@@ -741,7 +740,7 @@ impl Tool for LivePaintSelectionTool {
             PointerKind::Down => {
                 let mut hit = None;
                 if let Some(g) = live_paint_at(cx.doc, p).and_then(|id| cx.doc.node(id)) {
-                    let part = if ev.mods.alt { edge_near(g, p, cx.tol(4.0)) } else { face_at(g, p) };
+                    let part = if ev.mods.alt { edge_near(g, p, cx.tol(4.0)) } else { visible_face_at(g, p) };
                     hit = part.map(|n| n.id);
                 }
                 match (hit, ev.mods.shift) {
@@ -772,6 +771,14 @@ pub fn create(id: &str) -> Option<Box<dyn Tool>> {
         "livePaintSelection" => Box::new(LivePaintSelectionTool::default()),
         _ => return None,
     })
+}
+
+pub fn visible_face_at(group: &Node, p: Point) -> Option<&Arc<Node>> {
+    front_face(faces(group).into_iter().filter(|f| f.visible), p)
+}
+
+fn front_face<'a>(faces: impl DoubleEndedIterator<Item = &'a Arc<Node>>, p: Point) -> Option<&'a Arc<Node>> {
+    faces.rev().find(|f| f.path_data().is_some_and(|pd| path_contains(pd, FillRule::NonZero, p)))
 }
 
 #[cfg(test)]
@@ -1020,5 +1027,20 @@ mod tests {
             assert_eq!(create(id).unwrap().id(), id);
         }
         assert!(create("pen").is_none());
+    }
+    #[test]
+    fn live_paint_tools_skip_hidden_faces() {
+        let (mut d, gid, face, _) = live_group_doc();
+        d.node_mut(face).unwrap().visible = false;
+        let sel = Selection::default();
+        let paint = paint();
+        let c = cx(&d, &sel, &paint);
+        assert_eq!(live_paint_at(&d, Point::new(75.0, 25.0)), None);
+        assert!(visible_face_at(d.node(gid).unwrap(), Point::new(75.0, 25.0)).is_none());
+        let mut bucket = LivePaintBucketTool::default();
+        assert!(bucket.pointer(&c, &ev(PointerKind::Down, 75.0, 25.0)).is_empty());
+        let mut pick = LivePaintSelectionTool::default();
+        assert_eq!(pick.pointer(&c, &ev(PointerKind::Down, 75.0, 25.0)), vec![Action::Exec("select.none".into(), json!({}))]);
+        assert_eq!(live_paint_at(&d, Point::new(25.0, 25.0)), Some(gid));
     }
 }

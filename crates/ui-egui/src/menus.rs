@@ -873,7 +873,7 @@ pub fn run_ui_command(app: &mut VectnorApp, id: &str, p: &Value) -> Option<Resul
         "file.revert" if p.get("confirmed").and_then(Value::as_bool) != Some(true) => io::ask_revert(app),
         "file.reveal" => io::reveal(app),
         id if id.starts_with("file.openRecent") => match recent_slot(app, id).cloned() {
-            Some(path) => io::open_reporting(app, &path),
+            Some(path) => io::open_recent_reporting(app, &path),
             None => Err("no such recent file".into()),
         },
         "type.findFont" => {

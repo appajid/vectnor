@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -57,10 +57,15 @@ artwork was verified through `ui.render`; the earlier preferences/canvas screens
 Evidence stays local under `/tmp/vectnor-english-*`; no GitHub upload. This remains focused regression
 coverage, not a claim of complete Indic IME/editor/export parity.
 
+## Local input and threading follow-up — 2026-10-22
+
+Bengali Backspace and replacement text in one frame, typed text/editing keys/Enter/IME ordering, AltGr typing without command activation and middle-frame thread release receive focused coverage. Half-form tests build positive/negative fixtures in memory from existing OFL bytes and require actual shaping capability. No new font file or interface translation. Comprehensive Indic IME/export parity remains unassessed. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-12 | scope | English-only interface by owner request; Indic document text retained with nine-script shaping and edit/undo/redo/native round-trip checks. Historical readiness estimates unchanged pending reassessment. |

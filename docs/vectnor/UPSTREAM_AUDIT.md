@@ -1,6 +1,88 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged)
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged)
+
+## 2026-10-22 local update — M0.upstream-workflow
+
+Screened **329 PRs updated since `fcfa46a`** (2026-10-21 08:05:34 UTC): **211 merged,
+106 open and 12 closed without merge**. Four public REST pages held 400 distinct records and crossed
+the cutoff; a fifth 100-record verification page contained no post-cutoff updates. Capture time:
+2026-10-22 11:47:26 UTC. Review is limited to PRs targeting the [upstream repository](https://github.com/storytold/vectorcraft).
+Metadata screening is not full source review. Scoped 40 candidate diffs (including six prior adaptation
+rechecks), and adapted **19 PR scopes: 18 merged and one open**, including one regression-only PR.
+
+The [dated snapshot](upstream-audit-2026-10-22.json) pins author logins, exact heads, raw diff SHA-256,
+41 verified Rust postimage Git blob IDs, compatibility decisions and every metadata-screened record.
+Older snapshots remain unchanged. Existing upstream MIT OR Apache-2.0 attribution is retained.
+
+| PR | State at capture | Author / immutable head | Local adaptation |
+|---|---|---|---|
+| [#3382](https://github.com/storytold/vectorcraft/pull/3382) | merged | @dotCooCoo / `76058fb1b557` | AltGr characters typed while editing text do not also run command chords. |
+| [#2636](https://github.com/storytold/vectorcraft/pull/2636) | open | @dotCooCoo / `2adce89eb1aa` | Process typed text, IME, editing keys, Enter and clipboard events in their received order; fitted to current shortcut router, with command-chord text suppression from the pinned postimage. |
+| [#3376](https://github.com/storytold/vectorcraft/pull/3376) | merged | @dotCooCoo / `da197ba75c1b` | Half-form test selects only a capable fallback face; build positive/negative GSUB fixtures in code from an existing OFL font. |
+| [#3409](https://github.com/storytold/vectorcraft/pull/3409) | merged | @lehni / `23dbf5d214aa` | Releasing a middle threaded-text frame preserves one story; regression uses existing thread.create because thread.add is absent. |
+| [#3385](https://github.com/storytold/vectorcraft/pull/3385) | merged | @dotCooCoo / `4b56ce44a161` | Brush rename/delete reaches masks, symbols, pattern tiles and retained pattern originals, graphic styles and brush art. Graph designs are absent; existing single-rename contract retained. |
+| [#3206](https://github.com/storytold/vectorcraft/pull/3206) | merged | @Taha-Mahmoodi / `4fdb3e1f9b29` | Arrange art inside a clipped group/layer without moving the bottom clipping path. |
+| [#3614](https://github.com/storytold/vectorcraft/pull/3614) | merged | @bflatastic / `76399175ebb3` | EPS readline consumes CRLF as one terminator, preserving counted and binary payload alignment. |
+| [#3240](https://github.com/storytold/vectorcraft/pull/3240) | merged | @Silvertree2010 / `2b0d71dbea04` | EPS number serialization avoids accidental inf for huge finite values; format numeric-range validation is separate. |
+| [#3284](https://github.com/storytold/vectorcraft/pull/3284) | merged | @MMexicann / `97d133d9d408` | Preserve fractional CSS gradient-stop percentages. |
+| [#3340](https://github.com/storytold/vectorcraft/pull/3340) | merged | @dotCooCoo / `ba8c1e042c3d` | Zero Edit Selected Paths/Close Paths distances disable endpoint continuation/automatic closure for Pencil/Paintbrush. |
+| [#3257](https://github.com/storytold/vectorcraft/pull/3257) | merged | @FractalEncrypt / `b9fa08f9e6eb` | Remember Polygon/Star exact-size counts through the existing tool.setOption command. |
+| [#3348](https://github.com/storytold/vectorcraft/pull/3348) | merged | @MarekSpodBiedry / `cde39698ffa7` | Alt-click exact-size rectangles and ellipses use the clicked centre. |
+| [#3502](https://github.com/storytold/vectorcraft/pull/3502) | merged | @nrq6993-a11y / `e4db022f494a` | Welcome recent thumbnails and Open Recent activate an existing tab, preserving unsaved edits, instead of opening another copy. |
+| [#3460](https://github.com/storytold/vectorcraft/pull/3460) | merged | @dotCooCoo / `4bd55029e8d6` | Live Paint face picking/filling skips hidden faces. Existing edge-picking contract retained. |
+| [#3406](https://github.com/storytold/vectorcraft/pull/3406) | merged | @oracola91 / `d8e876b721fc` | Create recovery folders owner-only on Unix while preserving modes of pre-existing chosen folders. |
+| [#3518](https://github.com/storytold/vectorcraft/pull/3518) | merged | @nrq6993-a11y / `3d4d34fc15e1` | Color-book library tab names follow ordinary file basenames; existing copy behavior retained. |
+| [#3534](https://github.com/storytold/vectorcraft/pull/3534) | merged | @nrq6993-a11y / `8735170a3422` | Regression coverage only: filled paths without stroke accept Type on Path/Area Type on their outline, not inside the fill; current implementation already matches. |
+| [#3550](https://github.com/storytold/vectorcraft/pull/3550) | merged | @Taha-Mahmoodi / `a8bdf5043f94` | Properties/flyout/docked-column scrollbars reserve a column, using a small scroll-style prerequisite from the same postimage. New shared-panel docking module absent and excluded. |
+| [#3554](https://github.com/storytold/vectorcraft/pull/3554) | merged | @Taha-Mahmoodi / `7141932dfb27` | Layers scrollbar reserves its own column and avoids selection/target marks. |
+
+Compatibility and exclusions:
+
+- Ordered input comes from open #2636, explicitly recorded as a reviewed local proposal adaptation.
+  Its small shortcut-modifier helper comes from the same pinned postimage; the previous Type/Escape
+  claims and grapheme caret behavior remain. English interface, Indic document support and native
+  `.vcnr`/`vectnor` identity are preserved. The half-form test creates fonts in memory from existing
+  licensed bytes; no font files, assets, translation catalogs or dependency changes are introduced.
+- Thread release uses existing Create Thread commands in its regression. Brush rename adapts direct
+  mask fields and the existing single-rename API; the newer graph-design model is absent and excluded.
+  Native Recent uses the existing activation/sync/home behavior and keeps the thumbnail layout.
+  Live Paint keeps current edge-picking semantics. Scroll fixes cover current Properties, flyouts,
+  docked columns and Layers; a newer shared-panel docking module is absent and not imported.
+- Previously adapted #3230/#3323/#3331/#3337/#3254/#2671 are now merged with rebased heads. Their relevant
+  production scopes were rechecked and remain implemented; they are not counted again. Existing
+  group/layer-only isolation is retained rather than importing single-object/guide isolation contracts.
+- CDR proposals #3123 and #2890 were scoped for architecture, parser boundaries and integration needs.
+  They add substantial competing importers and require full untrusted-input review, fuzzing and file
+  validation. They remain deferred; **this update adds no CDR support**. Existing supported AI/PDF/EPS
+  import remains partial, with format limitations described in [file-format-parity](../file-format-parity.md).
+- New save/export extension rules require the newer picker and overwrite-confirmation contracts;
+  those are deferred together. Broader paragraph visitation, modal layout, rendering, import/backend,
+  platform, scripting and docking changes remain compatibility work. Translations, community controls,
+  promotional/service integrations and automatic publication are excluded by owner scope.
+- This task stayed separate from Pagenor: no external messages or other project PR review. Owner
+  policy edits are preserved, including the authorized public repository status; no source upload.
+
+Verification: **all eight CI gates pass — 5,265 tests passed, zero failed, four existing ignored**.
+The UI suite passes 942 tests. The actual browser app also checks for WASM, with the existing unused
+`ask_update_changed` warning in unchanged `dialogs/missing_links.rs`.
+
+Native control port 17994 checks Bengali Backspace-plus-replacement in one real UI frame, exact-size
+Alt-click centring, Polygon count persistence/reopen/Cancel and Open Recent activation of an existing
+dirty document without losing unsaved geometry or adding a tab. Bengali, Telugu, Hindi and joiners
+save/reopen as `.vcnr` with identical node JSON and artwork PNG SHA-256; reopened dirty=false.
+Inspected Canvas, short-window Layers, English Preferences and About screenshots: scrollbar column,
+Vectnor branding, Developer: Appaji Ambarisha and Contributors/Models remain. The test app quit cleanly.
+Evidence remains local under `/tmp/vectnor-upstream-2026-10-22/`.
+
+Performance remains **8/10 budgets before and after** on 50k synthetic paths in the optimized-development
+build: 400% render 22.35 → 22.16 ms (16 ms limit), native open 314.54 → 335.00 ms (300 ms limit).
+An earlier busy trial (load 19.3 on 12 cores) is retained separately and excluded from inference.
+The final trial followed completed builds and app exit, at load 8.1; baseline load is unknown.
+Single runs with these load differences establish neither a speedup nor a regression; the two overruns
+remain open under G15. `dist/Vectnor.app` is refreshed from SHA-256-verified native/CLI binaries.
+
+Scores, estimates and application version remain unchanged. No source, build, PR or hosted app is uploaded.
 
 ## 2026-10-21 local update — M0.upstream-indic
 
@@ -236,6 +318,7 @@ Full CI logs: `/tmp/vectnor-upstream-ci-verified.log`. Native proof: `/tmp/vectn
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](upstream-audit-2026-10-17.json). No upload. |
 | 2026-10-12 | minor | Nine merged upstream fixes selected, pinned, adapted and regression-tested; Pagenor structure comparison documented. |

@@ -1,6 +1,6 @@
 # UI and interaction parity
 
-> **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (reviewed Indic, editing and export fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 How Vectnor's tools, handles, snapping and panels behave next to Illustrator's. A vector illustrator's
 trust is in the details: where a handle lands, what Shift and Alt do mid-drag, what a smart guide snaps to,
@@ -185,10 +185,15 @@ The [upstream audit](vectnor/UPSTREAM_AUDIT.md) records source pins, verificatio
 
 Double-click text editing returns to the invoking tool on Escape; typed text claims keys before shortcuts. Dropdown choices close the popup, Transform menu flips use the selected reference point, layers ignore a second double click while already renaming, and isolated Wand/container guards have focused coverage. [Pinned PR audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
 
+## Local interaction follow-up — 2026-10-22
+
+Exact-size rectangle/ellipse Alt-click uses the click as its centre; Polygon/Star counts persist through tool settings. Zero endpoint edit/close distances disable those Pencil/Paintbrush behaviors. Clipped art stays above its clipping path. Welcome thumbnails/Open Recent reuse an open tab, retaining unsaved work; Properties/Layers scrollbars leave controls visible. These are focused regressions, not a full interaction assessment. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-13 | minor | Reviewed upstream correctness pass: twenty updated adaptations and two alignment dependencies; English interface/Indic text retained; scores unchanged. See the [audit](vectnor/UPSTREAM_AUDIT.md). |

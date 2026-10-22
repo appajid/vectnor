@@ -696,6 +696,44 @@ pub fn place_bytes(app: &mut VectnorApp, name: &str, bytes: &[u8]) -> Result<(),
     crate::place::run(app, &serde_json::json!({ "name": name, "dataBase64": vectnor_format::base64_encode(bytes) })).map(|_| ())
 }
 
+pub fn open_recent_reporting(app: &mut VectnorApp, path: &str) -> Result<Value, String> {
+    if let Some(r) = try_activate_open_document(app, path)? {
+        return Ok(r);
+    }
+    open_reporting(app, path)
+}
+
+fn document_index_for_path(app: &VectnorApp, path: &str) -> Option<usize> {
+    app.session.documents().iter().position(|st| st.path.as_deref().is_some_and(|p| same_open_path(p, path)))
+}
+
+fn same_open_path(a: &str, b: &str) -> bool {
+    match (std::fs::canonicalize(a), std::fs::canonicalize(b)) {
+        (Ok(a), Ok(b)) => a == b,
+        _ => a == b,
+    }
+}
+
+fn try_activate_open_document(app: &mut VectnorApp, path: &str) -> Result<Option<Value>, String> {
+    let Some(index) = document_index_for_path(app, path) else {
+        return Ok(None);
+    };
+    let Some(st) = app.session.documents().get(index) else { return Ok(None) };
+    let r = json!({
+        "index": index,
+        "title": st.title(),
+        "format": st.format,
+        "warnings": [],
+        "restored": false,
+        "activated": true,
+    });
+    app.run("document.activate", json!({ "index": index }))?;
+    app.ui.home = None;
+    app.sync_views();
+    note_recent(app, path);
+    Ok(Some(r))
+}
+
 #[cfg(test)]
 mod tests {
     use std::cell::RefCell;

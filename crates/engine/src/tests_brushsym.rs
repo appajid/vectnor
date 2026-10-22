@@ -570,3 +570,97 @@ fn brushes_and_symbols_survive_vectnor_round_trip() {
     let b = s2.doc().unwrap().doc.node(NodeId(r["id"].as_u64().unwrap())).unwrap().geometric_bounds().unwrap();
     assert!(close(b, Rect::new(60.0, 80.0, 140.0, 120.0), 1e-9));
 }
+
+fn brushes_outside_the_layers(s: &Session, pattern: &str) -> Vec<String> {
+    let d = &s.doc().unwrap().doc;
+    let mut out = vec![];
+    let mut items = |place: &str, items: &[vectnor_doc::AppearanceItem]| {
+        for it in items {
+            if let vectnor_doc::AppearanceItem::Stroke(st) = it {
+                out.push(format!("{place}: {}", st.brush.as_deref().unwrap_or("-")));
+            }
+        }
+    };
+    let mut tree = |place: &str, n: &Node| n.walk(&mut |m| items(place, &m.appearance.items));
+    tree("symbol", &d.symbols.iter().find(|x| x.name == "Mark").unwrap().art);
+    d.pattern(pattern).unwrap().art.iter().for_each(|n| tree("pattern", n));
+    let mut masks = vec![];
+    d.walk(|n| masks.extend(n.mask.as_deref().map(|m| m.art.clone())));
+    masks.iter().for_each(|n| tree("mask", n));
+    let holder = vectnor_brush::find(d, "Holder").unwrap();
+    holder.art().into_iter().for_each(|n| tree("brush art", n));
+    items("style", &d.graphic_styles.iter().find(|x| x.name == "Linked").unwrap().appearance.items);
+    out
+}
+
+#[test]
+fn brush_rename_and_delete_reach_strokes_outside_the_layers() {
+    let mut s = session();
+    let brushed = |s: &mut Session| {
+        let id = rect(s, 10.0, 10.0, 40.0, 20.0);
+        s.execute("brush.apply", &json!({"name": "Charcoal", "ids": [id.0]})).unwrap();
+        id
+    };
+    let clear = |s: &mut Session, id: NodeId| {
+        if s.doc().unwrap().doc.node(id).is_some() {
+            s.execute("edit.clear", &json!({"ids": [id.0]})).unwrap();
+        }
+    };
+    brushed(&mut s);
+    let sym = s.execute("symbol.new", &json!({"name": "Mark"})).unwrap();
+    clear(&mut s, NodeId(sym["id"].as_u64().unwrap()));
+    let id = brushed(&mut s);
+    let pattern = s.execute("object.pattern.make", &json!({"edit": false})).unwrap()["name"].as_str().unwrap().to_string();
+    clear(&mut s, id);
+    let id = brushed(&mut s);
+    s.execute("graphicStyle.new", &json!({"name": "Linked", "id": id.0})).unwrap();
+    clear(&mut s, id);
+    let id = brushed(&mut s);
+    s.execute("brush.new", &json!({"type": "art", "name": "Holder"})).unwrap();
+    clear(&mut s, id);
+    let masked = rect(&mut s, 100.0, 100.0, 60.0, 60.0);
+    let mask = brushed(&mut s);
+    select(&mut s, &[masked, mask]);
+    s.execute("transparency.makeOpacityMask", &json!({})).unwrap();
+    let a = brushed(&mut s);
+    let plain = rect(&mut s, 200.0, 10.0, 40.0, 20.0);
+    let shared = |s: &Session| s.doc().unwrap().doc.layers[0].children().unwrap().iter().find(|c| c.id == plain).unwrap().clone();
+    let plain_before = shared(&s);
+    let before = brushes_outside_the_layers(&s, &pattern);
+    for place in ["symbol", "pattern", "mask", "brush art", "style"] {
+        assert!(before.contains(&format!("{place}: Charcoal")), "{place} in {before:?}");
+    }
+    let with = |to: &str| -> Vec<String> { before.iter().map(|e| e.replace(": Charcoal", &format!(": {to}"))).collect() };
+    let undo = s.doc().unwrap().history.undo.len();
+    s.execute("brush.options", &json!({"name": "Charcoal", "newName": "Chalk"})).unwrap();
+    assert_eq!((brush_of(&s, a).as_deref(), brushes_outside_the_layers(&s, &pattern)), (Some("Chalk"), with("Chalk")));
+    assert!(std::sync::Arc::ptr_eq(&shared(&s), &plain_before), "an object without the brush is not copied");
+    assert_eq!(s.doc().unwrap().history.undo.len(), undo + 1);
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert_eq!((brush_of(&s, a).as_deref(), brushes_outside_the_layers(&s, &pattern)), (Some("Charcoal"), before.clone()));
+    s.execute("brush.delete", &json!({"name": "Charcoal"})).unwrap();
+    assert_eq!((brush_of(&s, a), brushes_outside_the_layers(&s, &pattern)), (None, with("-")));
+    assert_eq!(s.doc().unwrap().history.undo.len(), undo + 1);
+    // A brush made later with the deleted brush's name does not paint the strokes that used it.
+    s.execute("brush.new", &json!({"type": "calligraphic", "name": "Charcoal"})).unwrap();
+    assert_eq!(brushes_outside_the_layers(&s, &pattern), with("-"));
+    s.execute("edit.undo", &json!({})).unwrap();
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert_eq!((brush_of(&s, a).as_deref(), brushes_outside_the_layers(&s, &pattern)), (Some("Charcoal"), before));
+}
+
+#[test]
+fn brush_rename_reaches_the_tile_that_pattern_cancel_puts_back() {
+    let mut s = session();
+    let id = rect(&mut s, 10.0, 10.0, 40.0, 20.0);
+    s.execute("brush.apply", &json!({"name": "Charcoal", "ids": [id.0]})).unwrap();
+    let pattern = s.execute("object.pattern.make", &json!({"edit": false})).unwrap()["name"].as_str().unwrap().to_string();
+    s.execute("object.pattern.edit", &json!({"name": pattern})).unwrap();
+    s.execute("brush.options", &json!({"name": "Charcoal", "newName": "Chalk"})).unwrap();
+    s.execute("object.pattern.cancel", &json!({})).unwrap();
+    let mut brushes = vec![];
+    for n in &s.doc().unwrap().doc.pattern(&pattern).unwrap().art {
+        n.walk(&mut |m| brushes.extend(m.appearance.stroke().and_then(|st| st.brush.clone())));
+    }
+    assert_eq!(brushes, ["Chalk"]);
+}

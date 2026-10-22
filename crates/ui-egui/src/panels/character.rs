@@ -293,6 +293,8 @@ pub(crate) fn intercept_text_command(app: &mut VectnorApp, id: &str) -> Option<R
 }
 
 enum TextInput {
+    Typed(egui::Event),
+    Enter,
     Key(ToolKey, Mods),
     Copy,
     Cut,
@@ -302,11 +304,28 @@ enum TextInput {
 
 /// Route editing keys (with modifiers), clipboard events and Cmd+C/X/V to the Type tool (Cmd+A is
 /// left to the Select All shortcut, which selects the text being edited).
-pub(crate) fn route_type_input(app: &mut VectnorApp, ctx: &egui::Context) {
+pub(crate) fn route_type_input(app: &mut VectnorApp, ctx: &egui::Context, composing: bool) {
     CTX.get_or_init(|| ctx.clone());
+    let shortcut_mods = ctx.input(|i| crate::shortcuts::is_shortcut_chord(i.modifiers));
     let mut todo = vec![];
     ctx.input_mut(|i| {
         i.events.retain(|e| match e {
+            egui::Event::Text(_) | egui::Event::Ime(_) => {
+                todo.push(TextInput::Typed(e.clone()));
+                true
+            }
+            // Enter types a line break. The event stays in the input for the shortcuts: a command
+            // bound to its chord (Cmd+Enter) runs instead of the line break.
+            egui::Event::Key { key: Key::Enter, pressed, modifiers: m, .. } => {
+                let bound = || {
+                    let all = crate::shortcuts::all_shortcuts();
+                    all.iter().any(|(sc, ..)| sc.modifiers.command && sc.logical_key == Key::Enter && m.matches_logically(sc.modifiers))
+                };
+                if *pressed && !(m.command && bound()) {
+                    todo.push(TextInput::Enter);
+                }
+                true
+            }
             egui::Event::Copy => {
                 todo.push(TextInput::Copy);
                 false
@@ -362,7 +381,15 @@ pub(crate) fn route_type_input(app: &mut VectnorApp, ctx: &egui::Context) {
         })
     });
     for t in todo {
+        let ime = composing || app.session.tool_composing();
         match t {
+            TextInput::Typed(e) => crate::shortcuts::type_event(app, e, shortcut_mods),
+            _ if ime => {}
+            TextInput::Enter => {
+                let v = app.view_info();
+                let r = app.session.tool_key(ToolKey::Enter, Mods::default(), v);
+                crate::canvas::apply_requests(app, r);
+            }
             TextInput::Key(k, m) => text_key(app, k, m),
             TextInput::Copy => {
                 text_copy(app);
@@ -381,7 +408,6 @@ pub(crate) fn route_type_input(app: &mut VectnorApp, ctx: &egui::Context) {
         }
     }
 }
-
 /// A compact labelled cell: short glyph label + spinner field.
 fn cell(ui: &mut Ui, label: &str, tip: &str, add: impl FnOnce(&mut Ui)) {
     let t = Tokens::get(ui.ctx());

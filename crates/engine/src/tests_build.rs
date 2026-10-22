@@ -969,3 +969,29 @@ fn shape_builder_merges_rosette_rings_cleanly() {
     let clean = vectnor_pathops::normalize(&ring, rule);
     assert!((ring.length() - clean.length()).abs() < 1.0, "{} pt of outline, {} without inner edges", ring.length(), clean.length());
 }
+
+#[test]
+fn live_paint_fill_skips_hidden_faces() {
+    let mut s = session();
+    let g = live(&mut s);
+    // The face from x=50 to x=100 is hidden on its own; the group stays visible.
+    let hidden = vectnor_tools::builder::face_at(&node(&s, g), vectnor_geom::Point::new(75.0, 50.0)).unwrap().id;
+    s.execute("object.setProps", &json!({"ids": [hidden.0], "visible": false})).unwrap();
+    let green = Paint::solid(Color::from_hex("#00ff00").unwrap());
+    let children = node(&s, g).children().unwrap().len();
+    // livePaint.fill at a point on the hidden face returns an error and fills no face, with `group`
+    // and with the group in `ids`, and it does not rebuild the group.
+    for p in [json!({"group": g.0, "point": [75, 50], "color": "#00ff00"}), json!({"ids": [g.0], "point": [75, 50], "color": "#00ff00"})] {
+        assert!(s.execute("livePaint.fill", &p).is_err(), "{p}");
+        let face = node(&s, hidden);
+        assert!(!face.visible && face.appearance.fill_paint() != green, "{p}");
+        assert_eq!(node(&s, g).children().unwrap().len(), children, "{p}");
+    }
+    // Given another Live Paint group with a face at that point as well, that face is filled.
+    let other = rect(&mut s, 60.0, 40.0, 20.0, 20.0);
+    let other = NodeId(s.execute("livePaint.make", &json!({"ids": [other.0]})).unwrap()["id"].as_u64().unwrap());
+    let r = s.execute("livePaint.fill", &json!({"ids": [g.0, other.0], "point": [75, 50], "color": "#00ff00"})).unwrap();
+    assert_eq!(r["group"], other.0);
+    assert_eq!(node(&s, NodeId(r["face"].as_u64().unwrap())).appearance.fill_paint(), green);
+    assert!(!node(&s, hidden).visible);
+}
