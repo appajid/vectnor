@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -57,9 +57,10 @@ object per original frame, with its paragraph breaks, area/point type and charac
 Separate original frames stay separate. This uses the original editing data, rather than
 joining nearby lines into an assumed paragraph.
 
-Recovery is bounded and conservative: one matching artboard, contiguous text fragments in
-one graphics context, matching complete text and orientation, and unique frame ownership.
-Unread source frames, ambiguous/mismatched text, another crop or artboard, threaded/path-type fallback, masks or
+Recovery is bounded and conservative: matching complete artboard sets, contiguous fragments
+within each frame's graphics context, matching complete text and orientation, and unique ownership.
+Complete linked stories restore every original frame and link atomically. Unread source frames,
+ambiguous/mismatched text, different crops or missing artboards, path-type fallback, masks or
 intervening artwork retain their existing page objects. Direct native AI import continues
 to handle supported threaded/path type. Original-frame recovery requires readable editing
 data; PDF-only text cannot reliably reveal the original boxes. Reopen the original `.ai`
@@ -141,6 +142,7 @@ EPS readline treats CRLF as one terminator, preserving counted metadata and raw/
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

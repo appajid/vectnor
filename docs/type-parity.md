@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -69,10 +69,15 @@ frames remain distinct. Complete text, orientation, context and unique ownership
 uncertain cases remain unchanged. [Evidence and limits](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22).
 This is an import improvement; type-core/advanced scores and remaining hours are unchanged.
 
+The supplied multi-artboard case also retains both original linked-frame pairs. Translated
+area paths, default identity point matrices and superscript/subscript positions are read.
+Missing fonts can still change wrapping and leave text overset; unsupported affine area transforms remain conservative.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

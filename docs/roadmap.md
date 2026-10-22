@@ -1,6 +1,6 @@
 # Roadmap: milestones and what's next
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Forward-looking plan. Where Vectnor stands is in [`ROADMAP.md`](../ROADMAP.md) and
 [target-app-parity.md](target-app-parity.md); the ranked work list is [gaps.md](gaps.md). Hours are Opus 5.5
@@ -22,7 +22,7 @@ Checked 2026-10-10 from the code, tests and open issues; no workflow fails, so V
 | Set type: point and area type, Character and Paragraph styles, threading, outlines | yes | type core 80%; styles, threading, Create Outlines and font matching tested ([type-parity.md](type-parity.md)); hyphenation and justification options missing (not blocking) | 0 |
 | Organise layers and artboards and export assets (Export for Screens, SVG, PNG, PDF per artboard) | yes | Layers panel rework, Artboards panel and tool, Export for Screens and Asset Export done; ghost borders in some Asset Export output (#983) | 0 |
 | Print production: CMYK and spot colour, bleed and marks, PDF/X out, separations preview | yes | PDF/X-1a/3/4, presets, marks and bleed, ICC output intent, Separations Preview, Print with PostScript output | 0 |
-| Exchange files with Illustrator users: open their `.ai`/EPS/PDF, hand back a file they can open | partial (doesn't block alpha) | `.ai`, EPS and PDF open as editable art, but real files can get the wrong layer structure (#951, #868) and lose guides (#779); Save As `.ai` is PDF-compatible, which Illustrator opens without its own editing data. Complete AI editing data opens independently of PDF margins; readable original text frames can also be recovered during artwork fallback (local 2026-10-22 checks). Broader real-file fidelity remains open. This is the beta main-format gap ([gaps.md](gaps.md) G9) | 10–20 (for beta) |
+| Exchange files with Illustrator users: open their `.ai`/EPS/PDF, hand back a file they can open | partial (doesn't block alpha) | `.ai`, EPS and PDF open as editable art, but real files can get the wrong layer structure (#951, #868) and lose guides (#779); Save As `.ai` is PDF-compatible, which Illustrator opens without its own editing data. Complete AI editing data opens independently of PDF margins; readable original text frames, including complete linked stories across matched artboards, can also be recovered during artwork fallback (local 2026-10-22 checks). Broader real-file fidelity remains open. This is the beta main-format gap ([gaps.md](gaps.md) G9) | 10–20 (for beta) |
 
 ## Current focus
 
@@ -83,6 +83,7 @@ After placed documents (File › Place of a `.vcnr` file, linked), M4.14–M4.98
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

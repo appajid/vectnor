@@ -19,7 +19,7 @@ const MAX_SCANNED_NODES: usize = 100_000;
 const MAX_MATCH_BYTES: usize = 64 << 20;
 
 pub(super) fn recover(data: &[u8], page: &mut Document) -> usize {
-    if data.len() > MAX_RECOVERY_DATA || page.artboards.len() != 1 {
+    if data.len() > MAX_RECOVERY_DATA || page.artboards.is_empty() {
         return 0;
     }
     let Ok(structure) = ai::read_for_text(data) else { return 0 };
@@ -45,13 +45,25 @@ struct Piece {
     parent: Option<NodeId>,
     index: usize,
     at: Point,
+    extent: Option<Rect>,
     text: String,
     safe: bool,
     direction: (f64, f64),
 }
 
 fn canonical(text: &str) -> String {
-    text.chars().filter(|c| !c.is_whitespace()).collect()
+    text.chars().filter(|c| !c.is_whitespace()).fold(String::new(), |mut out, c| {
+        match c {
+            '\u{fb00}' => out.push_str("ff"),
+            '\u{fb01}' => out.push_str("fi"),
+            '\u{fb02}' => out.push_str("fl"),
+            '\u{fb03}' => out.push_str("ffi"),
+            '\u{fb04}' => out.push_str("ffl"),
+            '\u{fb05}' | '\u{fb06}' => out.push_str("st"),
+            _ => out.push(c),
+        }
+        out
+    })
 }
 
 fn source(n: &Node, shift: Affine) -> Option<Source> {
@@ -67,13 +79,13 @@ fn source(n: &Node, shift: Affine) -> Option<Source> {
             let lines = text.split('\n').count();
             let longest = text.split('\n').map(|l| l.chars().count()).max().unwrap_or(0) as f64;
             let reach = (longest + 1.0) * size * 3.0;
-            Rect::new(-reach, -size * 0.5, reach, leading * lines.saturating_sub(1) as f64 + size * 0.5)
+            Rect::new(-reach, -size * 0.5, reach, leading * lines.saturating_sub(1) as f64 + size * 1.5)
         }
         TextKind::OnPath { .. } => return None,
     };
     let inverse = t.xf.inverse();
     let text = canonical(&text);
-    if text.is_empty() || !region.is_finite() || !inverse.as_coeffs().iter().all(|v| v.is_finite()) {
+    if !region.is_finite() || !inverse.as_coeffs().iter().all(|v| v.is_finite()) {
         return None;
     }
     let [a, b, ..] = t.xf.as_coeffs();
@@ -87,8 +99,7 @@ fn source(n: &Node, shift: Affine) -> Option<Source> {
 
 fn collect_sources(
     nodes: &[Arc<Node>],
-    threaded: &HashSet<NodeId>,
-    shift: Affine,
+    boards: &[(Rect, Affine)],
     out: &mut Vec<Source>,
     bytes: &mut usize,
     depth: usize,
@@ -106,10 +117,19 @@ fn collect_sources(
             continue;
         }
         if matches!(n.kind, NodeKind::Text(_)) {
-            if threaded.contains(&n.id) {
-                continue;
-            }
-            if let Some(s) = source(n, shift) {
+            let Some(raw) = source(n, Affine::IDENTITY) else { continue };
+            let NodeKind::Text(t) = &n.kind else { continue };
+            let on = match t.kind {
+                TextKind::Point => Rect::from_origin_size(t.xf * Point::ZERO, (0.0, 0.0)),
+                _ => t.xf.transform_rect_bbox(raw.region.inflate(-0.5, -0.5)),
+            };
+            let mut matches = boards.iter().filter(|(b, _)| b.inflate(0.5, 0.5).contains_rect(on));
+            let shift = if boards.len() == 1 {
+                boards.first().map(|(_, m)| *m)
+            } else {
+                matches.next().filter(|_| matches.next().is_none()).map(|(_, m)| *m)
+            };
+            if let Some(s) = shift.and_then(|m| source(n, m)) {
                 *bytes = bytes.saturating_add(s.text.len());
                 if out.len() >= MAX_SLOTS || *bytes > MAX_TEXT {
                     return false;
@@ -117,7 +137,7 @@ fn collect_sources(
                 out.push(s);
             }
         } else if let Some(c) = n.children()
-            && !collect_sources(c, threaded, shift, out, bytes, depth + 1, visited)
+            && !collect_sources(c, boards, out, bytes, depth + 1, visited)
         {
             return false;
         }
@@ -145,17 +165,19 @@ fn collect_pieces(nodes: &[Arc<Node>], parent: Option<NodeId>, out: &mut Vec<Pie
             }
             let [a, b, c, d, ..] = t.xf.as_coeffs();
             let length = a.hypot(b);
+            let extent = if let TextKind::Area { frame } = &t.kind { frame.bounds().map(|r| t.xf.transform_rect_bbox(r)) } else { None };
             out.push(Piece {
                 id: n.id,
                 parent,
                 index,
                 at: t.xf * Point::ZERO,
+                extent,
                 text,
                 direction: (a / length, b / length),
                 safe: length.is_finite()
                     && length > 1e-9
                     && a * d - b * c > 0.0
-                    && matches!(t.kind, TextKind::Point)
+                    && (matches!(t.kind, TextKind::Point) || extent.is_some())
                     && n.opacity == 1.0
                     && n.blend == BlendMode::Normal
                     && n.mask.is_none()
@@ -171,72 +193,129 @@ fn collect_pieces(nodes: &[Arc<Node>], parent: Option<NodeId>, out: &mut Vec<Pie
     true
 }
 
-/// Recover only on a single, matching artboard: another page/crop/rotation cannot safely use
-/// the native positions. Threaded/path type and spans across different graphics contexts stay
-/// untouched. Ordinary direct AI imports already retain those frames and their threading.
+/// Pair complete artboard sets in file order. Cropped, missing, or ambiguous boards do
+/// not provide a safe coordinate mapping for the original frame identities.
 fn recover_document(native: &Document, page: &mut Document) -> usize {
-    if native.artboards.len() != 1 || page.artboards.len() != 1 {
+    if native.artboards.is_empty() || native.artboards.len() != page.artboards.len() || native.artboards.len() > 1000 {
         return 0;
     }
-    let (Some(a), Some(b)) = (native.artboards.first(), page.artboards.first()) else { return 0 };
-    if (a.rect.width() - b.rect.width()).abs() > 0.5 || (a.rect.height() - b.rect.height()).abs() > 0.5 {
-        return 0;
+    let mut boards = vec![];
+    for (a, b) in native.artboards.iter().zip(&page.artboards) {
+        if !a.rect.is_finite()
+            || !b.rect.is_finite()
+            || (a.rect.width() - b.rect.width()).abs() > 0.5
+            || (a.rect.height() - b.rect.height()).abs() > 0.5
+        {
+            return 0;
+        }
+        boards.push((a.rect, Affine::translate(b.rect.origin() - a.rect.origin())));
     }
-    let shift = Affine::translate(b.rect.origin() - a.rect.origin());
-    let threaded = native.text_threads.iter().flatten().copied().collect();
     let (mut sources, mut pieces) = (vec![], vec![]);
-    if !collect_sources(&native.layers, &threaded, shift, &mut sources, &mut 0, 0, &mut 0)
+    if !collect_sources(&native.layers, &boards, &mut sources, &mut 0, 0, &mut 0)
         || !collect_pieces(&page.layers, None, &mut pieces, &mut 0, 0, &mut 0)
         || sources.len().saturating_mul(pieces.len()) > MAX_PAIRS
         || sources.iter().map(|s| s.text.len()).sum::<usize>().saturating_mul(pieces.len()) > MAX_MATCH_BYTES
     {
         return 0;
     }
+    // A linked story is recovered atomically, keeping every original frame and link. The
+    // first native frame holds its story; engine import subsequently flows it through them.
+    let mut sources: HashMap<NodeId, Source> = sources.into_iter().map(|s| (s.node.id, s)).collect();
+    let mut units = vec![];
+    for thread in &native.text_threads {
+        if thread.len() < 2 || thread.iter().any(|id| !sources.contains_key(id)) {
+            return 0;
+        }
+        let frames: Vec<Source> = thread.iter().filter_map(|id| sources.remove(id)).collect();
+        if frames.len() == thread.len() && frames.len() > 1 {
+            units.push(frames);
+        }
+    }
+    let mut singles: Vec<Source> = sources.into_values().collect();
+    singles.sort_by_key(|s| s.node.id);
+    units.extend(singles.into_iter().filter(|s| !s.text.is_empty()).map(|s| vec![s]));
     let mut plans = vec![];
     let mut claims: HashMap<NodeId, usize> = HashMap::new();
-    for s in sources {
-        let matched: Vec<&Piece> = pieces
-            .iter()
-            .filter(|p| {
-                let dot = p.direction.0 * s.direction.0 + p.direction.1 * s.direction.1;
-                s.region.contains(s.inverse * p.at) && dot.is_finite() && (dot - 1.0).abs() <= 1e-4 && s.text.contains(&p.text)
-            })
-            .collect();
-        // Even a frame that cannot be rebuilt claims its plausible fragments. Otherwise an
-        // overlapping frame could absorb text belonging to a separate original object.
-        for p in &matched {
-            *claims.entry(p.id).or_default() += 1;
-        }
-        let Some(first) = matched.first().copied() else { continue };
-        if matched
-            .iter()
-            .any(|p| !p.safe || p.parent != first.parent || (p.direction.0 * s.direction.0 + p.direction.1 * s.direction.1 - 1.0).abs() > 1e-4)
-            || matched.windows(2).any(|w| !matches!(w, [a, b] if b.index == a.index + 1))
-            || !matched.iter().flat_map(|p| p.text.chars()).eq(s.text.chars())
-        {
+    let mut work = 0usize;
+    for frames in units {
+        let text: String = frames.iter().map(|s| s.text.as_str()).collect();
+        if text.is_empty() {
             continue;
         }
-        let ids: Vec<NodeId> = matched.iter().map(|p| p.id).collect();
-        // Whole one-piece frames also claim their fragments, preventing a different frame
-        // from absorbing them just because its region overlaps.
-        if ids.len() > 1 {
-            plans.push((s.node, ids));
+        work = work.saturating_add(text.len().saturating_mul(pieces.len()).saturating_mul(frames.len()));
+        if work > MAX_MATCH_BYTES {
+            return 0;
         }
+        let mut owned = HashSet::new();
+        let mut matches = vec![];
+        let mut unique = true;
+        for s in &frames {
+            let matched: Vec<&Piece> = pieces
+                .iter()
+                .filter(|p| {
+                    let dot = p.direction.0 * s.direction.0 + p.direction.1 * s.direction.1;
+                    s.region.contains(s.inverse * p.at)
+                        && dot.is_finite()
+                        && (dot - 1.0).abs() <= 1e-4
+                        && !p.text.is_empty()
+                        && text.contains(&p.text)
+                })
+                .collect();
+            for p in &matched {
+                if !owned.insert(p.id) {
+                    unique = false;
+                }
+            }
+            matches.push(matched);
+        }
+        // Partial stories also claim their plausible pieces, so a neighbouring original
+        // can never absorb them. Multiple frames in one story count as one owner.
+        for id in owned {
+            *claims.entry(id).or_default() += 1;
+        }
+        if !unique || matches.iter().any(|m| m.is_empty()) {
+            continue;
+        }
+        let valid = frames.iter().zip(&matches).all(|(s, matched)| {
+            let Some(first) = matched.first() else { return false };
+            matched.iter().all(|p| {
+                p.safe
+                    && p.parent == first.parent
+                    && p.extent.is_none_or(|r| r.is_finite() && s.region.contains_rect(s.inverse.transform_rect_bbox(r)))
+            }) && matched.windows(2).all(|w| matches!(w, [a, b] if b.index == a.index + 1))
+        });
+        if !valid || !matches.iter().flatten().flat_map(|p| p.text.chars()).eq(text.chars()) {
+            continue;
+        }
+        if frames.len() == 1 && matches.first().is_none_or(|m| m.len() < 2) {
+            continue;
+        }
+        plans.push((frames, matches.iter().map(|m| m.iter().map(|p| p.id).collect::<Vec<_>>()).collect::<Vec<_>>()));
     }
     let mut replacements = HashMap::new();
     let mut removed = HashSet::new();
-    for (mut node, ids) in plans {
-        if ids.iter().any(|id| claims.get(id) != Some(&1)) {
+    let mut threads = vec![];
+    for (frames, pieces) in plans {
+        if pieces.iter().flatten().any(|id| claims.get(id) != Some(&1)) {
             continue;
         }
-        let Some((first, rest)) = ids.split_first() else { continue };
-        node.id = *first;
-        replacements.insert(*first, node);
-        removed.extend(rest.iter().copied());
+        let mut thread = vec![];
+        for (s, ids) in frames.into_iter().zip(pieces) {
+            let Some((first, rest)) = ids.split_first() else { continue };
+            let mut node = s.node;
+            node.id = *first;
+            replacements.insert(*first, node);
+            removed.extend(rest.iter().copied());
+            thread.push(*first);
+        }
+        if thread.len() > 1 {
+            threads.push(thread);
+        }
     }
     let restored = replacements.len();
     if restored > 0 {
         apply(&mut page.layers, &mut replacements, &removed);
+        page.text_threads.extend(threads);
     }
     restored
 }
@@ -394,6 +473,87 @@ mod tests {
         t.xf = Affine::translate((60.0, 30.0));
         let group_id = page.alloc_id();
         Arc::make_mut(&mut page.layers[0]).children_mut().unwrap().insert(1, Arc::new(Node::group(group_id, vec![])));
+        let before = page.clone();
+        assert_eq!(recover_document(&native, &mut page), 0);
+        assert_eq!(page, before);
+    }
+    #[test]
+    fn multiple_artboards_map_each_original_frame_without_joining_identical_boxes() {
+        let mut native = Document::new(200.0, 160.0);
+        let mut board = native.artboards[0].clone();
+        board.id = 2;
+        board.rect = Rect::new(0.0, 200.0, 200.0, 360.0);
+        native.artboards.push(board);
+        area(&mut native, "Alpha Beta", Rect::new(10.0, 10.0, 180.0, 90.0));
+        area(&mut native, "Alpha Beta", Rect::new(10.0, 210.0, 180.0, 290.0));
+        let mut page = Document::new(200.0, 160.0);
+        let mut board = page.artboards[0].clone();
+        board.id = 2;
+        board.rect = Rect::new(236.0, 0.0, 436.0, 160.0);
+        page.artboards.push(board);
+        for x in [20.0, 256.0] {
+            piece(&mut page, "Alpha", x, 30.0);
+            piece(&mut page, "Beta", x + 40.0, 30.0);
+        }
+        assert_eq!(recover_document(&native, &mut page), 2);
+        assert_eq!(texts(&page).len(), 2);
+        let before = page.clone();
+        page.artboards.pop();
+        assert_eq!(recover_document(&native, &mut page), 0);
+        page = before;
+        page.artboards[1].rect.y1 += 18.0;
+        assert_eq!(recover_document(&native, &mut page), 0);
+    }
+
+    #[test]
+    fn linked_frames_recover_atomically_with_ligatures_and_existing_area_fragments() {
+        let mut native = Document::new(200.0, 200.0);
+        let a = area(&mut native, "First office\nSecond flow", Rect::new(10.0, 10.0, 180.0, 80.0));
+        let b = area(&mut native, "", Rect::new(10.0, 100.0, 180.0, 180.0));
+        native.text_threads = vec![vec![a, b]];
+        let mut page = Document::new(200.0, 200.0);
+        let first = piece(&mut page, "First", 20.0, 30.0);
+        piece(&mut page, "oﬃce", 60.0, 30.0);
+        let second = area(&mut page, "Second ﬂow", Rect::new(0.0, -9.0, 140.0, 12.0));
+        let NodeKind::Text(t) = &mut page.node_mut(second).unwrap().kind else { panic!("text") };
+        t.xf = Affine::translate((20.0, 115.0));
+        assert_eq!(recover_document(&native, &mut page), 2);
+        assert_eq!(page.text_threads, vec![vec![first, second]]);
+        assert_eq!(texts(&page)[0].plain_text(), "First office\nSecond flow");
+        assert_eq!(texts(&page)[1].plain_text(), "");
+    }
+
+    #[test]
+    fn incomplete_linked_story_and_overlapping_frames_are_not_partially_recovered() {
+        let mut native = Document::new(200.0, 200.0);
+        let a = area(&mut native, "First Second", Rect::new(10.0, 10.0, 180.0, 80.0));
+        let b = area(&mut native, "", Rect::new(10.0, 100.0, 180.0, 180.0));
+        native.text_threads = vec![vec![a, b]];
+        let mut page = Document::new(200.0, 200.0);
+        piece(&mut page, "First", 20.0, 30.0);
+        piece(&mut page, "WRONG", 20.0, 115.0);
+        let before = page.clone();
+        assert_eq!(recover_document(&native, &mut page), 0);
+        assert_eq!(page, before);
+        let NodeKind::Text(t) = &mut native.node_mut(b).unwrap().kind else { panic!("text") };
+        t.kind = TextKind::Area { frame: PathData::from_bezpath(&Rect::new(10.0, 10.0, 180.0, 180.0).to_path(0.1)) };
+        let last = page.layers[0].children().unwrap().last().unwrap().id;
+        let NodeKind::Text(t) = &mut page.node_mut(last).unwrap().kind else { panic!("text") };
+        t.runs[0].text = "Second".into();
+        let before = page.clone();
+        assert_eq!(recover_document(&native, &mut page), 0);
+        assert_eq!(page, before);
+    }
+    #[test]
+    fn a_printed_area_fragment_extending_outside_the_original_is_not_absorbed() {
+        let mut native = Document::new(200.0, 160.0);
+        area(&mut native, "Alpha Beta", Rect::new(10.0, 10.0, 180.0, 90.0));
+        let mut page = Document::new(200.0, 160.0);
+        piece(&mut page, "Alpha", 20.0, 30.0);
+        area(&mut page, "Beta", Rect::new(-20.0, -10.0, 200.0, 150.0));
+        let last = page.layers[0].children().unwrap().last().unwrap().id;
+        let NodeKind::Text(t) = &mut page.node_mut(last).unwrap().kind else { panic!("text") };
+        t.xf = Affine::translate((60.0, 30.0));
         let before = page.clone();
         assert_eq!(recover_document(&native, &mut page), 0);
         assert_eq!(page, before);

@@ -2,7 +2,7 @@
 
 **Stage: alpha** · next: beta, ~13 points (ready for real work ~62% → ~75%, and reliable `.ai` exchange) and ~170–270 h away
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Vectnor is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
 on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
@@ -114,6 +114,7 @@ Ranked; detail in [docs/roadmap.md](docs/roadmap.md) and [docs/gaps.md](docs/gap
 
 | Date | What landed |
 |---|---|
+| 2026-10-22 | Supplied two-artboard AI recovers 10 original text objects from 143 fragments, including two linked-frame pairs. Local only; scores unchanged. |
 | 2026-10-22 | Recover original AI text frames when unsupported artwork needs fallback: separate frames stay separate; multiline and styled spans stay inside their original frame. Scores unchanged; local only. |
 | 2026-10-22 | Direct AI opening avoids PDF margin fallback and recovers native structure in a supplied file. Scores unchanged; no upload. [Evidence](docs/vectnor/AI_IMPORT.md). |
 | 2026-10-22 | Nineteen reviewed local PR scopes improve ordered Indic input, editing and EPS/CSS correctness, exact-size shapes, Recent tab reuse and panel scrollbars. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
@@ -142,6 +143,7 @@ The full pre-standard record of what landed is kept in [docs/roadmap.md](docs/ro
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](docs/vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](docs/vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](docs/vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |

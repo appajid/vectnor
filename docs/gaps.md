@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -62,6 +62,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Estimate:** 60–90 h; splits well by tool across agents.
 
 ## G9 Illustrator `.ai` and EPS files from real users
+
+- **Real-file text recovery (2026-10-22):** supplied two-artboard AI now recovers 10 original text objects from 143 fragments, including two linked-frame pairs. Translated area frames, default point matrices and presentation ligatures are handled. Missing fonts and unsupported artwork remain limitations. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22).
 
 - **Text-frame recovery (2026-10-22):** readable AI text frames can now be restored even when unrelated unsupported artwork requires PDF fallback. Synthetic two-frame artwork formerly imported five text objects; now it imports two with their original paragraphs and styles. Unreadable/ambiguous frame identities and broader real-file coverage remain open. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22).
 
@@ -238,6 +240,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

@@ -1,5 +1,7 @@
 # Local AI opening verification
 
+> Last reviewed/updated: 2026-10-22 · minor: supplied multi-artboard/linked text recovery; scores unchanged.
+
 Status: 2026-10-22; local implementation and verification complete. No upload.
 
 AI/AI-template opening now tries the bounded editing-data reader before importing the PDF
@@ -75,14 +77,14 @@ The text-recovery reader tolerates unsupported artwork only to extract known ori
 frames; it is never used as a whole-document import. Syntax, nesting, decompression and other
 reader limits remain enforced. Additional caps bound recovery bytes, nodes, text, candidate
 pairs and string-comparison work. Replacement requires complete text agreement, matching
-orientation and a single matching artboard. Fragments must be contiguous siblings in one
+orientation and matching complete artboard sets. Fragments must be contiguous siblings in one
 graphics context. Every plausible source frame claims its fragments, including frames that
 cannot themselves be restored, so overlapping identities cannot consume a separate box.
 
 Ambiguous, incomplete or mismatched text remains unchanged. If any source text frame
 cannot be read, frame recovery is withheld so its story cannot absorb another original frame. Recovery across groups/masks,
-intervening artwork, multiple artboards or different crops, and fallback threaded/path type
-remain outside this change. Supported direct native AI text/thread/path import is unchanged.
+intervening artwork, different crops or missing/ambiguous artboards, and fallback path type
+remain unsupported. Complete linked stories can now be restored atomically; see the real-file check below. Supported direct native AI text/thread/path import is unchanged.
 When original editing data is absent or unreadable, the precise original boxes cannot be
 reliably reconstructed from printed fragments alone. Existing `.vcnr` conversions need the
 original AI file reopened; their discarded source metadata cannot be recreated.
@@ -121,3 +123,68 @@ Verification:
   These single trials do not establish a speedup/regression, and parity scores remain unchanged.
 
 Verification evidence: `/tmp/vectnor-ai-text-2026-10-22/` (local only).
+
+
+## Multi-artboard linked frames — 2026-10-22
+
+The owner supplied an affected two-artboard AI for local checking. The prior app imported
+143 text fragments. Its editing data contains 10 original text objects, including two
+stories each linked through two area frames. An omitted identity matrix made one point
+frame unreadable, area-frame translations were ignored, and fallback recovery skipped
+multiple artboards and linked stories. These cases are now handled. Common Latin
+presentation ligatures are compared with their underlying letters without changing the
+original story text; superscript/subscript character positions retain their native styles.
+
+Every native artboard must match a printed artboard in file order and size. Each frame
+maps through its own artboard translation. Frames spanning ambiguous artboards are left
+alone. Linked-story recovery requires complete text agreement, every original frame,
+unique fragment ownership and contiguous siblings within each frame's graphics context;
+no partial linked story is restored. Reader and matching-work caps remain enforced.
+Malformed explicit matrices are rejected; translated area frames are supported, while
+other area affine transforms require corresponding style work and remain unsupported.
+Printed fragments that are already area type can participate in a complete original frame.
+
+The supplied document now imports as 10 text objects, preserving both pairs of linked
+frames. Unsupported placed artwork still uses the PDF drawing and retains its warning;
+this is recovery of original AI text metadata, not a whole-document native-artwork claim.
+Six Open Sans styles are unavailable locally, so fallback fonts alter text wrapping
+and can leave text overset in its original frame; all story text is retained for editing. No fonts or assets were installed or added. The supplied file, decoded
+metadata and generated artwork stay under `/tmp/vectnor-ai-announcement-2026-10-22/` only,
+never in Git; the original external file remains unchanged.
+
+Synthetic regressions cover default/malformed point matrices, translated/unsupported area
+matrices, script positions, different artboard arrangements and missing/cropped boards,
+atomic linked stories, presentation ligatures, already-area fragments, incomplete stories
+and overlapping frames. Mutated AI recovery includes translated area/thread and default
+point matrix variants. First baselines are restored from each frame's saved layout; this
+prevents the supplied title's last line becoming overset after grouping. Native screenshots
+confirm all three title lines. Whole-paragraph Type selection, Telugu editing/history and a
+linked-frame edit/history pass. Native save/reopen preserves complete layer JSON, both link
+lists and exact source stories; artwork PNG SHA-256 is identical and the reopened copy is clean.
+Area auto leading no longer treats printed paragraph gaps as character leading, avoiding
+counting paragraph spacing twice. A full second-artboard inspection caught and corrected
+that error. With the six unavailable Open Sans styles, the last frames of both linked
+stories still report overflow: their complete text remains editable, but this local check
+does not establish visual parity with the original fonts. Both artboard renders remain
+identical across native save/reopen. All eight quality gates pass (5,286 tests passed, zero failed, four existing ignored),
+including ten new synthetic regressions and the extended AI recovery mutation property.
+The actual browser WASM build passes with the existing `missing_links.rs` unused-function
+warning. The final optimized development app/CLI bundle (0.9.0) is SHA-256 verified.
+Normal File Open with All Pages also imports the same ten objects and links, and the
+earlier supplied single-line AI's CLI information is unchanged. No source or build uploaded.
+
+
+## Revision history
+
+| Date | Change | Evidence |
+|---|---|---|
+| 2026-10-22 | Multi-artboard and atomic linked text recovery; matrix defaults/translations, saved first baselines, script positions and area Auto leading. Missing-font overflow remains documented. | Supplied AI: 143 fragments → 10 objects; two linked pairs; both-artboard native round trip. |
+| 2026-10-22 | Original text recovery during unsupported-artwork fallback. | Synthetic five fragments → two original frames. |
+| 2026-10-22 | Direct native AI opening before optional PDF drawing. | Earlier supplied single-line AI and synthetic margin cases. |
+
+
+The optimized-development 50k-path performance baseline passed eight of ten budgets
+(zoom 21.88 ms against 16 ms; native open 310.21 ms against 300 ms). The final trial after
+all builds and test apps quit passed nine of ten (zoom 20.93 ms; open 292.60 ms).
+Load was unavailable in both reports. Native-open timing fluctuates around its limit, and
+the existing zoom overrun remains; no speedup or release-performance claim is made.

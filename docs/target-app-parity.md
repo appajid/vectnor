@@ -1,6 +1,6 @@
 # Parity with Adobe Illustrator
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (AI original text-frame recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
 
 The authoritative parity assessment. [`ROADMAP.md`](../ROADMAP.md) summarizes it; [`gaps.md`](gaps.md) is
 the work list made from it. Deep areas have their own checklists: [UI and interaction](ui-parity.md),
@@ -83,7 +83,7 @@ dominate; 3D, graphs and automation are specialist). They sum to 105. Feature de
 | Layers, artboards, document setup | 5 | 78% | 30.0's artboard locking and colours and managing artboards from the canvas, Layers panel row context menus and Collect for Export | 5–8 | estimated (lowered from 82%: target moved) |
 | View & navigation | 3 | 70% | saved-view input validates before mutation; multiple windows and Arrange, Snap to Glyph remain | 9–14 | estimated |
 | Guides, grids, smart guides, snapping, rulers | 3 | 80% | new-guide Alt/Option orientation switching done; 30.0's tangent and perpendicular snapping and its snapping panel, "intersect" smart guides, global/video rulers, distance readouts while drawing | 4–7 | estimated (lowered from 85%: target moved) |
-| File formats | 6 | 75% | Original text-frame recovery during AI artwork fallback; direct AI editing-data opening avoids margin-dependent PDF fallback; EPS CRLF/finite-number and fractional CSS export fixes, plus reviewed CSV/SVG/DXF/EMF correctness; remaining: `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
+| File formats | 6 | 75% | Multi-artboard and linked original text-frame recovery during AI artwork fallback; direct AI editing-data opening avoids margin-dependent PDF fallback; EPS CRLF/finite-number and fractional CSS export fixes, plus reviewed CSV/SVG/DXF/EMF correctness; remaining: `.ai` files open with a flattened or wrong layer structure in real cases (#951, #868), guides lost (#779), no writing of Illustrator's editing data, FreeHand/CorelDRAW/DWG/HEIC/JPEG 2000 import, 3D export; see [file-format-parity.md](file-format-parity.md) | 10–20 | estimated (lowered from 85%: open issues) |
 | Export for Screens, Asset Export, slices, Save for Web | 3 | 85% | anti-aliasing ghost borders (#983), TIFF in Export for Screens (30.2) | 2–4 | estimated |
 | Print, colour management, separations, flattener | 3 | 80% | print preview fidelity | 2–4 | estimated |
 | Automation (Actions, Variables, scripting, batch) | 3 | 60% | MCP framing/envelope/reply guards verified; remaining: a scripting surface (Illustrator: JavaScript/ExtendScript), Batch, image and graph variables, dataset import/export | 8–14 | estimated |
@@ -467,10 +467,13 @@ Moved from the ROADMAP's "Shipped so far" on 2026-10-10. Update it when a featur
 
 - **AI opening (2026-10-22):** `.ai`/`.ait` documents with fully readable editing data open independently of the PDF drawing; explicit PDF options and incomplete-data recovery retain their earlier behavior. One supplied file checked locally; [synthetic and native verification](vectnor/AI_IMPORT.md). Scores and remaining hours unchanged.
 
+- **Supplied multi-artboard AI (2026-10-22):** 143 fragments become 10 original text objects, with both linked-frame pairs retained. Matrix defaults/translations, common presentation ligatures and script positions are covered; missing fonts and unsupported artwork remain. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). Scores/hours unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |

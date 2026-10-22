@@ -22,7 +22,7 @@ use std::collections::BTreeMap;
 
 use kurbo::{BezPath, CubicBez, ParamCurve, ParamCurveArclen};
 use vectnor_color::{Color, Paint};
-use vectnor_doc::{CharStyle, Justify, Node, NodeId, NodeKind, ParaStyle, TextKind, TextObject, TextRun};
+use vectnor_doc::{CharPosition, CharStyle, FirstBaseline, Justify, Node, NodeId, NodeKind, ParaStyle, ScriptMetrics, TextKind, TextObject, TextRun};
 use vectnor_geom::{Affine, PathData, Point, Rect};
 
 /// Longest story read (bytes).
@@ -244,7 +244,7 @@ enum FrameKind {
     /// canvas.
     Point([f64; 6]),
     /// Area type flowed inside a path: its cubic segments on the canvas, four points each.
-    Area(Vec<[f64; 8]>),
+    Area { segments: Vec<[f64; 8]>, offset: (f64, f64) },
     /// Type on a path, from `start` to `end` (segment index and the place in that segment).
     OnPath { segments: Vec<[f64; 8]>, start: f64, end: f64 },
 }
@@ -270,6 +270,8 @@ pub(super) struct Story {
     anchor: (f64, f64),
     /// Where each of the first frame's lines starts, from the anchor.
     lines: Vec<(f64, f64)>,
+    /// First printed baseline of each frame, in its untranslated layout space.
+    frame_starts: Vec<Option<(f64, f64)>>,
     /// The frames the story flows through, in order.
     frames: Vec<FrameKind>,
     /// `(characters, paragraph)` in order.
@@ -286,6 +288,7 @@ struct Style {
     leading: Option<f64>,
     tracking: f64,
     baseline_shift: f64,
+    position: CharPosition,
     h_scale: f64,
     v_scale: f64,
     fill: Option<Color>,
@@ -357,8 +360,33 @@ impl Texts {
             (rest.is_empty() && !chunks.is_empty() && chunks.len() <= MAX_SEGMENTS).then(|| chunks.to_vec())
         };
         match carries.get("0").and_then(Val::num).unwrap_or(0.0) as i64 {
-            0 => Some(FrameKind::Point(carries.get("2")?.nums()?.try_into().ok()?)),
-            1 => Some(FrameKind::Area(segments()?)),
+            0 => Some(FrameKind::Point(match carries.get("2") {
+                Some(m) => m.nums()?.try_into().ok()?,
+                None => Affine::IDENTITY.as_coeffs(),
+            })),
+            1 => {
+                let mut segments = segments()?;
+                let mut offset = (0.0, 0.0);
+                if let Some(m) = carries.get("2") {
+                    let [a, b, c, d, x, y]: [f64; 6] = m.nums()?.try_into().ok()?;
+                    // Translated area frames retain their path in the layout's old space.
+                    // Other affine changes need corresponding type-style transforms too.
+                    if [a - 1.0, b, c, d - 1.0].iter().any(|v| v.abs() > 1e-9) {
+                        return None;
+                    }
+                    offset = (x, y);
+                    for segment in &mut segments {
+                        for [px, py] in segment.as_chunks_mut::<2>().0 {
+                            *px += x;
+                            *py += y;
+                        }
+                    }
+                }
+                if segments.iter().flatten().any(|v| !v.is_finite() || v.abs() > 1e7) {
+                    return None;
+                }
+                Some(FrameKind::Area { segments, offset })
+            }
             2 => {
                 let range = carries.get("6").and_then(Val::nums).unwrap_or_default();
                 let segments = segments()?;
@@ -376,13 +404,9 @@ impl Texts {
         let s = self.stories.get(i)?;
         let text = s.get("0")?.get("0")?.str().filter(|t| t.len() <= MAX_STORY)?.to_string();
         let view = s.get("1")?;
-        let frames: Vec<FrameKind> = view
-            .get("0")?
-            .list()
-            .iter()
-            .take(MAX_FRAMES)
-            .map(|f| f.get("0").and_then(Val::num).and_then(|n| self.frame(n as usize)))
-            .collect::<Option<_>>()?;
+        let frame_ids: Vec<usize> =
+            view.get("0")?.list().iter().take(MAX_FRAMES).map(|f| f.get("0").and_then(Val::num).map(|n| n as usize)).collect::<Option<_>>()?;
+        let frames: Vec<FrameKind> = frame_ids.iter().map(|i| self.frame(*i)).collect::<Option<_>>()?;
         if frames.is_empty() {
             return None;
         }
@@ -405,6 +429,33 @@ impl Texts {
                 }
             }
         }
+        let mut layout_frames = vec![];
+        if let Some(layout) = view.get("2") {
+            find_nodes(layout, "F", &mut layout_frames);
+        }
+        // Bound the identity lookup even in a hostile layout containing many frame nodes.
+        if frame_ids.len().saturating_mul(layout_frames.len()) > 1_000_000 {
+            return None;
+        }
+        let frame_starts = frame_ids
+            .iter()
+            .map(|id| {
+                let mut matching = layout_frames.iter().filter(|f| f.get("10").and_then(Val::num) == Some(*id as f64));
+                let f = match matching.next() {
+                    Some(f) if matching.next().is_none() => *f,
+                    None if frame_ids.len() == 1 && layout_frames.len() == 1 && layout_frames.first()?.get("10").is_none() => {
+                        *layout_frames.first()?
+                    }
+                    _ => return None,
+                };
+                let anchor = f.get("0")?.get("0")?.nums()?;
+                let l = find_node(f, "L")?;
+                let off = l.get("0").and_then(|o| o.get("0")).and_then(Val::nums).unwrap_or_else(|| vec![0.0, 0.0]);
+                let segment = l.get("6")?.list().iter().find(|c| c.is_node("S"))?;
+                let so = segment.get("0").and_then(|o| o.get("0")).and_then(Val::nums).unwrap_or_else(|| vec![0.0, 0.0]);
+                Some((anchor.first()? + off.first()? + so.first()?, anchor.get(1)? + off.get(1)?))
+            })
+            .collect();
         let mut paras = vec![];
         for run in s.get("0")?.get("5").map(|p| p.get("0").map(Val::list).unwrap_or_default()).unwrap_or_default() {
             let n = run.get("1").and_then(Val::num)? as usize;
@@ -420,7 +471,7 @@ impl Texts {
         if runs.is_empty() {
             runs.push((text.chars().count(), self.style(None)));
         }
-        Some(Story { text, anchor, lines, frames, paras, runs })
+        Some(Story { text, anchor, lines, frame_starts, frames, paras, runs })
     }
 
     /// A paragraph's attributes: its own keys, else the document's.
@@ -451,6 +502,11 @@ impl Texts {
             leading: if on("4") { None } else { num("5").filter(|v| *v > 0.0 && *v < 1e5) },
             tracking: num("8").filter(|v| v.abs() < 1e5).unwrap_or(0.0),
             baseline_shift: num("9").filter(|v| v.abs() < 1e5).unwrap_or(0.0),
+            position: match num("13") {
+                Some(1.0) => CharPosition::Superscript(ScriptMetrics::DEFAULT),
+                Some(2.0) => CharPosition::Subscript(ScriptMetrics::DEFAULT),
+                _ => CharPosition::Normal,
+            },
             h_scale: num("6").filter(|v| *v > 0.0 && *v < 100.0).unwrap_or(1.0),
             v_scale: num("7").filter(|v| *v > 0.0 && *v < 100.0).unwrap_or(1.0),
             fill: if on("56") { Some(pick("53").and_then(paint).unwrap_or(Color::BLACK)) } else { None },
@@ -586,7 +642,7 @@ impl Story {
         let size = self.runs.iter().map(|(_, s)| s.size).fold(0.0, f64::max);
         let bounds = |segments: &[[f64; 8]]| path_of(segments, template, to_doc).bounds();
         let r = match self.frames.first()? {
-            FrameKind::Area(s) => bounds(s)?,
+            FrameKind::Area { segments, .. } => bounds(segments)?,
             FrameKind::OnPath { segments, .. } => bounds(segments)?.inflate(size * 1.5, size * 1.5),
             FrameKind::Point(_) => {
                 let longest = self.text.split(['\r', '\x03']).map(|l| l.chars().count()).max().unwrap_or(0) as f64;
@@ -619,7 +675,7 @@ impl Story {
                 let at = to_doc * Point::new(x, y);
                 (scale, Affine::new([a / scale, b / scale, c / scale, d / scale, at.x, at.y]), TextKind::Point)
             }
-            FrameKind::Area(s) => (1.0, Affine::IDENTITY, TextKind::Area { frame: path_of(s, template, to_doc) }),
+            FrameKind::Area { segments, .. } => (1.0, Affine::IDENTITY, TextKind::Area { frame: path_of(segments, template, to_doc) }),
             FrameKind::OnPath { segments, start, end } => {
                 let n = segments.len() as f64;
                 let end = (*end < n - 0.02).then(|| length_fraction(segments, *end));
@@ -634,7 +690,13 @@ impl Story {
         if text.trim().is_empty() && !threaded {
             return None;
         }
-        let leading = self.lines.windows(2).map(|w| (w[1].1 - w[0].1) * scale).find(|l| l.is_finite() && *l > 0.0);
+        // Area layout already applies paragraph spacing. Its printed baseline gaps include
+        // that spacing and wrapping, so treating a gap as character leading counts it twice.
+        let leading = if matches!(self.frames.get(frame), Some(FrameKind::Point(_))) {
+            self.lines.windows(2).map(|w| (w[1].1 - w[0].1) * scale).find(|l| l.is_finite() && *l > 0.0)
+        } else {
+            None
+        };
         let chars: Vec<char> = text.chars().collect();
         let mut runs = vec![];
         let mut from = 0usize;
@@ -662,6 +724,17 @@ impl Story {
             t.paras = paras;
         }
         t.kind = kind;
+        if let (TextKind::Area { frame: path }, FrameKind::Area { offset, .. }) = (&t.kind, self.frames.get(frame)?)
+            && let Some(Some((x, y))) = self.frame_starts.get(frame)
+            && let Some(bounds) = path.bounds()
+        {
+            let (x, y) = to_art((x + offset.0, y + offset.1), template);
+            let baseline = (to_doc * Point::new(x, y)).y - bounds.y0;
+            if baseline.is_finite() && (0.0..=bounds.height()).contains(&baseline) {
+                t.area.first_baseline = FirstBaseline::Fixed;
+                t.area.first_baseline_min = baseline;
+            }
+        }
         t.xf = xf;
         Some(Node::new(id, NodeKind::Text(Box::new(t))))
     }
@@ -727,6 +800,7 @@ fn char_style(s: &Style, scale: f64, leading: Option<f64>) -> CharStyle {
         leading: s.leading.map(|l| l * scale).or(leading),
         tracking: s.tracking,
         baseline_shift: s.baseline_shift * scale,
+        position: s.position,
         h_scale: s.h_scale * 100.0,
         v_scale: s.v_scale * 100.0,
         fill: s.fill.map_or(Paint::None, Paint::solid),
@@ -758,5 +832,83 @@ mod tests {
         }
         let deep = format!("/0 {}", "[".repeat(200));
         assert!(read(deep.as_bytes()).is_none());
+    }
+    fn frame_reader(frames: &[u8]) -> Texts {
+        Texts {
+            stories: vec![],
+            fonts: vec![],
+            defaults: Val::Dict(BTreeMap::new()),
+            para_defaults: Val::Dict(BTreeMap::new()),
+            frames: read(frames).unwrap().get("0").unwrap().list().to_vec(),
+        }
+    }
+
+    #[test]
+    fn point_frame_defaults_to_identity_but_rejects_a_malformed_explicit_matrix() {
+        let t = frame_reader(b"/0 [ << /0 << /2 << >> >> >> << /0 << /2 << /2 [1 0] >> >> >> ]");
+        assert!(matches!(t.frame(0), Some(FrameKind::Point(m)) if m == Affine::IDENTITY.as_coeffs()));
+        assert!(t.frame(1).is_none());
+    }
+
+    #[test]
+    fn translated_area_frames_apply_their_own_matrix() {
+        let t = frame_reader(b"/0 [ << /0 << /1 << /0 [10 20 10 20 30 40 30 40] >> /2 << /0 1 /2 [1 0 0 1 100 200] >> >> >> ]");
+        let Some(FrameKind::Area { segments: s, .. }) = t.frame(0) else { panic!("area") };
+        assert_eq!(s, [[110.0, 220.0, 110.0, 220.0, 130.0, 240.0, 130.0, 240.0]]);
+        let t = frame_reader(b"/0 [ << /0 << /1 << /0 [10 20 10 20 30 40 30 40] >> /2 << /0 1 /2 [2 0 0 1 0 0] >> >> >> ]");
+        assert!(t.frame(0).is_none(), "non-translation needs corresponding style transforms");
+    }
+
+    #[test]
+    fn character_positions_retain_superscript_and_subscript_styles() {
+        let t = frame_reader(b"/0 []");
+        for (value, expected) in
+            [(1, CharPosition::Superscript(ScriptMetrics::DEFAULT)), (2, CharPosition::Subscript(ScriptMetrics::DEFAULT)), (0, CharPosition::Normal)]
+        {
+            let v = read(format!("/0 << /1 20 /13 {value} >>").as_bytes()).unwrap();
+            assert_eq!(char_style(&t.style(v.get("0")), 1.0, None).position, expected);
+        }
+    }
+    #[test]
+    fn area_first_baseline_comes_from_its_layout_after_frame_translation() {
+        let mut t = frame_reader(b"/0 [ << /0 << /1 << /0 [10 20 10 20 110 80 110 80] >> /2 << /0 1 /2 [1 0 0 1 7 9] >> >> >> ]");
+        let story=read(b"/0 << /0 << /0 (First\\rSecond\\r) >> /1 << /0 [ << /0 0 >> ] /2 [ << /99 /F /0 << /0 [10 20] >> /6 [ << /99 /L /0 << /0 [0 12] >> /6 [ << /99 /S >> ] >> ] >> ] >> >>").unwrap();
+        t.stories = vec![story.get("0").unwrap().clone()];
+        let story = t.story(0).unwrap();
+        let node = story.node(NodeId(1), 0, (0.0, 0.0), Affine::new([1.0, 0.0, 0.0, -1.0, 0.0, 0.0])).unwrap();
+        let NodeKind::Text(text) = node.kind else { panic!("text") };
+        assert_eq!(text.area.first_baseline, FirstBaseline::Fixed);
+        assert_eq!(text.area.first_baseline_min, 12.0);
+    }
+    #[test]
+    fn frame_baselines_match_explicit_identity_and_reject_duplicate_layouts() {
+        let mut t = frame_reader(b"/0 [ << /0 << /1 << /0 [10 20 10 20 110 80 110 80] >> /2 << /0 1 >> >> >> ]");
+        let story=read(b"/0 << /0 << /0 (Example) >> /1 << /0 [ << /0 0 >> ] /2 [ << /99 /F /10 7 /0 << /0 [10 20] >> /6 [ << /99 /L /0 << /0 [0 55] >> /6 [ << /99 /S >> ] >> ] >> << /99 /F /10 0 /0 << /0 [10 20] >> /6 [ << /99 /L /0 << /0 [0 12] >> /6 [ << /99 /S >> ] >> ] >> ] >> >>").unwrap();
+        t.stories = vec![story.get("0").unwrap().clone()];
+        let story = t.story(0).unwrap();
+        assert_eq!(story.frame_starts, [Some((10.0, 32.0))]);
+        let Val::Dict(story) = t.stories.first_mut().unwrap() else { panic!("story") };
+        let Val::Dict(view) = story.get_mut("1").unwrap() else { panic!("view") };
+        let Val::List(layout) = view.get_mut("2").unwrap() else { panic!("layout") };
+        layout[0] = layout[1].clone();
+        assert_eq!(t.story(0).unwrap().frame_starts, [None]);
+        let Val::Dict(story) = t.stories.first_mut().unwrap() else { panic!("story") };
+        let Val::Dict(view) = story.get_mut("1").unwrap() else { panic!("view") };
+        let reference = view.get("0").unwrap().list()[0].clone();
+        let layout = view.get("2").unwrap().list()[0].clone();
+        view.insert("0".into(), Val::List(vec![reference; 1001]));
+        view.insert("2".into(), Val::List(vec![layout; 1001]));
+        assert!(t.story(0).is_none(), "hostile frame/layout cross-products stay bounded");
+    }
+    #[test]
+    fn area_auto_leading_does_not_double_count_paragraph_spacing() {
+        let mut t = frame_reader(b"/0 [ << /0 << /1 << /0 [10 20 10 20 110 80 110 80] >> /2 << /0 1 >> >> >> ]");
+        let story=read(b"/0 << /0 << /0 (First\\rSecond\\r) /5 << /0 [ << /0 << /0 << /5 << /5 8 >> >> >> /1 13 >> ] >> >> /1 << /0 [ << /0 0 >> ] /2 [ << /99 /F /0 << /0 [10 20] >> /6 [ << /99 /L /0 << /0 [0 10] >> /6 [ << /99 /S >> ] >> << /99 /L /0 << /0 [0 32.4] >> /6 [ << /99 /S >> ] >> ] >> ] >> >>").unwrap();
+        t.stories = vec![story.get("0").unwrap().clone()];
+        let story = t.story(0).unwrap();
+        let node = story.node(NodeId(1), 0, (0.0, 0.0), Affine::IDENTITY).unwrap();
+        let NodeKind::Text(text) = node.kind else { panic!("text") };
+        assert_eq!(text.para.space_after, 8.0);
+        assert!(text.runs.iter().all(|r| r.style.leading.is_none()), "saved baseline gap includes paragraph space, not an explicit leading override");
     }
 }
