@@ -1,6 +1,6 @@
 # Vectnor MCP server
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Change:** minor (local upstream safety and editing adaptations; scores unchanged)
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (direct AI editing-data opening; scores unchanged)
 
 `vectnor-cli mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server on stdio
 (newline-delimited JSON-RPC 2.0; see [Protocol](#protocol) for version negotiation). Agents use it to
@@ -482,6 +482,11 @@ and `flattener` options over it (as `object.flattenTransparency` takes them); im
 transparency and rasterized areas are clipped to their regions. A file that would still have transparency fails the
 export. PDF/X-1a and PDF/X-3 files are PDF 1.3 files too.
 
+A `.ai`/`.ait` opens from its editing data first when no art or text is reported omitted; its
+optional PDF drawing is not imported or compared, so bleed/margins cannot change the native
+artboard. Explicit pages, non-default crop, outlines or `layers: false` use the PDF path.
+Incomplete editing data retains page-assisted recovery below. Ordinary PDFs keep page-first import.
+
 An Illustrator EPS (version 9 on) or `.ai` file opens from the editing data it carries (after the EPS page; in the
 `.ai` file's PDF private data): layers and sublayers (name, order, visibility, lock, printing, preview, dimming,
 colour), groups as they were nested, compound paths, clipping groups, object names, hidden and locked objects, fills and
@@ -492,7 +497,7 @@ document, whole and editable: point type, area type (a story in several frames a
 with its fonts, size, leading, tracking, scaling, baseline shift, fill and stroke (grey, RGB or CMYK), alignment,
 indents and paragraph spacing. Where the text document can't say, type that shows is the page's, in its text object's
 place. A file whose editing data has symbols,
-pattern fills, placed files or anything else the reader doesn't read on a layer that shows, or whose layers look
+pattern fills, placed files or anything else the reader doesn't read on a layer that shows, or (in page-assisted recovery) whose layers look
 different from its page, opens as before: an EPS as its printed page, a `.ai` file from its PDF content (where plain
 groups open ungrouped), with a warning saying why. Layers look different when they draw an object the page doesn't (or
 miss one it draws), and, for an EPS whose page is the box of its art, when they print art outside it. With
@@ -3087,6 +3092,7 @@ Envelope Options.
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | AI documents with fully readable editing data open before the optional PDF drawing; explicit PDF options and incomplete-data recovery retained. |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |
 | 2026-10-12 | minor | Lost-reply errors require inspection before repeating an edit; remote MCP never automatically resends it. |
 

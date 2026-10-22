@@ -104,6 +104,12 @@ pub fn eps(data: &[u8], page: &str) -> Vec<u8> {
 /// `private` (the private data streams' contents, such as `%AI12_CompressedData` and zlib data) in
 /// two streams.
 pub fn ai(private: &[u8], page: &str) -> Vec<u8> {
+    ai_with_page_size(private, page, 200.0, 100.0)
+}
+
+/// An AI container whose PDF page size can differ from the editing data's artboard (for
+/// example, because the page includes bleed). All content is written from scratch by tests.
+pub fn ai_with_page_size(private: &[u8], page: &str, width: f64, height: f64) -> Vec<u8> {
     let (first, second) = private.split_at(private.len() / 2);
     let stream = |part: &[u8]| {
         let mut s = format!("<< /Length {} >>\nstream\n", part.len()).into_bytes();
@@ -115,7 +121,7 @@ pub fn ai(private: &[u8], page: &str) -> Vec<u8> {
         b"<< /Type /Catalog /Pages 2 0 R >>".to_vec(),
         b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_vec(),
         format!(
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 100] /Contents 4 0 R \
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {width} {height}] /Contents 4 0 R \
              /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> \
              /PieceInfo << /{PIECE} << /Private << /AIPrivateData1 5 0 R /AIPrivateData2 6 0 R /NumBlock 2 >> >> >> >>"
         )

@@ -2,7 +2,7 @@
 
 **Stage: alpha** · next: beta, ~13 points (ready for real work ~62% → ~75%, and reliable `.ai` exchange) and ~170–270 h away
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (direct AI editing-data opening; scores unchanged) · **Target:** public documentation and owner requirements
 
 Vectnor is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
 on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
@@ -114,6 +114,7 @@ Ranked; detail in [docs/roadmap.md](docs/roadmap.md) and [docs/gaps.md](docs/gap
 
 | Date | What landed |
 |---|---|
+| 2026-10-22 | Direct AI opening avoids PDF margin fallback and recovers native structure in a supplied file. Scores unchanged; no upload. [Evidence](docs/vectnor/AI_IMPORT.md). |
 | 2026-10-22 | Nineteen reviewed local PR scopes improve ordered Indic input, editing and EPS/CSS correctness, exact-size shapes, Recent tab reuse and panel scrollbars. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | Thirty-two reviewed local PR adaptations for Indic editing, styles, selection, bounded processing and export correctness. English UI retained; scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | Eighteen reviewed local adaptations: save/export safety, bounded input/work, MCP envelope/reply matching, Direct Selection/Pencil fixes and field focus/arithmetic. English UI and Indic text retained; scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
@@ -140,6 +141,7 @@ The full pre-standard record of what landed is kept in [docs/roadmap.md](docs/ro
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](docs/vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](docs/vectnor/UPSTREAM_AUDIT.md). No upload. |

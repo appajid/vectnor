@@ -1881,6 +1881,8 @@ proptest! {
             }
         }
         survive("mutated .ai editing data", || Some(vectnor_eps::layered_ai(&private, Document::new(100.0, 100.0), vec![], false).0))?;
+        let file = vectnor_testkit::ai::ai_with_page_size(&private, "0 g 0 0 20 20 re f", 136.0, 136.0);
+        survive("mutated .ai direct document", || vectnor_engine::cmd::fileio::load("x.ai", &file).ok().map(|l| l.doc))?;
     }
 }
 
@@ -2076,6 +2078,8 @@ proptest! {
         let data = ai::editing_data(200.0, 100.0, &format!("%AI5_BeginLayer\n1 1 1 1 0 0 1 0 79 128 255 0 50 0 Lb\n(L) Ln\n{}\nLB\n", tokens.join(" ")));
         survive("hostile editing data", || Some(vectnor_eps::layered_ai(data.as_bytes(), Document::new(200.0, 100.0), vec![], false).0))?;
         survive("hostile editing data, type as outlines", || Some(vectnor_eps::layered_ai(data.as_bytes(), Document::new(200.0, 100.0), vec![], true).0))?;
+        let file = ai::ai_with_page_size(data.as_bytes(), "0 g 0 0 20 20 re f", 236.0, 136.0);
+        survive("hostile direct AI document", || vectnor_engine::cmd::fileio::load("x.ai", &file).ok().map(|l| l.doc))?;
         let eps = ai::eps(data.as_bytes(), ai::page_ps());
         survive("hostile editing data in an EPS", || vectnor_engine::cmd::fileio::load("x.eps", &eps).ok().map(|l| l.doc))?;
         // An EPS whose page is its art's box, not its artboard: what prints outside it is compared too.

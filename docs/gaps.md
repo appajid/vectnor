@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (direct AI editing-data opening; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every known shortfall against Illustrator, one entry each, **ranked by how much it stops a professional from
 switching**. This is the work list: unless you were given a task, pick the highest-ranked gap you can make
@@ -62,6 +62,8 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Estimate:** 60–90 h; splits well by tool across agents.
 
 ## G9 Illustrator `.ai` and EPS files from real users
+
+- **Improved locally (2026-10-22):** complete `.ai`/`.ait` editing data opens before the optional PDF drawing, avoiding false rejection when PDF margins differ from the native artboard. One user-supplied file and synthetic differing-page cases checked locally; broader fidelity, missing fonts and the gaps below remain. [Evidence](vectnor/AI_IMPORT.md).
 
 - **Missing:** faithful layer and group structure from the editing data in real files (#951: 109 layers instead
   of 14; #868: round trip with Illustrator 2018 loses layers and groups), guides and non-printing construction
@@ -234,6 +236,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |
 | 2026-10-22 | minor | Nineteen reviewed upstream scopes for ordered Indic/AltGr input, threaded text, brush references, clipping, EPS/CSS, exact-size shapes, Recent tabs and panel scrolling. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-21 | minor | Thirty-two reviewed local upstream adaptations: Indic caret/joiners, style resets, selection, bounded mesh/EMF processing, CSV/SVG and raster-scale export correctness. Scores unchanged; no upload. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-17 | minor | Eighteen reviewed upstream adaptations for save/export safety, bounded processing, automation framing and editing; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). No upload. |

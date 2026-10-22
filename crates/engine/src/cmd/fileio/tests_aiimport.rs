@@ -82,6 +82,49 @@ fn an_illustrator_ai_file_opens_from_its_editing_data() {
 }
 
 #[test]
+fn ai_open_does_not_depend_on_the_pdf_drawing_or_its_page_size() {
+    let mut s = Session::new();
+    let private = compressed(&ai::sample_data());
+    // A different drawing on a page with 18 pt extra on each side. The AI document, including
+    // its hidden layer, sublayer and named groups, must come from the editing data alone.
+    let page = "0 0 1 rg 0 0 236 136 re f";
+    let file = ai::ai_with_page_size(&private, page, 236.0, 136.0);
+    for name in ["bleed.ai", "template.ait"] {
+        let r = open(&mut s, name, &file, json!({})).unwrap();
+        assert_eq!(r["warnings"], json!([]), "{name}: {r}");
+        check_sample(&s);
+    }
+    // Explicitly selecting the printed page still opens the PDF-sized drawing.
+    for opts in [json!({"editingData": false}), json!({"layers": false}), json!({"page": 1}), json!({"cropTo": "media"})] {
+        let r = open(&mut s, "bleed.ai", &file, opts.clone()).unwrap();
+        let doc = &s.doc().unwrap().doc;
+        assert_eq!(doc.artboards[0].rect, vectnor_geom::Rect::new(0.0, 0.0, 236.0, 136.0), "{opts}: {r}");
+        assert_ne!(names(&doc.layers), ["Art", "Hidden"]);
+    }
+    // A regular PDF keeps the page-first behaviour even if it carries AI editing data.
+    open(&mut s, "bleed.pdf", &file, json!({})).unwrap();
+    assert_eq!(s.doc().unwrap().doc.artboards[0].rect.width(), 236.0);
+}
+
+#[test]
+fn a_complete_ai_import_still_protects_the_original_editing_data() {
+    let file = ai::ai(&compressed(&ai::sample_data()), ai::page_pdf());
+    let mut s = Session::new();
+    let original = "/art/complete.ai";
+    let r = super::load::open_bytes(&mut s, original, &file, Some(original.into())).unwrap();
+    assert_eq!(r["warnings"], json!([]));
+    check_sample(&s);
+    let st = s.doc().unwrap();
+    assert!(st.path.is_none(), "Save must ask for a new name");
+    let losses = super::load::overwrite_losses(st, original, &json!({})).unwrap();
+    assert!(losses.iter().any(|l| l.contains("original AI editing data")));
+    let e = s.execute("document.export", &json!({"path": original, "format": "ai"})).unwrap_err().to_string();
+    assert!(e.contains("original AI editing data") && e.contains("acknowledgeLoss"), "{e}");
+    assert!(super::load::overwrite_losses(s.doc().unwrap(), "/art/copy.ai", &json!({})).is_none());
+    assert!(super::load::overwrite_losses(s.doc().unwrap(), original, &json!({"acknowledgeLoss": true})).is_none());
+}
+
+#[test]
 fn what_the_reader_doesnt_read_opens_as_before_with_a_warning() {
     let symbols = ai::editing_data(200.0, 100.0, &ai::layer("Art", "/SymbolInstance :\n(Dot) /SymbolRef ,\n;\n"));
     let mut s = Session::new();

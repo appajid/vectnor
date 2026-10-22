@@ -168,6 +168,19 @@ fn from_editing_data_alone(bytes: &[u8], opts: &LoadOptions) -> Option<Result<(D
     )
 }
 
+/// Prefer the AI document itself to its optional PDF drawing. The drawing can have bleed or
+/// printer margins, omit pasteboard art, or be just a placeholder. A complete editing-data
+/// import needs none of it. If the reader reports missing art or text, retain the page-assisted
+/// importer below so those objects can still be recovered, with its existing loss warnings.
+/// Explicit PDF page/crop/outline options keep their meaning.
+fn complete_ai_document(bytes: &[u8], opts: &LoadOptions) -> Option<(Document, Vec<String>)> {
+    if opts.crop != vectnor_pdf::CropTo::default() || opts.text_as != vectnor_pdf::TextAs::Text {
+        return None;
+    }
+    let (doc, warnings) = from_editing_data_alone(bytes, opts)?.ok()?;
+    (!warnings.iter().any(|w| vectnor_eps::is_loss(w))).then_some((doc, warnings))
+}
+
 /// [`load`] with `document.open` options (the PDF pages, box and password; the DXF options).
 pub fn load_with(name: &str, bytes: &[u8], opts: &LoadOptions) -> Result<Loaded> {
     let format = detect(name, bytes).ok_or_else(|| match super::unsupported(&super::extension(name)) {
@@ -206,13 +219,20 @@ pub fn load_with(name: &str, bytes: &[u8], opts: &LoadOptions) -> Result<Loaded>
                 .then(|| vectnor_pdf::editing_with(bytes, opts.password.as_deref()))
                 .flatten()
                 .map(|e| (e.intact, move || Some(e.data)));
-            restore_or_import(editing, || match super::pdfimport::import(bytes, opts) {
-                Ok((doc, warnings)) => Ok(through_editing_data(bytes, opts, doc, warnings)),
-                // Saved without its PDF part: the editing copy is all the file has.
-                Err(e) if e.to_string() == vectnor_pdf::PdfError::PlaceholderOnly.to_string() => {
-                    from_editing_data_alone(bytes, opts).unwrap_or(Err(e))
+            restore_or_import(editing, || {
+                if matches!(format.id, "ai" | "ait")
+                    && let Some(document) = complete_ai_document(bytes, opts)
+                {
+                    return Ok(document);
                 }
-                Err(e) => Err(e),
+                match super::pdfimport::import(bytes, opts) {
+                    Ok((doc, warnings)) => Ok(through_editing_data(bytes, opts, doc, warnings)),
+                    // Saved without its PDF part: the editing copy is all the file has.
+                    Err(e) if e.to_string() == vectnor_pdf::PdfError::PlaceholderOnly.to_string() => {
+                        from_editing_data_alone(bytes, opts).unwrap_or(Err(e))
+                    }
+                    Err(e) => Err(e),
+                }
             })?
         }
         "dxf" => {
@@ -291,7 +311,12 @@ pub fn open_template(s: &mut Session, name: &str, bytes: &[u8], path: Option<&st
 fn open_loaded(s: &mut Session, loaded: Loaded, path: Option<String>, opts: &LoadOptions, as_template: bool) -> Result<Value> {
     let Loaded { mut doc, format, warnings, restored, converted, .. } = loaded;
     // What reading the file left out of the document, if anything.
-    let losses: Vec<String> = warnings.iter().filter(|w| is_loss(w)).cloned().collect();
+    let mut losses: Vec<String> = warnings.iter().filter(|w| is_loss(w)).cloned().collect();
+    // Reading all the art does not mean we can write the original AI editing data back.
+    // Keep its source protected even when the direct import has no omitted-art warnings.
+    if matches!(format.id, "ai" | "ait") && !restored {
+        losses.push(AI_WRITE_LOSS.into());
+    }
     let source_path = path.clone().filter(|_| !losses.is_empty());
     let links = crate::cmd::links::resolve(&mut doc, path.as_deref(), s.prefs.update_links == "automatically");
     // A template (saved by Save as Template, or an .ait/.vctemplate file) opens as a new untitled
@@ -430,22 +455,26 @@ fn is_loss(note: &str) -> bool {
     note == vectnor_pdf::OFF_ARTBOARD_NOTE || vectnor_eps::is_loss(note)
 }
 
+const AI_WRITE_LOSS: &str = "Vectnor cannot write the original AI editing data back";
+
 /// Writing the file `target` for document `st`: not over the file `st` was read from when reading
-/// it left something out (hidden text, art or layers), unless `p` has `acknowledgeLoss: true`.
+/// it left something out (hidden text, art or layers) or cannot write its original AI editing
+/// data back, unless `p` has `acknowledgeLoss: true`.
 /// Another name keeps the original file, with all it has.
 pub(crate) fn check_not_lossy_overwrite(st: &crate::DocState, target: &str, p: &Value, cmd: &str) -> Result<()> {
     let Some(losses) = overwrite_losses(st, target, p) else { return Ok(()) };
     let what = losses_summary(losses);
+    let reason = if losses.iter().any(|n| n == AI_WRITE_LOSS) { "replacing it would discard original data" } else { "reading it left things out" };
     Err(bad(
         cmd,
         format!(
-            "{target} is the file this document was read from, and reading it left things out ({what}): writing over it would lose them for good. Write another file instead, or pass acknowledgeLoss: true to replace it anyway"
+            "{target} is the file this document was read from, and {reason} ({what}): writing over it would lose them for good. Write another file instead, or pass acknowledgeLoss: true to replace it anyway"
         ),
     ))
 }
 
-/// What writing the file `target` for document `st` would lose for good: the notes of what reading
-/// it left out when `target` is the file `st` was read from, unless `p` has `acknowledgeLoss: true`.
+/// What writing the file `target` for document `st` would lose for good: unread content or AI
+/// editing data we cannot write, when `target` is its source, unless `p` has `acknowledgeLoss: true`.
 /// The UI asks before such a write and repeats it with `acknowledgeLoss` ([`check_not_lossy_overwrite`]).
 pub fn overwrite_losses<'a>(st: &'a crate::DocState, target: &str, p: &Value) -> Option<&'a [String]> {
     let source = st.imported_from.as_deref().filter(|_| !st.import_losses.is_empty())?;
