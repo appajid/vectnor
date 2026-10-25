@@ -48,7 +48,8 @@ const LAYERS_UNREAD: &str = "the file's layers weren't read";
 /// Does this import note say that the file has something the document doesn't (hidden text, art or
 /// layers that could not be read)? Writing the document over the file would lose it for good.
 pub fn is_loss(note: &str) -> bool {
-    note.ends_with(TEXT_LEFT_OUT)
+    note == ai::IMAGE_TOO_LARGE
+        || note.ends_with(TEXT_LEFT_OUT)
         || note.ends_with(TYPE_LEFT_OUT)
         || [ART_LEFT_OUT, LAYERS_UNREAD, super::graphics::TOO_MUCH, super::graphics::FAR_AWAY].iter().any(|n| note.starts_with(n))
 }
@@ -807,6 +808,11 @@ fn build_structure(
     outlined: bool,
 ) -> Result<(Document, Vec<String>), String> {
     let Structure { mut doc, to_doc, bbox, artboard, template, hidden_unread, slot_names, warnings } = structure;
+    // Reject an incomplete candidate before comparing its missing image with the visible page.
+    // Without a page, retain the partial document and its explicit loss warning.
+    if visible.is_some() && warnings.iter().any(|n| n == ai::IMAGE_TOO_LARGE) {
+        return Err("an image is too large to read from them".into());
+    }
     let (mut shown, mut hidden) = (vec![], vec![]);
     let mut frame = None;
     if let Some(visible) = visible {

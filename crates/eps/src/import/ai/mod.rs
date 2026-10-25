@@ -20,6 +20,7 @@
 mod lex;
 mod obj;
 mod paint;
+mod palette;
 mod read;
 
 use std::io::Read as _;
@@ -28,7 +29,7 @@ use super::lex::find;
 use crate::ps;
 
 pub(crate) use read::read_for_text;
-pub use read::{Structure, read};
+pub use read::{IMAGE_TOO_LARGE, Structure, read};
 pub(crate) use read::{slot_frame, slot_of};
 
 #[cfg(test)]

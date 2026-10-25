@@ -1,6 +1,6 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged)
+> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (reviewed AI import and font/thread fixes; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
@@ -58,6 +58,16 @@ including one regression-only PR) after 41 Rust postimage blob checks. Six prior
 rechecked at rebased merged heads and are not counted again. [Review](docs/vectnor/UPSTREAM_AUDIT.md)
 and [source snapshot](docs/vectnor/upstream-audit-2026-10-22.json) record exact scope and exclusions.
 The two substantial CDR proposals remain deferred; this update adds no CDR support. Keep changes local.
+
+## Local update — M0.upstream-ai-text, 2026-10-25
+
+Screened 541 updated VectorCraft PRs since the October 22 capture; scoped 23 diffs and adapted eight
+merged scopes for AI palette/Registration import, oversized-image fallback, closed-path text, font
+lookup/concurrent publication and Convert To Point Type on threaded frames. The
+[review](docs/vectnor/UPSTREAM_AUDIT.md) and
+[immutable snapshot](docs/vectnor/upstream-audit-2026-10-25.json) distinguish adapted scopes from
+metadata-only screening and deferred dependency chains. Existing attribution and AI original-frame
+recovery remain. No new assets/dependencies, version change or upload.
 
 ## Revision history
 

@@ -24,7 +24,10 @@
 //!   `(name) x y scaleX scaleY angle reflect axis shear shearAxis [matrix] p` (`P`), the matrix
 //!   taking the pattern's space to art space (the other operands are what it is made of).
 //!
-//! Sections the reader doesn't need (brushes, symbols, styles, swatches, filters) are skipped;
+//! - Swatches: the palette (`%AI5_BeginPalette`), read by [`super::palette`], replaces the
+//!   default swatches.
+//!
+//! Sections the reader doesn't need (brushes, symbols, styles, filters) are skipped;
 //! type, symbols, fills with a pattern it can't read, placed files, legacy type and operators it
 //! doesn't know are errors.
 
@@ -57,6 +60,9 @@ const MAX_NODES: usize = 4_000_000;
 const MAX_POINTS: usize = 4_000_000;
 /// Largest image read (pixels).
 const MAX_PIXELS: u64 = 1 << 25;
+/// The note for an image past [`MAX_PIXELS`]: the file then opens from its PDF part, which reads
+/// larger images (#1479).
+pub const IMAGE_TOO_LARGE: &str = "an image too large to read from the editing data was left out";
 /// Largest side of the document and its artboards (points).
 const MAX_SIDE: f64 = 1e6;
 /// Art space (y up) → a pattern's space in the document's terms (y down).
@@ -278,6 +284,8 @@ struct Reader<'a> {
     drawn_looks: usize,
     /// Nodes read from `%_` lines.
     hidden_ids: HashSet<NodeId>,
+    /// The swatches (`%AI5_BeginPalette`).
+    palette: super::palette::Palette,
     /// CMYK samples converted, by value.
     cmyk_cache: HashMap<[u8; 4], [u8; 3]>,
     /// A `/ForeignObject`'s `/Data`: its PDF as ASCII85 in comment lines, until the object closes.
@@ -349,7 +357,6 @@ const SKIPPED: &[(&str, &str)] = &[
     ("BeginPluginObject", "EndPluginObject"),
     ("BeginArtStyles", "EndArtStyles"),
     ("BeginArtStyleList", "EndArtStyleList"),
-    ("BeginPalette", "EndPalette"),
     ("BeginSymbolList", "EndSymbolList"),
     ("BeginTextDocument", "EndTextDocument"),
     ("BeginEncoding", "EndEncoding"),
@@ -408,6 +415,7 @@ impl<'a> Reader<'a> {
             warnings: Vec::new(),
             drawn_looks: 0,
             hidden_ids: HashSet::new(),
+            palette: super::palette::Palette::default(),
             cmyk_cache: HashMap::new(),
             done: false,
             obj_hidden: false,
@@ -472,6 +480,11 @@ impl<'a> Reader<'a> {
         if m == "BeginPattern" && self.pattern.is_none() {
             let section = self.section("EndPattern")?;
             self.define_pattern(section);
+            return Ok(());
+        }
+        if m == "BeginPalette" {
+            let section = self.section("EndPalette")?;
+            self.palette = super::palette::palette(section);
             return Ok(());
         }
         if let Some((_, end)) = SKIPPED.iter().find(|(b, _)| *b == m) {
@@ -834,7 +847,7 @@ impl<'a> Reader<'a> {
                 self.paint(&op, hidden, true)?;
             }
             // Colours.
-            "g" | "G" | "k" | "K" | "x" | "X" | "Xa" | "XA" | "Xx" | "XX" | "Xk" | "XK" => self.color(w, &vals),
+            "g" | "G" | "k" | "K" | "x" | "X" | "Xa" | "XA" | "Xx" | "XX" | "Xk" | "XK" | "Xs" | "XS" | "Xz" | "XZ" => self.color(w, &vals),
             "p" | "P" => self.pattern_paint(w, &vals),
             // A pattern's definition ends.
             "E" if self.pattern.is_some() => self.done = true,
@@ -1164,7 +1177,9 @@ impl<'a> Reader<'a> {
 
     fn color(&mut self, w: &str, vals: &[V]) {
         let Some((p, named)) = paint::color_op(w, vals) else { return };
-        match p.color() {
+        // Registration (`Xs`, `Xz`) says nothing of the document's colour model.
+        let registration = matches!(w, "Xs" | "XS" | "Xz" | "XZ");
+        match p.color().filter(|_| !registration) {
             Some(vectnor_color::Color::Rgb { .. }) => self.rgb_colors += 1,
             Some(vectnor_color::Color::Cmyk { .. }) => self.cmyk_colors += 1,
             _ => {}
@@ -1362,7 +1377,11 @@ impl<'a> Reader<'a> {
         let n = Self::nums(&vals);
         let [_, _, _, _, w, h, bits, kind, alpha, _, binary, ..] = n.as_slice() else { return Ok(()) };
         let (w, h) = (*w as u64, *h as u64);
-        if w == 0 || h == 0 || w.saturating_mul(h) > MAX_PIXELS || ![1.0, 8.0].contains(bits) {
+        if w.saturating_mul(h) > MAX_PIXELS {
+            self.warn(IMAGE_TOO_LARGE);
+            return Ok(());
+        }
+        if w == 0 || h == 0 || ![1.0, 8.0].contains(bits) {
             self.warn("an image Vectnor can't read was left out");
             return Ok(());
         }
@@ -1529,6 +1548,34 @@ impl<'a> Reader<'a> {
         if self.color_model.unwrap_or(self.cmyk_colors > self.rgb_colors) {
             doc.color_mode = ColorMode::Cmyk;
             (doc.swatches, doc.swatch_groups) = vectnor_color::default_swatches(ColorMode::Cmyk.model());
+        }
+        // The file's own swatches in place of the defaults, in its order and colour groups.
+        if !self.palette.is_empty() {
+            let palette = std::mem::take(&mut self.palette);
+            let swatch = |e: super::palette::Entry| -> Option<Swatch> {
+                use super::palette::Cell;
+                let (paint, global, spot) = match e.cell {
+                    Cell::Color { color, global, spot } => (Paint::solid(color), global, spot),
+                    Cell::Gradient(g) => {
+                        let mut gp = vectnor_color::gradient::GradientPaint::new(self.gradients.get(&g)?.clone());
+                        gp.swatch = Some(e.name.clone());
+                        (Paint::Gradient(Box::new(gp)), false, false)
+                    }
+                    Cell::Pattern(p) => {
+                        doc.patterns.iter().find(|d| d.name == p)?;
+                        (Paint::Pattern { pattern: p, xf: Affine::IDENTITY }, false, false)
+                    }
+                };
+                Some(Swatch { name: e.name, paint, global, spot })
+            };
+            let mut swatches = vec![Swatch { name: "[None]".into(), paint: Paint::None, global: false, spot: false }];
+            swatches.extend(palette.swatches.into_iter().filter_map(swatch));
+            let groups: Vec<_> = palette
+                .groups
+                .into_iter()
+                .map(|(name, s)| vectnor_color::swatch::SwatchGroup { name, swatches: s.into_iter().filter_map(swatch).collect() })
+                .collect();
+            (doc.swatches, doc.swatch_groups) = (swatches, groups);
         }
         for n in &self.spots {
             if doc.swatch(&n.name).is_none() {

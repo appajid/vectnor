@@ -81,6 +81,37 @@ fn an_illustrator_ai_file_opens_from_its_editing_data() {
     assert_ne!(names(&s.doc().unwrap().doc.layers), ["Art", "Hidden"]);
 }
 
+/// A `.ai` file opens with the swatches its palette holds, spot colours the art doesn't use and colour
+/// groups included, in place of the default swatches; art painted with Registration (`XZ`) still
+/// opens from the editing data.
+#[test]
+fn an_ai_file_opens_with_the_swatches_of_its_palette() {
+    let palette = "%AI5_BeginPalette\n0 0 Pb\n0 0 0 0 1 1 1 Xa\n(White)\nPc\n0.04 0.3 0 0 81.96 21 -8 (Pink ink) 0 2 Xx\n(Pink ink)\nPc\n\
+                   0.06 0.98 1 0 (Red ink) 0 x\n(Red ink)\nPc\n1 (Inks) 1 Pg\n0.02 0.1 1 0 (Yellow ink) 0 x\n(Yellow ink)\nPc\nPB\n%AI5_EndPalette\n";
+    // The square the page draws, in the red ink, after a stroke colour of Registration.
+    let art = format!("0 0 0 0 0 0 0 ([Registration]) 0 1 XZ\n0.06 0.98 1 0 (Red ink) 0 x\n{}f\n", ai::rect(10.0, 50.0, 40.0, 90.0));
+    let data = ai::editing_data(200.0, 100.0, &format!("{palette}{}", ai::layer("Art", &art)));
+    let mut s = Session::new();
+    let r = open(&mut s, "inks.ai", &ai::ai(&compressed(data.as_bytes()), "1 0 0 rg 10 50 30 40 re f"), json!({})).unwrap();
+    assert_eq!(r["format"], json!("ai"), "{r}");
+    let doc = &s.doc().unwrap().doc;
+    assert_eq!(names(&doc.layers), ["Art"], "opened from the editing data: {r}");
+    let swatches: Vec<&str> = doc.swatches.iter().map(|s| s.name.as_str()).collect();
+    assert_eq!(swatches, ["[None]", "White", "Pink ink", "Red ink"]);
+    let pink = doc.swatch("Pink ink").unwrap();
+    assert!(pink.spot && pink.global);
+    assert_eq!(pink.paint.color(), Some(vectnor_color::Color::lab(81.96, 21.0, -8.0)), "a Lab ink keeps its Lab values");
+    let groups: Vec<&str> = doc.swatch_groups.iter().map(|g| g.name.as_str()).collect();
+    assert_eq!(groups, ["Inks"]);
+    assert!(doc.swatch("Yellow ink").is_some_and(|s| s.spot), "an ink the art doesn't use");
+    let red = &doc.layers[0].children().unwrap()[0];
+    assert!(
+        matches!(red.appearance.fill().map(|f| &f.paint), Some(vectnor_color::Paint::Solid { swatch: Some(n), .. }) if n == "Red ink"),
+        "{:?}",
+        red.appearance.fill()
+    );
+}
+
 #[test]
 fn ai_open_does_not_depend_on_the_pdf_drawing_or_its_page_size() {
     let mut s = Session::new();
@@ -269,4 +300,23 @@ fn ai_fitting_text_and_flow_into_the_next_linked_frame_do_not_warn() {
         "only the last frame retains overset text: {:?}",
         loaded.warnings
     );
+}
+
+/// An incomplete native candidate must not hide the visible page, even though the default AI
+/// route first tries editing data independently of its PDF drawing.
+#[test]
+fn oversized_ai_images_do_not_make_the_native_candidate_look_complete() {
+    let raster = "%AI5_BeginRaster\n() 1 XG\n/DeviceGray XN\n[ 1 0 0 1 0 100 ] 6000 6000 0 Xh\n[ 1 0 0 1 0 100 ] 0 0 6000 6000 6000 6000 8 1 0 0 1 0 4 4 0 0\n%%BeginData: 1\rXI\n\0%%EndData\r\nXH\r\n%AI5_EndRaster\r\nN";
+    let data = ai::editing_data(200.0, 100.0, &ai::layer("Native image", raster));
+    let private = compressed(data.as_bytes());
+    let (_, notes) = vectnor_eps::ai_alone(&private).unwrap();
+    assert!(notes.iter().any(|w| vectnor_eps::is_loss(w)), "{notes:?}");
+    for name in ["oversized.ai", "oversized.AI", "oversized.ait"] {
+        let mut s = Session::new();
+        let file = ai::ai(&private, "1 0 0 rg 10 10 40 40 re f");
+        let result = open(&mut s, name, &file, json!({})).unwrap();
+        assert!(result["warnings"].as_array().unwrap().iter().any(|w| w.as_str().unwrap().contains("an image is too large")), "{name}: {result}");
+        assert_ne!(names(&s.doc().unwrap().doc.layers), ["Native image"]);
+        assert!(s.doc().unwrap().doc.art_bounds().is_some(), "the visible page is retained");
+    }
 }

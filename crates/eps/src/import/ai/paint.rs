@@ -53,6 +53,7 @@ pub(super) fn color_op(op: &str, vals: &[V]) -> Option<(Paint, Option<Named>)> {
         "x" => named(vals, Some(false)),
         "xx" => named(vals, None),
         "xk" => named(vals, None).map(|(p, n)| (p, n.map(|n| Named { spot: false, ..n }))),
+        "xs" | "xz" => registration(vals),
         _ => None,
     }
 }
@@ -67,9 +68,14 @@ fn named(vals: &[V], rgb: Option<bool>) -> Option<(Paint, Option<Named>)> {
     let unit = |v: f32| v.clamp(0.0, 1.0);
     let tint = 1.0 - unit(*after.first()?);
     let n = before.len();
-    let color = if rgb.unwrap_or(after.get(1).is_some_and(|t| *t == 1.0)) {
+    let kind = after.get(1).copied();
+    let color = if rgb.unwrap_or(kind == Some(1.0)) {
         let [r, g, b] = before.get(n.checked_sub(3)?..)? else { return None };
         Color::rgb(unit(*r), unit(*g), unit(*b))
+    } else if rgb.is_none() && kind == Some(2.0) {
+        // Type 2: a colour defined in Lab, its L a b values after the CMYK equivalent (#1032).
+        let [l, a, b] = before.get(n.checked_sub(3)?..)? else { return None };
+        Color::lab(l.clamp(0.0, 100.0), a.clamp(-128.0, 127.0), b.clamp(-128.0, 127.0))
     } else {
         // The CMYK values come first (an RGB equivalent may follow them).
         let from = if n >= 7 { n - 7 } else { n.checked_sub(4)? };
@@ -78,6 +84,15 @@ fn named(vals: &[V], rgb: Option<bool>) -> Option<(Paint, Option<Named>)> {
     };
     let paint = Paint::Solid { color: color.tinted(tint), swatch: Some(name.clone()), tint };
     Some((paint, Some(Named { name, color, tint, spot: true })))
+}
+
+/// `… (name) tint Xs` / `… (name) tint type Xz`: the built-in Registration swatch at the tint (its
+/// own colour, whatever values the operands give).
+fn registration(vals: &[V]) -> Option<(Paint, Option<Named>)> {
+    let at = vals.iter().rposition(|v| matches!(v, V::Str(_)))?;
+    let tint = 1.0 - vals.get(at + 1).and_then(V::num).unwrap_or(0.0).clamp(0.0, 1.0) as f32;
+    let full = Color::cmyk(1.0, 1.0, 1.0, 1.0);
+    Some((Paint::Solid { color: full.tinted(tint), swatch: Some(vectnor_color::swatch::REGISTRATION.into()), tint }, None))
 }
 
 /// The colour of a gradient stop's colour values and style.
@@ -235,6 +250,20 @@ mod tests {
 
     fn nums(v: &[f64]) -> Vec<V> {
         v.iter().map(|n| V::Num(*n)).collect()
+    }
+
+    #[test]
+    fn registration_paints_with_the_registration_swatch_at_its_tint() {
+        let mut v = nums(&[0.75, 0.68, 0.67, 0.9, 0.0, 0.0, 0.0]);
+        v.extend([V::Str(b"[Registration]".to_vec()), V::Num(0.1), V::Num(1.0)]);
+        let (p, named) = color_op("XZ", &v).unwrap();
+        assert!(named.is_none());
+        let Paint::Solid { swatch, tint, color } = p else { panic!() };
+        assert_eq!((swatch.as_deref(), color), (Some("[Registration]"), Color::cmyk(1.0, 1.0, 1.0, 1.0).tinted(0.9)));
+        assert!((tint - 0.9).abs() < 1e-6);
+        let mut v = nums(&[1.0, 1.0, 1.0, 1.0]);
+        v.extend([V::Str(b"[Registration]".to_vec()), V::Num(0.0)]);
+        assert!(matches!(color_op("Xs", &v), Some((Paint::Solid { tint, .. }, None)) if tint == 1.0));
     }
 
     #[test]

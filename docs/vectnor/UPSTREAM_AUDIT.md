@@ -1,6 +1,66 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (reviewed input, editing and file fixes; scores unchanged)
+> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (AI palette, path text and font/thread fixes; scores unchanged)
+
+## 2026-10-25 local update — M0.upstream-ai-text
+
+Screened **541 PRs updated after the last capture** (2026-10-22 11:47:26 UTC): **309 merged,
+137 open and 95 closed without merge**. Capture: 2026-10-25 14:49:05 UTC. Seven public REST pages
+held 700 distinct records; page six crossed the cutoff and page seven verified no newer records.
+Review is limited to [VectorCraft](https://github.com/storytold/vectorcraft). Metadata screening is
+not a full source review: 23 candidate diffs were scoped and **eight merged PR scopes** adapted.
+
+The [dated snapshot](upstream-audit-2026-10-25.json) records all screened records and decisions,
+authors, immutable heads, raw diff SHA-256 and 21 verified Rust postimage blob identities (including
+reviewed source/test files excluded from adaptation). Existing MIT OR Apache-2.0 notices remain.
+
+| PR | Source author / head | Local scope and compatibility |
+|---|---|---|
+| [#3941](https://github.com/storytold/vectorcraft/pull/3941) | @fabian-co / `9090afea1c99` | Read AI palette swatches, unused spot/global colours, colour groups, gradients/pattern references and Registration operators. Fit to existing lexer/reader; use a running entry count to avoid repeated group scans. Swatches-panel selection retention and newer fuzz fixture are excluded. |
+| [#3927](https://github.com/storytold/vectorcraft/pull/3927) | @bflatastic / `76c9aa579de6` | Mark oversized editing-data images as incomplete, reject that native-first candidate and retain the visible PDF artwork with existing original text-frame recovery. Without usable PDF artwork retain existing partial-import warnings. Current layered_ai API preserved. |
+| [#3685](https://github.com/storytold/vectorcraft/pull/3685) | @ham9zah / `1abc5d4066d3` | Keep wrapped/unwrapped end brackets of closed-path AI text and finite defaults; preserve clamping on open paths. Existing ATE paths already close matching endpoints, and the older native planner does not overwrite them with PDF paths, so the newer native.rs helper is unnecessary. |
+| [#3755](https://github.com/storytold/vectorcraft/pull/3755) | @fortesnow / `bfceca7b4d1a` | Resolve imported family/style pairs split from a PostScript name once that exact PostScript face is installed. Retain current canonical-name API. |
+| [#3861](https://github.com/storytold/vectorcraft/pull/3861) | @FractalEncrypt / `25abd1f4728f` | Recheck loaded fallback faces after concurrent system lookup, even when this thread added no face. Retain existing fallback signature without newer weight/italic parameters. |
+| [#3921](https://github.com/storytold/vectorcraft/pull/3921) | @Taha-Mahmoodi / `6b52e54a1b81` | Publish all faces of a catalogued family atomically and deduplicate under the write lock. Deterministic publication-hook regression uses only existing licensed font bytes. |
+| [#3827](https://github.com/storytold/vectorcraft/pull/3827) | @dotCooCoo / `0083587131b9` | Converting a linked area-text frame to point type removes its own characters from the remaining thread, preserving other frames and undo. Tests use the existing selection-based text.thread.create API; no new threading command. |
+| [#3735](https://github.com/storytold/vectorcraft/pull/3735) | @Silvertree2010 / `ffd831761e96` | Limit in-memory font-collection face enumeration to the existing 256-face file-scan cap; damaged collection regression. |
+
+The AI importer still prefers complete original editing data independently of the PDF drawing.
+Oversized-image omissions now make that candidate incomplete; available PDF artwork is retained,
+with the existing conservative original-frame recovery. Without usable PDF artwork, partial native
+imports retain omission warnings. No larger image allocation limit was introduced. Closed-path
+ranges use the existing ATE geometry, without replacing original area-text boundaries or baselines.
+Lab inks also require the small named-colour Lab branch from the same verified #3941 postimage,
+recorded as a prerequisite outside that PR diff. Swatch parsing keeps a running entry count, capped at 20,000 entries and 20,000 groups, and 64
+operand values; unknown palette entries do not prevent supported colours from importing.
+
+Deferred source scopes: connected AI meshes (#3811) need a newer reader; paragraph continuation
+(#4031/#4072) spans the model, layout, copies and recovery; outline/raster/symbol/transparency thread
+exits (#3977/#4047/#4059/#4039) need their shared identity and overflow helpers. PDF glyph placement
+(#3715/#3641/#3742/#3753) and PostScript interpreter/resource changes (#3771/#3816/#3821/#3810) remain
+separate compatibility passes. The Swatches-panel retention portion of #3941 is excluded. Previously
+adapted PRs are not counted again; metadata-only re-updates do not claim fresh source verification.
+Other PRs remain metadata-only, with per-record reasons. No CDR/DWG or broader AI compatibility claim.
+
+English UI, Indic document text, `.vcnr` identity, overflow notices, original AI frame recovery and
+source overwrite protection remain. No dependencies, fonts, artwork, contributor profiles, community
+controls, services or publication workflows added. This update is separate from Pagenor, with no
+cross-chat messages. Owner edits to AGENTS.md and CLAUDE.md remain untouched. No upload.
+
+Verification: **all eight CI gates pass — 5,306 tests passed, zero failed, four existing ignored**;
+UI suite: 942. Actual browser WASM check passes with the existing unused `ask_update_changed`
+warning in unchanged `missing_links.rs`. The final unseeded property suite completed in 135.52 s;
+a retained process sample showed active unchanged Pathfinder work. No timeout, skip or seed change.
+
+Optimized-development 0.9.0 native/CLI binaries refreshed in `dist/Vectnor.app` and SHA-256 checked.
+Both supplied AI files retain exactly their previous CLI summaries; the announcement's full layer
+JSON, linked threads, inspection and warnings also match. Normal desktop File Open checks ten text
+objects, two linked pairs, exact source stories, whole-paragraph selection, Telugu edit/undo/redo,
+linked edit/undo and linked-frame Convert To Point Type with undo/redo. Native save/reopen preserves
+node/thread JSON and both artboard PNG hashes, with dirty=false. Overflow notes match actual area
+queries. An independent palette fixture retains an unused Lab ink, its colour group and Registration.
+Screenshots inspected; the isolated app on port 18006 quit. Missing fonts remain missing.
+Evidence: `/tmp/vectnor-upstream-2026-10-25/`. Version, scores and estimates unchanged; nothing uploaded.
 
 ## 2026-10-22 local update — M0.upstream-workflow
 

@@ -689,6 +689,30 @@ impl Alias {
     }
 }
 
+#[cfg(test)]
+thread_local! {
+    /// Tests: run on this thread each time it publishes faces to a database, to look the database
+    /// up at exactly that point (as another thread could).
+    static ON_FACES_PUBLISHED: std::cell::RefCell<Option<Box<dyn FnMut()>>> = const { std::cell::RefCell::new(None) };
+}
+
+/// Tests: run `hook` each time this thread publishes faces to a database.
+#[cfg(test)]
+pub(crate) fn on_faces_published(hook: Option<Box<dyn FnMut()>>) {
+    ON_FACES_PUBLISHED.with(|h| *h.borrow_mut() = hook);
+}
+
+#[cfg(test)]
+fn faces_published() {
+    // Taken out while it runs, so a hook that adds faces itself doesn't run again.
+    if let Some(mut hook) = ON_FACES_PUBLISHED.with(|h| h.borrow_mut().take()) {
+        hook();
+        ON_FACES_PUBLISHED.with(|h| {
+            h.borrow_mut().get_or_insert(hook);
+        });
+    }
+}
+
 /// How a requested family and style resolved ([`FontDb::resolve`]).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FontMatch {
@@ -813,12 +837,15 @@ fn named_instances(f: &skrifa::FontRef<'_>, family: &str, style: &str, keys: &mu
     out
 }
 
+/// The most faces read from a (possibly damaged) collection.
+const MAX_FACES: u32 = 256;
+
 /// Parse every face in `data` (a font file or collection) and the named instances of its variable
 /// ones. Returns each style with the index of its face.
 fn enumerate_faces(data: &[u8]) -> Vec<(u32, FaceStyle)> {
     let count = match FileRef::new(data) {
         Ok(FileRef::Font(_)) => 1,
-        Ok(FileRef::Collection(c)) => c.len(),
+        Ok(FileRef::Collection(c)) => c.len().min(MAX_FACES),
         Err(_) => 0,
     };
     (0..count)
@@ -848,8 +875,6 @@ const OUTLINE_TABLES: [&[u8; 4]; 4] = [b"glyf", b"CFF ", b"CFF2", b"VARC"];
 /// are left out.
 #[cfg(not(target_arch = "wasm32"))]
 fn file_face_names(path: &Path) -> Vec<FaceStyle> {
-    /// The most faces read from a (possibly damaged) collection.
-    const MAX_FACES: u32 = 256;
     file_face_names_within(path, MAX_FACES, u64::MAX)
 }
 
@@ -1553,24 +1578,45 @@ impl FontDb {
 
     /// [`FontDb::add_font`] for the bytes of the file at `path` (when known).
     fn add_font_from(&self, bytes: Vec<u8>, path: Option<&Path>) -> usize {
-        let data = Arc::new(bytes);
-        let mut added = 0;
-        for (i, spec) in enumerate_faces(&data) {
-            // Another version of a family and style is kept: a document may name it (the first one
-            // loaded stays the one the family and style alone resolve to).
-            let version = skrifa::FontRef::from_index(&data, i).ok().and_then(|f| name(&f, &[StringId::VERSION_STRING])).unwrap_or_default();
-            if self
-                .read_faces()
-                .iter()
-                .any(|f| f.family.eq_ignore_ascii_case(&spec.family) && f.style.eq_ignore_ascii_case(&spec.style) && f.version == version)
-            {
-                continue;
-            }
-            if let Some(f) = make_face(FontBytes::Owned(data.clone()), i, spec, path.map(Path::to_path_buf)) {
-                self.faces.write().unwrap_or_else(|e| e.into_inner()).push(Arc::new(f));
-                added += 1;
+        self.add_fonts([(bytes, path.map(Path::to_path_buf))])
+    }
+
+    /// Add the faces of `files` (each file's bytes, and the file when known) all at once: a lookup
+    /// on another thread finds all of them or none, never a family with only some of its styles
+    /// loaded, whose nearest style it would take instead (Arial Bold Italic, the first of Arial's
+    /// files, for upright Regular text). Returns the number of faces added.
+    fn add_fonts(&self, files: impl IntoIterator<Item = (Vec<u8>, Option<PathBuf>)>) -> usize {
+        // Another version of a family and style is kept: a document may name it (the first one
+        // loaded stays the one the family and style alone resolve to).
+        let same = |f: &FontFace, family: &str, style: &str, version: &str| {
+            f.family.eq_ignore_ascii_case(family) && f.style.eq_ignore_ascii_case(style) && f.version == version
+        };
+        let mut made: Vec<FontFace> = Vec::new();
+        for (bytes, path) in files {
+            let data = Arc::new(bytes);
+            for (i, spec) in enumerate_faces(&data) {
+                let version = skrifa::FontRef::from_index(&data, i).ok().and_then(|f| name(&f, &[StringId::VERSION_STRING])).unwrap_or_default();
+                let present = |f: &FontFace| same(f, &spec.family, &spec.style, &version);
+                if self.read_faces().iter().any(|f| present(f)) || made.iter().any(present) {
+                    continue;
+                }
+                if let Some(f) = make_face(FontBytes::Owned(data.clone()), i, spec, path.clone()) {
+                    made.push(f);
+                }
             }
         }
+        let mut faces = self.faces.write().unwrap_or_else(|e| e.into_inner());
+        let before = faces.len();
+        for f in made {
+            // Another thread may have added the same face meanwhile.
+            if !faces.iter().any(|g| same(g, &f.family, &f.style, &f.version)) {
+                faces.push(Arc::new(f));
+            }
+        }
+        let added = faces.len() - before;
+        drop(faces);
+        #[cfg(test)]
+        faces_published();
         if added > 0 {
             self.changed();
         }
@@ -1711,6 +1757,20 @@ impl FontDb {
             found.extend(v.iter().cloned());
         }
         let ns = norm(style);
+        // A family and style split from a PostScript name by an importer that didn't have the font
+        // (`Honoka-Mincho` → Honoka, Mincho): once it is installed, the face of that PostScript
+        // name, which is its own family and style (ほのか明朝, Regular).
+        if found.is_empty() && !ns.is_empty() {
+            let joined = format!("{key}{ns}");
+            let face = |a: &Alias| a.paired.is_none() && a.style.is_some();
+            let ps =
+                self.read_faces().iter().flat_map(|f| Alias::of(&f.family, &f.style, &f.keys)).find(|(k, a)| *k == joined && face(a)).map(|(_, a)| a);
+            let ps =
+                ps.or_else(|| self.aliases.read().unwrap_or_else(|e| e.into_inner()).get(&joined).and_then(|v| v.iter().find(|a| face(a)).cloned()));
+            if let Some(a) = ps {
+                return (a.family, a.style.unwrap_or_else(|| style.to_string()));
+            }
+        }
         // A family name keeps the style asked for; a legacy pair names its face; a PostScript name
         // its face whatever style is asked for.
         if let Some(a) = found.iter().find(|a| a.style.is_none()) {
@@ -1777,20 +1837,17 @@ impl FontDb {
         self.postscript.read().unwrap_or_else(|e| e.into_inner()).get(&norm(name)).cloned()
     }
 
-    /// Load the files of the installed `family`. Returns whether any face was added.
+    /// Load the files of the installed `family`, adding all their faces at once
+    /// ([`Self::add_fonts`]). Returns whether the family is loaded now: by this call, or by another
+    /// thread meanwhile.
     #[cfg(not(target_arch = "wasm32"))]
     fn load_cataloged(&self, family: &str) -> bool {
         let mut paths: Vec<PathBuf> =
             self.read_catalog().get(&family.to_ascii_lowercase()).map(|c| c.faces.iter().map(|cf| cf.path.clone()).collect()).unwrap_or_default();
         paths.sort();
         paths.dedup();
-        let mut any = false;
-        for p in paths {
-            for data in font_files(&p) {
-                any |= self.add_font_from(data, Some(&p)) > 0;
-            }
-        }
-        any
+        let files = paths.into_iter().flat_map(|p| font_files(&p).into_iter().map(move |data| (data, Some(p.clone()))));
+        self.add_fonts(files) > 0 || self.is_loaded(family)
     }
 
     /// Resolve a family + style to a face, falling back to the closest style of the family, then to
@@ -1924,10 +1981,9 @@ impl FontDb {
             return Some(f);
         }
         #[cfg(not(target_arch = "wasm32"))]
-        if self.system_fallback(c) {
-            return self.loaded_fallback(c, exclude);
-        }
-        None
+        self.system_fallback(c);
+        // Another lookup may have loaded the face while this one searched.
+        self.loaded_fallback(c, exclude)
     }
 
     /// A face that covers `c`, for text drawn outside the canvas (the app's own UI): the loaded
@@ -2052,6 +2108,43 @@ mod alias_tests {
         }
         font.extend(head);
         font
+    }
+
+    #[test]
+    fn a_collection_lists_at_most_max_faces() {
+        let mut font = name_font(&[(3, 0x0409, 1, "Fam"), (3, 0x0409, 2, "Regular")]);
+        let n = 1000u32;
+        let base = 12 + 4 * n;
+        let table = u32::from_be_bytes(font[20..24].try_into().unwrap()) + base;
+        font[20..24].copy_from_slice(&table.to_be_bytes());
+        let mut ttc = b"ttcf".to_vec();
+        for v in [0x0001_0000, n] {
+            ttc.extend_from_slice(&u32::to_be_bytes(v));
+        }
+        for _ in 0..n {
+            ttc.extend_from_slice(&base.to_be_bytes());
+        }
+        ttc.extend(font);
+        let faces = enumerate_faces(&ttc);
+        assert!(!faces.is_empty());
+        assert!(faces.len() <= MAX_FACES as usize, "{} faces", faces.len());
+    }
+
+    /// A PDF names a font by PostScript name; when it isn't installed the importer splits the name
+    /// (`Honoka-Mincho` → Honoka, Mincho). Once a font of that PostScript name is installed, under
+    /// a family name of its own (ほのか明朝), the split pair finds it.
+    #[test]
+    fn a_family_and_style_split_from_a_postscript_name_find_its_face() {
+        let db = FontDb::with_font_dirs(vec![]);
+        db.ensure_catalog();
+        // An installed face whose family name shares nothing with its PostScript name.
+        let alias = Alias { family: "Source Sans 3".into(), style: Some("Semibold".into()), paired: None };
+        db.aliases.write().unwrap().insert(norm("Honoka-Mincho"), vec![alias]);
+        db.changed();
+        let m = db.resolve("Honoka", "Mincho").map(|(face, m)| (face.family.clone(), face.style.clone(), m)).unwrap();
+        assert_eq!(m, ("Source Sans 3".into(), "Semibold".into(), FontMatch::Exact));
+        // Unknown names still fall back.
+        assert_eq!(db.resolve("Honoka", "Gothic").unwrap().1, FontMatch::Missing);
     }
 
     fn keys(records: &[(u16, u16, u16, &str)]) -> (String, String, FaceKeys) {

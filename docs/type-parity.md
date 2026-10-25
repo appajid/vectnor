@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (general AI text-overflow reporting; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (reviewed font lookup and threaded-frame conversion fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -82,6 +82,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-25 | minor | Reviewed upstream #3755/#3861/#3921/#3735/#3827: split PostScript font names resolve after installation, concurrent font lookups publish complete families and retry loaded fallback faces, collection enumeration is bounded, and Convert To Point Type removes a linked frame with its own text once. No font files added; missing fonts remain a document limitation. See docs/vectnor/UPSTREAM_AUDIT.md. |
 | 2026-10-25 | minor | General AI text-overflow notes after linked-story reflow; contents and original frame sizes retained. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#general-ai-overflow-reporting--2026-10-25). |
 | 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |

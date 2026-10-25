@@ -224,3 +224,22 @@ identical to the baseline. The native app still has ten text objects and two lin
 whole-paragraph selection, Telugu editing/history, linked editing/history and native
 save/reopen preserve the layer JSON and both artboard PNG hashes. The reopened file is clean.
 Original source bytes remain unchanged; no fonts or assets were added, and nothing uploaded.
+
+## Reviewed upstream compatibility fixes — 2026-10-25
+
+AI editing data now supplies its palette, including unused spot/global inks and colour groups,
+instead of only colours already painted on objects. Supported gradient and pattern references are
+retained; Registration operators use the built-in Registration paint. Closed-path type retains end
+brackets that wrap past the path's start; open-path ranges still clamp to their ends.
+
+An image above the editing-data reader's existing 2^25-pixel limit marks that candidate incomplete.
+The normal import route then keeps available PDF artwork and its existing original-text-frame
+recovery, with an explicit warning. Files without usable fallback artwork remain partial imports
+with omission warnings. This does not raise image allocation limits or make AI opening depend on PDF.
+
+Font lookup also resolves imported family/style pairs split from a PostScript name after that face
+is installed, rechecks concurrent fallback results and publishes a catalogued family's faces
+atomically. These fixes do not install missing fonts. Converting a threaded area frame to point type
+keeps its own text once and removes it from the remaining thread, with undo support.
+
+[Source review and limits](UPSTREAM_AUDIT.md) · [Pinned PR snapshot](upstream-audit-2026-10-25.json).
