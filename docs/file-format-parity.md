@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-22 · **Last updated:** 2026-10-22 · **Change:** minor (multi-artboard and linked AI text recovery; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (general AI text-overflow reporting; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -138,10 +138,16 @@ Graph CSV preserves quoted delimiters/newlines and huge axis labels. SVG title/d
 
 EPS readline treats CRLF as one terminator, preserving counted metadata and raw/buffered payloads. Huge finite number formatting avoids accidental inf; numeric range validation is separate. CSS palette gradient stops retain fractional percentages. Synthetic fixtures only. CDR proposals #3123/#2890 remain deferred pending full parser/fuzz/file review, so the existing unsupported CDR row remains accurate. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged.
 
+AI/AIT import notes now report overflow in the final visible text layout after linked
+stories reflow, retaining all text and original frame dimensions. Fitting/hidden/point text
+and native payload restores avoid spurious notes; bounded checks report incomplete review.
+[Evidence](vectnor/AI_IMPORT.md#general-ai-overflow-reporting--2026-10-25). Scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-25 | minor | General AI text-overflow notes after linked-story reflow; contents and original frame sizes retained. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#general-ai-overflow-reporting--2026-10-25). |
 | 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |
 | 2026-10-22 | minor | Recover original AI text frames during artwork fallback: multiline and mixed-style text stays together; ambiguous ownership stays unchanged. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#original-text-frames--2026-10-22). |
 | 2026-10-22 | minor | Prefer complete AI editing data before its optional PDF drawing; local real-file check and synthetic margin/option/hostile-input coverage. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md). |

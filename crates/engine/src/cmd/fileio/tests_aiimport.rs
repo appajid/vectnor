@@ -200,3 +200,73 @@ fn type_asked_for_as_outlines_opens_a_file_whose_type_shows_from_its_pdf_part() 
     assert!(r["warnings"].to_string().contains("outlines"), "{r}");
     assert_ne!(names(&s.doc().unwrap().doc.layers), ["Art"], "{r}");
 }
+
+/// Original synthetic area type: one frame, or a story linked through two frames.
+fn area_text_ai(first_height: f64, second_height: Option<f64>) -> (String, Vec<u8>) {
+    fn frame(y: f64, height: f64) -> String {
+        let (x0, x1, y0, y1) = (8151.5, 8231.5, 8141.5 + y, 8141.5 + y + height);
+        format!(
+            "<< /0 << /1 << /0 [ {x0} {y0} {x0} {y0} {x0} {y1} {x0} {y1} {x0} {y1} {x0} {y1} {x1} {y1} {x1} {y1} {x1} {y1} {x1} {y1} {x1} {y0} {x1} {y0} {x1} {y0} {x1} {y0} {x0} {y0} {x0} {y0} ] >> /2 << /0 1 >> >> >>"
+        )
+    }
+    let mut frames = vec![frame(10.0, first_height)];
+    let mut objects = "/AI11Text : 0 /StoryIndex , 0 /FrameIndex , ;\n".to_string();
+    let mut refs = "<< /0 0 >>".to_string();
+    if let Some(height) = second_height {
+        frames.push(frame(20.0, height));
+        objects.push_str("/AI11Text : 0 /StoryIndex , 1 /FrameIndex , ;\n");
+        refs.push_str(" << /0 1 >>");
+    }
+    let text = format!(
+        "/0 << /1 << /0 [ << /0 << /0 << /0 (Helvetica) >> >> >> ] >> /8 << /0 [ {} ] >> >> /1 << /1 [ << /0 << /0 (Sample text) >> /1 << /0 [ {refs} ] >> >> ] /2 << /1 14 >> >>",
+        frames.join(" ")
+    );
+    let mut encoded = String::new();
+    for chunk in text.as_bytes().chunks(4) {
+        let mut number = chunk.iter().enumerate().fold(0u32, |n, (i, b)| n | u32::from(*b) << (24 - 8 * i));
+        let mut digits = [0u8; 5];
+        for d in digits.iter_mut().rev() {
+            *d = (number % 85) as u8 + b'!';
+            number /= 85;
+        }
+        encoded.extend(digits.iter().take(chunk.len() + 1).map(|d| char::from(*d)));
+    }
+    encoded.push_str("~>");
+    let body =
+        format!("{}%AI11_BeginTextDocument\n/AI11TextDocument : /ASCII85Decode ,\n{encoded}\n%AI11_EndTextDocument\n", ai::layer("Text", &objects));
+    let data = ai::editing_data(100.0, 100.0, &body).replace("%%EndComments", "%AI3_TemplateBox: 50 50 50 50\n%%EndComments");
+    let file = ai::ai_with_page_size(&compressed(data.as_bytes()), "0 g 0 0 2 2 re f", 100.0, 100.0);
+    (data, file)
+}
+
+#[test]
+fn ai_overflow_warning_is_general_and_keeps_original_text_and_frame() {
+    let (data, file) = area_text_ai(4.0, None);
+    let expected = vectnor_eps::ai_alone(data.as_bytes()).unwrap().0;
+    for name in ["poster.ai", "unrelated.AI", "template.ait"] {
+        let loaded = super::load::load(name, &file).unwrap();
+        assert!(loaded.warnings.first().is_some_and(|w| w.starts_with("1 imported text frame has overflow text")), "{name}: {:?}", loaded.warnings);
+        assert_eq!(loaded.doc.layers, expected.layers, "diagnostic preserves text, styles and geometry");
+    }
+    let raw = super::load::load("legacy-container.ai", data.as_bytes()).unwrap();
+    assert!(raw.warnings.iter().any(|w| w.starts_with("1 imported text frame has overflow text")));
+}
+
+#[test]
+fn ai_fitting_text_and_flow_into_the_next_linked_frame_do_not_warn() {
+    for (first, second) in [(80.0, None), (4.0, Some(80.0))] {
+        let (_, file) = area_text_ai(first, second);
+        let loaded = super::load::load("different.ai", &file).unwrap();
+        assert!(!loaded.warnings.iter().any(|w| w.contains("overflow text")), "{:?}", loaded.warnings);
+        if second.is_some() {
+            assert_eq!(loaded.doc.text_threads.len(), 1);
+        }
+    }
+    let (_, file) = area_text_ai(4.0, Some(4.0));
+    let loaded = super::load::load("linked.ai", &file).unwrap();
+    assert!(
+        loaded.warnings.iter().any(|w| w.starts_with("1 imported text frame has overflow text")),
+        "only the last frame retains overset text: {:?}",
+        loaded.warnings
+    );
+}

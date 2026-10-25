@@ -1,6 +1,6 @@
 # Local AI opening verification
 
-> Last reviewed/updated: 2026-10-22 · minor: supplied multi-artboard/linked text recovery; scores unchanged.
+> Last reviewed/updated: 2026-10-25 · minor: general AI text-overflow reporting; scores unchanged.
 
 Status: 2026-10-22; local implementation and verification complete. No upload.
 
@@ -178,6 +178,7 @@ earlier supplied single-line AI's CLI information is unchanged. No source or bui
 
 | Date | Change | Evidence |
 |---|---|---|
+| 2026-10-25 | General AI/AIT overflow import notes after thread reflow; original content and frame sizes retained. | Synthetic import/visibility/limit tests and local file verification. |
 | 2026-10-22 | Multi-artboard and atomic linked text recovery; matrix defaults/translations, saved first baselines, script positions and area Auto leading. Missing-font overflow remains documented. | Supplied AI: 143 fragments → 10 objects; two linked pairs; both-artboard native round trip. |
 | 2026-10-22 | Original text recovery during unsupported-artwork fallback. | Synthetic five fragments → two original frames. |
 | 2026-10-22 | Direct native AI opening before optional PDF drawing. | Earlier supplied single-line AI and synthetic margin cases. |
@@ -188,3 +189,38 @@ The optimized-development 50k-path performance baseline passed eight of ten budg
 all builds and test apps quit passed nine of ten (zoom 20.93 ms; open 292.60 ms).
 Load was unavailable in both reports. Native-open timing fluctuates around its limit, and
 the existing zoom overrun remains; no speedup or release-performance claim is made.
+
+
+## General AI overflow reporting — 2026-10-25
+
+The shared AI/AIT load path checks the final text layout after linked stories flow through
+their original frames. An import note reports how many visible frames contain overflow
+text with the current fonts. It explains that some text is not visible inside its frame
+and that the full text is retained for editing. This applies to every foreign AI/AIT import,
+including PostScript-based AI, without filename or content-specific rules. The desktop
+status message, CLI and control/MCP document-open results share the same warning. The
+overflow note comes first so the desktop status shows it; all other import notes are retained.
+
+The diagnostic preserves original characters, styles, frame dimensions and threading.
+Fitting text, hidden frames and unbounded point type do not produce overflow notes;
+a story that fits after flowing into a later frame is not a false positive. Native Vectnor
+payload restoration keeps its existing behavior. The note does not diagnose a cause:
+missing fonts, unsupported layout details or already-overset source text can all matter.
+
+Checks are bounded by visited nodes, frame count and text bytes. If checking stops at a
+safety limit, a separate note explicitly says that remaining frames need review, rather
+than implying that the whole document fits. Regression cases cover generic names/AI/AIT,
+PostScript AI, exact source text/geometry preservation, fitting and linked type, hidden
+ancestors, point type and an oversized frame skipped before shaping.
+
+
+Verification: all eight CI gates pass (5,290 tests passed, zero failed, four existing ignored),
+plus final engine lint and actual browser WASM checks. The browser check retains the existing
+`missing_links.rs` unused-function warning. Normal File Open / All Pages shows the new note
+in the desktop status. Its reported count of three matches individual layout queries for
+all six area frames in that font environment; the CLI reports two in its own font environment.
+Except for the added first warning, the CLI's document information and prior warnings are
+identical to the baseline. The native app still has ten text objects and two linked pairs;
+whole-paragraph selection, Telugu editing/history, linked editing/history and native
+save/reopen preserve the layer JSON and both artboard PNG hashes. The reopened file is clean.
+Original source bytes remain unchanged; no fonts or assets were added, and nothing uploaded.

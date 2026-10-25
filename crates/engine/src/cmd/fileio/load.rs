@@ -3,7 +3,7 @@
 use std::io::Cursor;
 
 use serde_json::{Value, json};
-use vectnor_doc::{Document, ImageBlob, ImageObject, Node, NodeKind};
+use vectnor_doc::{Document, ImageBlob, ImageObject, Node, NodeKind, TextKind};
 use vectnor_geom::Affine;
 
 use super::super::*;
@@ -190,7 +190,7 @@ pub fn load_with(name: &str, bytes: &[u8], opts: &LoadOptions) -> Result<Loaded>
     let title = file_name(name);
     let mut converted = false;
     let mut preview_only = false;
-    let (mut doc, warnings, restored) = match format.id {
+    let (mut doc, mut warnings, restored) = match format.id {
         // EPS and PostScript .ai: the document our EPS files carry, else the PostScript read.
         _ if format.id == "eps" || vectnor_pdf::is_postscript(bytes) => {
             let editing = vectnor_eps::has_native(bytes).then_some((true, || vectnor_eps::native(bytes)));
@@ -255,6 +255,13 @@ pub fn load_with(name: &str, bytes: &[u8], opts: &LoadOptions) -> Result<Loaded>
     if !doc.text_threads.is_empty() && !restored {
         crate::cmd::threads::reflow(&Document::new(1.0, 1.0), &mut doc);
     }
+    if matches!(format.id, "ai" | "ait") && !restored {
+        // The desktop status shows the first note. Put an actionable layout problem first,
+        // retaining every existing import note in its original relative order.
+        let mut layout_notes = ai_text_overflow_notes(&doc);
+        layout_notes.append(&mut warnings);
+        warnings = layout_notes;
+    }
     if let Some(mode) = opts.color_mode.filter(|m| *m != doc.color_mode) {
         super::super::colormgmt::set_color_mode(&mut doc, mode, true, None, opts.grays);
     }
@@ -264,6 +271,63 @@ pub fn load_with(name: &str, bytes: &[u8], opts: &LoadOptions) -> Result<Loaded>
         doc.title = title;
     }
     Ok(Loaded { doc, format, warnings, restored, converted, preview_only })
+}
+
+/// Check the final imported layout, after threaded stories have flowed. This is advisory:
+/// the original text and frame sizes remain unchanged, even when the current fonts do not fit.
+fn ai_text_overflow_notes(doc: &Document) -> Vec<String> {
+    const MAX_NODES: usize = 100_000;
+    const MAX_FRAMES: usize = 1000;
+    const MAX_TEXT: usize = 1 << 20;
+    const MAX_FRAME_TEXT: usize = 64 << 10;
+    let mut stack = vec![doc.layers.iter()];
+    let (mut nodes, mut frames, mut bytes, mut overflow) = (0usize, 0usize, 0usize, 0usize);
+    let mut complete = true;
+    while let Some(iter) = stack.last_mut() {
+        let Some(node) = iter.next() else {
+            stack.pop();
+            continue;
+        };
+        nodes = nodes.saturating_add(1);
+        if nodes > MAX_NODES {
+            complete = false;
+            break;
+        }
+        if !node.visible {
+            continue;
+        }
+        if let NodeKind::Text(text) = &node.kind {
+            if matches!(text.kind, TextKind::Point) {
+                continue;
+            }
+            frames = frames.saturating_add(1);
+            let frame_bytes = text.runs.iter().fold(0usize, |total, r| total.saturating_add(r.text.len()));
+            bytes = bytes.saturating_add(frame_bytes);
+            if frames > MAX_FRAMES || bytes > MAX_TEXT || frame_bytes > MAX_FRAME_TEXT {
+                complete = false;
+                break;
+            }
+            if vectnor_text::layout(vectnor_text::FontDb::global(), text).overflow {
+                overflow += 1;
+            }
+        } else if let Some(children) = node.children() {
+            if stack.len() >= 256 {
+                complete = false;
+                break;
+            }
+            stack.push(children.iter());
+        }
+    }
+    let mut notes = vec![];
+    if overflow > 0 {
+        let qualifier = if complete { "" } else { "at least " };
+        let noun = if overflow == 1 { "frame has" } else { "frames have" };
+        notes.push(format!("{qualifier}{overflow} imported text {noun} overflow text with the current fonts; some text is not visible in its frame, but the overflow text is retained for editing"));
+    }
+    if !complete {
+        notes.push("the text overflow check reached its safety limit; review the remaining text frames".into());
+    }
+    notes
 }
 
 /// Import SVG text, reading the files its images link to (relative links from `folder`, the SVG's
@@ -495,5 +559,42 @@ fn same_file(a: &str, b: &str) -> bool {
     match (std::fs::canonicalize(a), std::fs::canonicalize(b)) {
         (Ok(a), Ok(b)) => a == b,
         _ => a == b,
+    }
+}
+
+#[cfg(test)]
+mod ai_overflow_tests {
+    use super::*;
+    use kurbo::Shape;
+    use vectnor_doc::{CharStyle, TextObject};
+    use vectnor_geom::{PathData, Point, Rect};
+
+    fn text_doc(text: &str, area: bool) -> Document {
+        let mut doc = Document::new(100.0, 100.0);
+        let mut t = TextObject::point(Point::ZERO, text, CharStyle::default());
+        if area {
+            t.kind = TextKind::Area { frame: PathData::from_bezpath(&Rect::new(10.0, 10.0, 90.0, 14.0).to_path(0.1)) };
+        }
+        let id = doc.alloc_id();
+        let parent = doc.layers[0].id;
+        doc.insert(Some(parent), 0, Node::new(id, NodeKind::Text(Box::new(t)))).unwrap();
+        doc
+    }
+
+    #[test]
+    fn ai_overflow_check_skips_hidden_ancestors_and_unbounded_point_type() {
+        let mut doc = text_doc("Sample text", true);
+        assert!(ai_text_overflow_notes(&doc).iter().any(|n| n.starts_with("1 imported text frame has")));
+        std::sync::Arc::make_mut(&mut doc.layers[0]).visible = false;
+        assert!(ai_text_overflow_notes(&doc).is_empty());
+        assert!(ai_text_overflow_notes(&text_doc("Sample text", false)).is_empty());
+    }
+
+    #[test]
+    fn ai_overflow_check_reports_unchecked_large_frames_without_shaping_them() {
+        let doc = text_doc(&"A".repeat((64 << 10) + 1), true);
+        let notes = ai_text_overflow_notes(&doc);
+        assert_eq!(notes.len(), 1);
+        assert!(notes[0].contains("safety limit"));
     }
 }
