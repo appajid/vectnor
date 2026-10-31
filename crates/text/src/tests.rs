@@ -3,6 +3,8 @@ use kurbo::{Affine, Shape};
 use vectnor_doc::{CharStyle, Justify, TextKind, TextRun};
 use vectnor_geom::PathData;
 
+mod vietnamese;
+
 /// The bundled fonts only: what these tests measure doesn't change with the fonts installed.
 fn db() -> &'static FontDb {
     static DB: std::sync::OnceLock<FontDb> = std::sync::OnceLock::new();

@@ -314,6 +314,8 @@ const IGNORED: &[&str] = &[
     "Xd",
     "Xr",
     "XG",
+    // `/DeviceGray XC` after a linked image's file name (`XG`): its colour space.
+    "XC",
     "Xh",
     "XH",
     "XF",
@@ -758,6 +760,9 @@ impl<'a> Reader<'a> {
 
     fn op(&mut self, w: &str, hidden: bool) -> Result<(), String> {
         match w {
+            // The writer's placeholder for a number the object doesn't have (a radial gradient's
+            // highlight `-- -- angle length Bh`): a NaN keeps the other operands where they are.
+            "--" => return self.push(V::Num(f64::NAN)),
             "[" => {
                 self.marks.push(self.stack.len());
                 return self.push(V::Mark);
@@ -801,6 +806,12 @@ impl<'a> Reader<'a> {
         }
         let vals = self.operands();
         let vals = self.take_head(vals);
+        // Only `Bh` reads an undefined number. Anywhere else it would reach a point or a size, so
+        // the operator is one the reader doesn't know, as before.
+        if w != "Bh" && !self.frames.is_empty() && vals.iter().any(undefined_number) {
+            self.note_unknown("--");
+            return Ok(());
+        }
         if let Some(d) = self.gradient_def.as_mut() {
             match w {
                 "Bs" => d.stop(&vals, &mut self.spots),
@@ -919,18 +930,22 @@ impl<'a> Reader<'a> {
             _ if IGNORED.contains(&w) => {}
             // Before the art, the setup runs procedures of the printing format.
             _ if self.frames.is_empty() => {}
-            _ => {
-                let op: String = w.chars().take(24).collect();
-                if !self.shown() {
-                    if self.hidden_unread.len() < 16 {
-                        self.hidden_unread.insert(format!("`{op}`"));
-                    }
-                } else if self.unknown.len() < 16 {
-                    self.unknown.insert(op);
-                }
-            }
+            _ => self.note_unknown(w),
         }
         Ok(())
+    }
+
+    /// An operator the reader doesn't know: on hidden art it is only noted, on shown art the file
+    /// is read from its PDF part.
+    fn note_unknown(&mut self, w: &str) {
+        let op: String = w.chars().take(24).collect();
+        if !self.shown() {
+            if self.hidden_unread.len() < 16 {
+                self.hidden_unread.insert(format!("`{op}`"));
+            }
+        } else if self.unknown.len() < 16 {
+            self.unknown.insert(op);
+        }
     }
 
     /// `:` after `/Type`: a dictionary opens.
@@ -1716,4 +1731,17 @@ fn join_and(items: &[&str]) -> String {
         [one] => (*one).to_string(),
         [rest @ .., last] => format!("{} and {last}", rest.join(", ")),
     }
+}
+
+/// Undefined placeholders nested in arrays must not reach matrices or dash geometry either.
+fn undefined_number(v: &V) -> bool {
+    let mut pending = vec![v];
+    while let Some(value) = pending.pop() {
+        match value {
+            V::Num(n) if n.is_nan() => return true,
+            V::Arr(a) => pending.extend(a),
+            _ => {}
+        }
+    }
+    false
 }

@@ -518,6 +518,8 @@ pub(crate) fn new_type_style(s: &Session, p: &Value) -> CharStyle {
     }
     if let Some(f) = str_param(p, "style") {
         style.font_style = f.to_string();
+    } else if str_param(p, "font").is_some() {
+        super::textedit::fit_font_style(&mut style);
     }
     style.fill = match p.get("color").and_then(color_value) {
         Some(c) => vectnor_color::Paint::solid(c),

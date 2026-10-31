@@ -213,10 +213,13 @@ impl Instance {
         self.bm = n.get(n.len().saturating_sub(6)..).and_then(affine).filter(|m| m.determinant().abs() > 1e-12);
     }
 
-    /// `x y angle length Bh`.
+    /// `x y angle length Bh`. The point is `--` (undefined) when the gradient has no highlight.
     pub fn bh(&mut self, vals: &[V]) {
         let n: Vec<f64> = vals.iter().filter_map(V::num).collect();
-        if let [x, y, ..] = n.as_slice() {
+        if let [x, y, ..] = n.as_slice()
+            && x.is_finite()
+            && y.is_finite()
+        {
             self.hilight = Vec2::new(*x, *y);
         }
     }

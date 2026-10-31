@@ -1,6 +1,7 @@
 //! The document canvas: rendering, rulers, navigation, pointer routing to tools and on-canvas
 //! selection visuals (bounding box, anchors, handles, smart-guide style labels).
 
+use egui::emath::GuiRounding as _;
 use egui::{Color32, CornerRadius, Pos2, Sense, Shape, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
 use serde_json::json;
 use vectnor_doc::{Node, NodeKind, Unit};
@@ -167,6 +168,8 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
         return;
     }
     let rect = if app.ui.view.rulers && app.ui.screen_mode < 3 { egui::Rect::from_min_max(full.min + vec2(RULER, RULER), full.max) } else { full };
+    // Match drawing and pointer mapping across subpixel dock layouts.
+    let rect = rect.round_to_pixels(ui.ctx().pixels_per_point());
     app.canvas_rect = Some(rect);
     let fitted = app.view().is_some_and(|v| v.fitted);
     if !fitted {
@@ -2120,6 +2123,32 @@ mod tests {
     use super::*;
     use vectnor_engine::Session;
     use vectnor_geom::Shape as _;
+
+    #[test]
+    fn subpixel_dock_layout_does_not_change_pointer_document_coordinates() {
+        let mut observed = Vec::new();
+        for width in [1324.0 + 29.0 / 32.0, 1324.875, 1325.875] {
+            let mut app = VectnorApp::new(Session::new(), Default::default());
+            app.session.execute("file.new", &json!({"width": 800, "height": 600, "created": 0})).unwrap();
+            let ctx = egui::Context::default();
+            ctx.set_pixels_per_point(2.0);
+            let raw = egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(1800.0, 900.0))),
+                max_texture_side: Some(8192),
+                ..Default::default()
+            };
+            let mut out = ctx.run_ui(raw, |ui| {
+                let area = egui::Rect::from_min_size(pos2(54.0, 72.0), vec2(width + 14.0, 636.0 + 14.0));
+                let mut child = ui.new_child(egui::UiBuilder::new().max_rect(area));
+                show(&mut app, &mut child);
+            });
+            out.textures_delta.clear();
+            let rect = app.canvas_rect.unwrap();
+            observed.push((rect, Xf::new(rect, app.view().unwrap()).to_doc(pos2(440.0, 330.0))));
+        }
+        assert_eq!(observed[0], observed[1], "the same physical canvas must map the same pointer identically");
+        assert_ne!(observed[0], observed[2], "a real device-pixel resize must still change the mapping");
+    }
 
     /// #826: in a turned view each ruler still has ticks along its whole length; at 0° the top one
     /// reads x where the canvas has it.

@@ -27,7 +27,7 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Window", "Layers"],
             Some("Cmd+L"),
             "{name?, top?: bool, color?, template?, locked?, visible?, printable?, preview?, dimImages?} a layer directly above the current layer, at its level (a sublayer beside a current sublayer); `top`: above all layers (Ctrl-click the button). Options as layer.setProps → {id}",
-            has_doc,
+            outside_mask_editing,
             new_layer
         ),
         cmd!(
@@ -36,7 +36,7 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Window", "Layers"],
             None,
             "{parent?: layer id (default: the highlighted row's layer, else the current layer), name?, options as layer.new} a sublayer on top of the parent's contents → {id}",
-            has_doc,
+            outside_mask_editing,
             new_sublayer
         ),
         cmd!(
@@ -847,4 +847,10 @@ fn artboard_fit_sel(s: &mut Session, p: &Value) -> Result<Value> {
     let st = s.doc()?;
     let b = st.doc.bounds_of(&st.selection.objects, true).ok_or_else(|| EngineError::Other("no selection bounds".into()))?;
     s.execute("artboard.setProps", &json!({"index": i, "x": b.x0, "y": b.y0, "width": b.width(), "height": b.height()}))
+}
+
+/// The Layers panel shows only the temporary mask layer while its mask is edited.
+fn outside_mask_editing(s: &Session) -> std::result::Result<(), String> {
+    has_doc(s)?;
+    if s.active().is_some_and(|st| st.doc.mask_edit.is_some()) { Err("leave opacity-mask editing before creating a layer".into()) } else { Ok(()) }
 }

@@ -419,6 +419,10 @@ fn set_style(s: &mut Session, p: &Value) -> Result<Value> {
             style_chars(t, range, |st| {
                 if let Some(f) = &font {
                     st.font_family = f.clone();
+                    // Keep the style when the new family has it, else its closest match (#4128).
+                    if style.is_none() {
+                        super::textedit::fit_font_style(st);
+                    }
                 }
                 if let Some(f) = &style {
                     st.font_style = f.clone();

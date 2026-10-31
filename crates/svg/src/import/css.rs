@@ -17,7 +17,8 @@ pub(super) type XNode<'a, 'i> = roxmltree::Node<'a, 'i>;
 
 /// `name: value` declarations of a block or `style` attribute, with their `!important` flag.
 fn parse_decls(s: &str) -> Vec<(String, String, bool)> {
-    s.split(';')
+    split_decls(s)
+        .into_iter()
         .filter_map(|d| {
             let (k, v) = d.split_once(':')?;
             let v = v.trim();
@@ -168,16 +169,69 @@ struct Rule {
     decls: Rc<Vec<(String, String, bool)>>,
 }
 
+/// Splits on the `;`s that are outside quoted strings and parentheses (`url(data:…;base64,…)`).
+fn split_decls(s: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let (mut start, mut depth, mut quote, mut escaped) = (0, 0usize, None::<char>, false);
+    for (i, c) in s.char_indices() {
+        if escaped {
+            escaped = false;
+        } else if c == '\\' {
+            escaped = true;
+        } else if let Some(q) = quote {
+            if c == q {
+                quote = None;
+            }
+        } else {
+            match c {
+                '\'' | '"' => quote = Some(c),
+                '(' => depth += 1,
+                ')' => depth = depth.saturating_sub(1),
+                ';' if depth == 0 => {
+                    parts.push(s.get(start..i).unwrap_or_default());
+                    start = i + 1;
+                }
+                _ => {}
+            }
+        }
+    }
+    parts.push(s.get(start..).unwrap_or_default());
+    parts
+}
+
 /// Rules from every `<style>` element, in source order.
 fn parse_sheet(css: &str, out: &mut Vec<Rule>) {
-    // Drop comments.
+    // Drop comments outside strings.
     let mut text = String::with_capacity(css.len());
-    let mut rest = css;
-    while let Some(i) = rest.find("/*") {
-        text.push_str(&rest[..i]);
-        rest = rest[i + 2..].find("*/").map_or("", |j| &rest[i + 2 + j + 2..]);
+    let mut chars = css.chars().peekable();
+    let mut quote = None;
+    let mut escaped = false;
+    while let Some(c) = chars.next() {
+        if let Some(q) = quote {
+            text.push(c);
+            if escaped {
+                escaped = false;
+            } else if c == '\\' {
+                escaped = true;
+            } else if c == q {
+                quote = None;
+            }
+        } else if c == '\'' || c == '"' {
+            quote = Some(c);
+            text.push(c);
+        } else if c == '/' && chars.peek() == Some(&'*') {
+            chars.next();
+            let mut prev_star = false;
+            for c in chars.by_ref() {
+                if prev_star && c == '/' {
+                    break;
+                }
+                prev_star = c == '*';
+            }
+        } else {
+            text.push(c);
+        }
     }
-    text.push_str(rest);
     let mut s = text.as_str();
     loop {
         s = s.trim_start();
@@ -287,6 +341,18 @@ impl Styles {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn semicolons_in_quotes_and_parens_do_not_split() {
+        let d = |k: &str, v: &str| (k.to_string(), v.to_string(), false);
+        assert_eq!(parse_decls("font-family:'A;B'; fill:red"), [d("font-family", "'A;B'"), d("fill", "red")]);
+        assert_eq!(parse_decls("font-family:\"A;B\"; fill:red"), [d("font-family", "\"A;B\""), d("fill", "red")]);
+        assert_eq!(
+            parse_decls("fill:url(data:image/svg+xml;base64,AAA); stroke:red"),
+            [d("fill", "url(data:image/svg+xml;base64,AAA)"), d("stroke", "red")]
+        );
+        let _ = parse_decls("font-family:'A;B; fill:red");
+    }
 
     fn with_doc(svg: &str, f: impl FnOnce(&roxmltree::Document, &Styles)) {
         let doc = roxmltree::Document::parse(svg).unwrap();

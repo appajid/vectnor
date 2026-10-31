@@ -518,3 +518,10 @@ fn gradients_on_scaled_text_stay_in_place() {
     let (start, end) = (t.xf * geom.start, t.xf * geom.end);
     assert!(start.distance(Point::new(40.0, 0.0)) < 1e-6 && end.distance(Point::new(240.0, 0.0)) < 1e-6, "{start:?} {end:?}");
 }
+
+#[test]
+fn comment_markers_inside_css_strings_are_not_comments() {
+    let d = open(r#"<style>text { font-family: "A/*B"; fill: red }</style><text y="10">x</text>"#);
+    let t = only_text(&d);
+    assert_eq!(t.first_style().fill.color().map(|c| c.to_hex()).as_deref(), Some("#ff0000"));
+}

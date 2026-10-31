@@ -243,3 +243,19 @@ atomically. These fixes do not install missing fonts. Converting a threaded area
 keeps its own text once and removes it from the remaining thread, with undo support.
 
 [Source review and limits](UPSTREAM_AUDIT.md) · [Pinned PR snapshot](upstream-audit-2026-10-25.json).
+
+## Reviewed import fixes — 2026-10-31
+
+AI character styles retain All Caps and Small Caps while preserving their original characters.
+Small Caps uses the current document default size; the source's custom size is not read. A radial
+gradient's undefined highlight (`-- --`) means no highlight; its other numeric operands keep their
+positions. The known image colour-space metadata operator no longer triggers an unknown-operator
+fallback. Undefined placeholders in other shown-art operands, including arrays, remain unsupported
+and reject that native candidate. Existing original-frame recovery and native-first opening remain.
+
+Whole-grapheme fallback keeps a base letter and its combining marks in one available face when
+possible. Missing fonts are not installed. The fallback search is bounded; source-run attribution,
+joiners and current caret behavior remain. Font creation/family changes retain an available style
+when the family has no Regular, while an explicitly requested style is preserved.
+
+[Provenance, tests and deferred dependency chains](UPSTREAM_AUDIT.md).

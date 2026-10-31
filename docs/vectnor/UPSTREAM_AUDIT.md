@@ -1,6 +1,74 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (AI palette, path text and font/thread fixes; scores unchanged)
+> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed import, cluster fallback and editing fixes; scores unchanged)
+
+## 2026-10-31 local update — M0.upstream-import-editing
+
+Screened **687 PRs updated since the last capture** (2026-10-25 14:49:05 UTC): **445 merged,
+199 open and 43 closed without merge**. Capture: 2026-10-31T11:43:55.000294+00:00. Eight public REST pages
+held 800 distinct records; page seven crossed the cutoff and page eight verified the older range.
+Only [VectorCraft](https://github.com/storytold/vectorcraft) was checked. Metadata screening is not
+full source review: scoped 24 candidate diffs, adapted **14 merged PR scopes** after 27 Rust
+postimage blob checks (including one reviewed RTF file not copied).
+
+The [dated snapshot](upstream-audit-2026-10-31.json) pins authors, heads, raw diff SHA-256, verified
+Rust postimages and every screened record/decision. Existing MIT OR Apache-2.0 notices remain.
+
+| PR | Source author / immutable head | Adapted scope |
+|---|---|---|
+| [#4549](https://github.com/storytold/vectorcraft/pull/4549) | @bflatastic / `e0c92a4d906e` | Keep a base letter and combining marks in one fallback face using grapheme clusters. Fit to existing source-run attribution, joiner handling and unweighted fallback API; no numeral-system or newer font-style API imported. Cap candidate lookup to 64 distinct drawn characters per cluster. Synthetic fonts test Vietnamese marks and Indic face selection; no font files added. |
+| [#4250](https://github.com/storytold/vectorcraft/pull/4250) | @DCaioP / `311b34321932` | Text creation and family-only style changes store an available closest style when the family has no Regular. Explicit styles and missing-family requests remain unchanged. Extract existing style-fit helper; synthetic numbered family from existing licensed font bytes. |
+| [#4708](https://github.com/storytold/vectorcraft/pull/4708) | @mockydevs / `530605d4fc86` | AI editing-data character-style key 12 retains All Caps and Small Caps while preserving original characters. Small Caps uses the existing document default size; custom source size remains unread. |
+| [#4179](https://github.com/storytold/vectorcraft/pull/4179) | @youwishgames / `9af023b084b4` | Read an undefined radial-gradient highlight as no highlight and recognize XC colour-space metadata. Reject undefined numbers in other shown-art operands, including nested arrays via an iterative scan. Original text-frame recovery and native-first import remain. |
+| [#4553](https://github.com/storytold/vectorcraft/pull/4553) | @TheGalitube / `2b37302fe5f7` | Keep CSS comment markers inside quoted strings during stylesheet parsing. |
+| [#4230](https://github.com/storytold/vectorcraft/pull/4230) | @Silvertree2010 / `29a98b750ac9` | Split CSS declarations on semicolons only outside quotes and parentheses, preserving font names and data URLs. |
+| [#4514](https://github.com/storytold/vectorcraft/pull/4514) | @TheGalitube / `c714797e99c8` | DXF integer parsing accepts whole-number floats and rejects fractional values instead of truncating them. |
+| [#4460](https://github.com/storytold/vectorcraft/pull/4460) | @Silvertree2010 / `ddd017eb0a5d` | PostScript radix numbers refuse a sign after #. |
+| [#4449](https://github.com/storytold/vectorcraft/pull/4449) | @Silvertree2010 / `aca98ffe7952` | EPS Unicode glyph names require hexadecimal digits. |
+| [#4321](https://github.com/storytold/vectorcraft/pull/4321) | @Silvertree2010 / `c2fb35b24485` | ColorKey formatting handles saturated negative Lab values without signed absolute-value overflow. |
+| [#4409](https://github.com/storytold/vectorcraft/pull/4409) | @Silvertree2010 / `de6b14b5417e` | MCP line reader accepts exactly the content-byte cap followed by CRLF; overlong content remains refused. |
+| [#4288](https://github.com/storytold/vectorcraft/pull/4288) | @Silvertree2010 / `76e0e5b0ac1a` | MCP resource percent decoding requires two hexadecimal digits and retains malformed escapes literally; Vectnor URI identity unchanged. |
+| [#4540](https://github.com/storytold/vectorcraft/pull/4540) | @bflatastic / `44ef4ab4bc16` | Align the canvas input rectangle to device pixels before fitting and existing custom scrollbar layout, stabilizing pointer mapping under subpixel dock widths. Keep egui 0.36 and the local scrollbar module. |
+| [#4580](https://github.com/storytold/vectorcraft/pull/4580) | @bflatastic / `9534a364162f` | New Layer and New Sublayer are refused while editing an opacity mask. Guard uses existing mask-edit state and retains current layer command options. |
+
+The cluster fix preserves the current grapheme caret, shaping-span source attribution and joiner
+rules. Its candidate search is bounded; glyph selection tests with synthetic Indic cmaps establish
+whole-cluster font choice, not Indic visual fidelity of those synthetic Latin outlines. Existing
+Indic layout/editing tests remain. No numeral-system model, weighted fallback API, new fonts or
+interface translations imported. The capitalization reader keeps source characters; custom source
+Small Caps sizes remain unread. Undefined gradient placeholders are permitted only for the known
+highlight operator; invalid use in shown art, including nested arrays, still rejects native artwork.
+
+Deferred source scopes: newer clipboard/IME changes (#4608), numeric-field commit changes (#4213),
+standalone RTF reader (#4330, absent here), Swatches document-focus tracking (#4733), Eyedropper
+picked/default paint routing (#4583), broad dropdown UI (#4337), soft-return model changes (#4584),
+and AI mesh/layer-state/placed-file chains (#4755/#4740/#4748). Other updates remain metadata-only,
+with per-record decisions. Larger AI capacity limits, new CDR/DWG importers, add-ons, auto-updating,
+platform/library migrations and translation catalogs are not copied. Earlier adapted PRs are not
+counted again. No claim of full AI/CDR/DWG compatibility or improved performance.
+
+Native-first AI opening, original text boxes/linked stories, source-overwrite protection, overflow
+warnings, English UI, Indic text, `.vcnr` branding and existing Contributors/Models remain. No
+Pagenor messages or other upstream project review. Owner instruction-file edits are preserved.
+Scores, estimates and version unchanged. No source/build upload.
+
+Verification: **all eight CI gates pass — 5,327 tests passed, zero failed, four existing ignored**;
+UI suite: 943. Optimized-development 0.9.0 native/CLI build and actual browser WASM check pass.
+The latter retains the existing unused `ask_update_changed` warning in unchanged `missing_links.rs`.
+Binaries in `dist/Vectnor.app` are refreshed and SHA-256 checked against the completed build.
+
+Both supplied AI files retain exactly their previous CLI summaries and full command/layer JSON.
+Normal desktop File Open retains ten original text objects, two linked pairs, standalone characters,
+complete linked stories and original frame geometry. Desktop font metrics redistribute the speaker
+story between its existing linked frames relative to the CLI; concatenated characters are exact.
+Whole-paragraph Type selection, Telugu/ZWNJ insertion, neighboring-frame isolation and exact
+undo/redo pass. Native save/reopen retains node/thread JSON, both artboard PNG hashes and dirty=false.
+Three overflow frames reported by File Open match actual current-font area queries; missing fonts
+remain missing. A synthetic native AI fixture retains source strings plus All Caps/Small Caps flags
+through native save/reopen, independently of its deliberately unrelated PDF drawing. Mask-editing
+layer creation is refused without model/history changes and works after leaving. Screenshots
+inspected; isolated app on port 18007 quit. Both original AI sources and owner instruction-file edits
+are SHA-256 unchanged. Evidence: `/tmp/vectnor-upstream-2026-10-31/`. Nothing uploaded.
 
 ## 2026-10-25 local update — M0.upstream-ai-text
 

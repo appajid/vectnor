@@ -5,9 +5,11 @@ use std::sync::Arc;
 
 use unicode_bidi::Level;
 use unicode_script::{Script, UnicodeScript};
+use unicode_segmentation::UnicodeSegmentation;
 
 use harfrust::{Direction, Feature, ShapeOptions, UnicodeBuffer};
 use skrifa::MetadataProvider;
+use skrifa::charmap::Charmap;
 use skrifa::instance::Size;
 use vectnor_doc::text::INLINE_CHAR;
 use vectnor_doc::{CharStyle, InlineArt};
@@ -307,20 +309,20 @@ pub(crate) fn shape_range(
         // Split into segments by font coverage (and case, for Small Caps).
         let group_output_start = out.len();
         let mut seg = Segment { range: a..a, run: source_runs.start, st, face: primary.clone(), small: false, level: level_at(a) };
-        let mut cache: Vec<(char, Arc<FontFace>)> = Vec::new();
+        let mut cache: std::collections::HashMap<&str, Arc<FontFace>> = std::collections::HashMap::new();
         let mut script = Script::Common;
-        for (i, c) in text[a..b].char_indices() {
+        for (i, cluster) in text[a..b].grapheme_indices(true) {
             let i = a + i;
+            let Some(c) = cluster.chars().next() else { continue };
             let level = level_at(i);
-            let covered = c.is_whitespace() || c.is_control() || pmap.as_ref().is_none_or(|m| m.map(c).is_some());
-            let face = if covered {
+            let face = if drawn_chars(cluster).all(|c| in_face(pmap.as_ref(), c)) {
                 primary.clone()
-            } else if let Some((_, f)) = cache.iter().find(|(k, _)| *k == c) {
-                f.clone()
+            } else if let Some(face) = cache.get(cluster) {
+                face.clone()
             } else {
-                let f = db.fallback_for(c, primary.id()).unwrap_or_else(|| primary.clone());
-                cache.push((c, f.clone()));
-                f
+                let face = fallback_face(db, &primary, pmap.as_ref(), cluster);
+                cache.insert(cluster, face.clone());
+                face
             };
             let small = small_caps && c.is_lowercase();
             let next_script = shaping_script(c);
@@ -363,6 +365,29 @@ fn source_run_at(runs: &[(Range<usize>, &CharStyle)], span: &Range<usize>, byte:
     let source = runs.get(span.clone())?;
     let i = source.partition_point(|(range, _)| range.end <= byte);
     source.get(i).filter(|(range, _)| range.contains(&byte)).map(|_| span.start + i)
+}
+
+/// Characters needing glyphs: layout controls, joiners and variation selectors need none.
+fn drawn_chars(cluster: &str) -> impl Iterator<Item = char> + '_ {
+    cluster.chars().filter(|&c| !(c.is_control() || matches!(c, '\u{200C}' | '\u{200D}' | '\u{FE00}'..='\u{FE0F}' | '\u{E0100}'..='\u{E01EF}')))
+}
+
+fn in_face(map: Option<&Charmap<'_>>, c: char) -> bool {
+    map.is_none_or(|m| m.map(c).is_some())
+}
+
+/// Prefer one fallback for the whole grapheme, so combining marks stay with their base.
+/// Check at most 64 distinct characters' candidates: malformed giant clusters must not
+/// cause quadratic fallback work. Ordinary clusters retain the existing fallback order.
+fn fallback_face(db: &FontDb, primary: &Arc<FontFace>, pmap: Option<&Charmap<'_>>, cluster: &str) -> Arc<FontFace> {
+    let fallback = |c| db.fallback_for(c, primary.id());
+    let mut seen = std::collections::HashSet::new();
+    drawn_chars(cluster)
+        .filter(|c| seen.insert(*c))
+        .take(64)
+        .find_map(|c| fallback(c).filter(|f| drawn_chars(cluster).all(|c| f.covers(c))))
+        .or_else(|| drawn_chars(cluster).next().filter(|&c| !in_face(pmap, c)).and_then(fallback))
+        .unwrap_or_else(|| primary.clone())
 }
 
 /// The script `c` is shaped in: Japanese and Chinese text mixes Han, Hiragana, Katakana and

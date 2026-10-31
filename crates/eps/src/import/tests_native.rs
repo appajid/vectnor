@@ -382,6 +382,30 @@ fn type_on_a_hidden_layer_comes_from_the_text_document() {
 }
 
 #[test]
+fn type_from_the_text_document_keeps_its_case_setting() {
+    // Key 12 of a character style is its case: 1 Small Caps, 2 All Caps. The characters stay as
+    // typed; the setting shows them as capitals.
+    let doc = text_document(&[
+        ("hon. guest\r", 0, (8200.0, 8180.0), (0.0, 0.0), 0.0),
+        ("Book Now\r", 0, (8200.0, 8170.0), (0.0, 0.0), 0.0),
+        ("plain\r", 0, (8200.0, 8160.0), (0.0, 0.0), 0.0),
+    ])
+    .replacen("/1 14.0 /53", "/1 14.0 /12 2 /53", 1)
+    .replacen("/1 14.0 /53", "/1 14.0 /12 1 /53", 1);
+    let spare = text_object(0) + &text_object(1) + &text_object(2);
+    let art = native_with_text(&(layer("Back", true, &square(10, 10)) + &layer("Spare", false, &spare)), &doc);
+    let r = import(&eps(&page_square(10, 10), &art)).unwrap();
+    let texts = text_of(&r.document.layers[1]);
+    assert_eq!(texts.len(), 3, "{:?}", r.warnings);
+    let case = |i: usize| texts[i].runs.iter().map(|r| (r.style.all_caps, r.style.small_caps)).collect::<Vec<_>>();
+    assert_eq!(texts[0].plain_text(), "hon. guest");
+    assert_eq!(case(0), [(true, None)]);
+    assert_eq!(texts[1].plain_text(), "Book Now");
+    assert_eq!(case(1), [(false, Some(r.document.setup.small_caps_size))]);
+    assert_eq!(case(2), [(false, None)]);
+}
+
+#[test]
 fn type_with_a_frame_it_cant_read_is_left_out_with_a_note() {
     // A story whose frame is of a kind this doesn't know isn't guessed at.
     let mut doc = text_document(&[("Area\r", 0, (8200.0, 8180.0), (0.0, 0.0), 0.0)]);

@@ -1,6 +1,6 @@
 # File format parity
 
-> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (reviewed AI palette, closed-path text and image-fallback fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed upstream import and text fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Every format Illustrator opens, places, saves or exports, against Vectnor's format table (`FORMATS`,
 `OPEN_EXTS`, `PLACE_EXTS` in `crates/engine/src/cmd/fileio/mod.rs`). Illustrator's list comes from its public
@@ -147,6 +147,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-31 | minor | Reviewed upstream AI capitalization and undefined-gradient highlights; SVG CSS quotes, semicolons and comment markers; EPS radix/glyph-name and DXF integer validation. Native-first AI opening, original frames and source protection retained. See docs/vectnor/UPSTREAM_AUDIT.md; no new format or image-capacity claim. |
 | 2026-10-25 | minor | Reviewed upstream #3941/#3685/#3927: supported AI editing-data palettes keep unused inks/groups and Registration; text on closed paths keeps wrapped end brackets; oversized editing-data images trigger the existing artwork fallback with a warning. Native-first opening and original frame recovery remain. No image-limit increase or new format claim. See docs/vectnor/UPSTREAM_AUDIT.md. |
 | 2026-10-25 | minor | General AI text-overflow notes after linked-story reflow; contents and original frame sizes retained. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#general-ai-overflow-reporting--2026-10-25). |
 | 2026-10-22 | minor | Supplied two-artboard AI: recover translated and linked original text frames, identity point matrices, saved first baselines and script positions; 143 fragments become 10 text objects locally. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#multi-artboard-linked-frames--2026-10-22). |

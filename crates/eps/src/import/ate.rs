@@ -294,6 +294,8 @@ struct Style {
     fill: Option<Color>,
     stroke: Option<Color>,
     stroke_width: f64,
+    /// Key 12, the case: 1 Small Caps, 2 All Caps.
+    caps: u8,
 }
 
 /// The text document of an editing copy.
@@ -521,6 +523,7 @@ impl Texts {
             fill: if on("56") { Some(pick("53").and_then(paint).unwrap_or(Color::BLACK)) } else { None },
             stroke: if matches!(pick("57"), Some(Val::Bool(true))) { pick("54").and_then(paint) } else { None },
             stroke_width: num("63").filter(|v| *v >= 0.0 && *v < 1e4).unwrap_or(1.0),
+            caps: num("12").filter(|v| *v == 1.0 || *v == 2.0).map_or(0, |v| v as u8),
         }
     }
 }
@@ -822,6 +825,9 @@ fn char_style(s: &Style, scale: f64, leading: Option<f64>) -> CharStyle {
         fill: s.fill.map_or(Paint::None, Paint::solid),
         stroke: s.stroke.map_or(Paint::None, Paint::solid),
         stroke_width: if s.stroke.is_some() { s.stroke_width * scale } else { 0.0 },
+        all_caps: s.caps == 2,
+        // At the default Small Caps size of Document Setup: the file's own isn't read.
+        small_caps: (s.caps == 1).then(|| vectnor_doc::DocSetup::default().small_caps_size),
         ..CharStyle::default()
     }
 }

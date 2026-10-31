@@ -1,6 +1,6 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (reviewed AI import and font/thread fixes; scores unchanged)
+> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed import and editing fixes; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
@@ -68,6 +68,15 @@ lookup/concurrent publication and Convert To Point Type on threaded frames. The
 [immutable snapshot](docs/vectnor/upstream-audit-2026-10-25.json) distinguish adapted scopes from
 metadata-only screening and deferred dependency chains. Existing attribution and AI original-frame
 recovery remain. No new assets/dependencies, version change or upload.
+
+## Local update — M0.upstream-import-editing, 2026-10-31
+
+Screened 687 VectorCraft PR updates after the October 25 capture, scoped 24 candidate diffs and
+adapted 14 merged scopes. Changes cover whole-cluster font fallback, available font styles,
+AI capitalization/gradient metadata, SVG CSS parsing, bounded/malformed input handling, mask-layer
+creation and subpixel canvas mapping. [Review](docs/vectnor/UPSTREAM_AUDIT.md) and
+[pinned source snapshot](docs/vectnor/upstream-audit-2026-10-31.json) record exact authors, heads,
+postimages, local compatibility bounds and exclusions. No font files, dependencies or publication.
 
 ## Revision history
 
