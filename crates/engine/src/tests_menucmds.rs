@@ -1380,3 +1380,16 @@ fn bristle_brush_strokes_select_by_brush_type() {
     assert_eq!(s.execute("select.object.bristleBrushStrokes", &json!({})).unwrap()["count"], 2);
     assert_eq!(selected(&s), vec![round, soft]);
 }
+
+#[test]
+fn select_same_character_colors_ignore_empty_text() {
+    let mut s = session();
+    let a = id_of(&s.execute("text.create", &json!({"x": 0, "y": 20, "text": "a"})).unwrap());
+    let b = id_of(&s.execute("text.create", &json!({"x": 0, "y": 40, "text": "b"})).unwrap());
+    let empty = id_of(&s.execute("text.create", &json!({"x": 0, "y": 60, "text": ""})).unwrap());
+    for cmd in ["select.same.textFillColor", "select.same.textStrokeColor"] {
+        sel(&mut s, &[a]);
+        s.execute(cmd, &json!({})).unwrap();
+        assert_eq!(selected(&s), vec![a, b], "{cmd}: empty object {empty:?}");
+    }
+}

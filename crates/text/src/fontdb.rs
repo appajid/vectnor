@@ -428,9 +428,21 @@ fn name(font: &skrifa::FontRef<'_>, ids: &[StringId]) -> Option<String> {
     ids.iter().find_map(|id| font.localized_strings(*id).english_or_first().map(|s| s.to_string()).filter(|s| !s.is_empty()))
 }
 
+const MAX_NAME_RECORDS: usize = 1024;
+const MAX_NAME_BYTES: usize = 1 << 20;
+
 /// Every localized string of `id`, with its language.
 fn localized(font: &skrifa::FontRef<'_>, id: StringId) -> Vec<(Option<String>, String)> {
-    font.localized_strings(id).map(|s| (s.language().map(str::to_owned), s.to_string())).filter(|(_, s)| !s.is_empty()).collect()
+    let mut bytes = 0usize;
+    font.localized_strings(id)
+        .take(MAX_NAME_RECORDS)
+        .map(|s| (s.language().map(str::to_owned), s.to_string()))
+        .take_while(|(_, s)| {
+            bytes = bytes.saturating_add(s.len());
+            bytes <= MAX_NAME_BYTES
+        })
+        .filter(|(_, s)| !s.is_empty())
+        .collect()
 }
 
 /// Whether a name-table language tag is English (Illustrator's "Show Font Names in English").
@@ -2241,5 +2253,19 @@ mod race_tests {
         for t in threads {
             assert_eq!(t.join().unwrap().as_deref(), Some("Inter"));
         }
+    }
+}
+
+#[cfg(test)]
+mod name_limits_tests {
+    use super::*;
+
+    #[test]
+    fn a_name_table_of_many_records_is_cut_short() {
+        let many: Vec<(u16, &str)> = (0..2000).map(|_| (1, "Short")).collect();
+        let name = crate::test_fonts::name_table(&many).unwrap_or_default();
+        let font = crate::fontdb::sfnt_of(&[(b"name", &name)]).unwrap_or_default();
+        let font = skrifa::FontRef::new(&font).unwrap();
+        assert_eq!(localized(&font, StringId::FAMILY_NAME).len(), MAX_NAME_RECORDS);
     }
 }

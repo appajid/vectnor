@@ -17,7 +17,8 @@ pub(super) type XNode<'a, 'i> = roxmltree::Node<'a, 'i>;
 
 /// `name: value` declarations of a block or `style` attribute, with their `!important` flag.
 fn parse_decls(s: &str) -> Vec<(String, String, bool)> {
-    split_decls(s)
+    let s = strip_comments(s);
+    split_decls(&s)
         .into_iter()
         .filter_map(|d| {
             let (k, v) = d.split_once(':')?;
@@ -199,9 +200,8 @@ fn split_decls(s: &str) -> Vec<&str> {
     parts
 }
 
-/// Rules from every `<style>` element, in source order.
-fn parse_sheet(css: &str, out: &mut Vec<Rule>) {
-    // Drop comments outside strings.
+/// CSS comments outside quoted strings are omitted.
+fn strip_comments(css: &str) -> String {
     let mut text = String::with_capacity(css.len());
     let mut chars = css.chars().peekable();
     let mut quote = None;
@@ -232,6 +232,12 @@ fn parse_sheet(css: &str, out: &mut Vec<Rule>) {
             text.push(c);
         }
     }
+    text
+}
+
+/// Rules from every `<style>` element, in source order.
+fn parse_sheet(css: &str, out: &mut Vec<Rule>) {
+    let text = strip_comments(css);
     let mut s = text.as_str();
     loop {
         s = s.trim_start();
@@ -418,5 +424,13 @@ mod tests {
         assert_eq!(s.specificity, (1, 1, 2));
         assert_eq!(s.parts.len(), 2);
         assert!(s.parts[0].1, "text must be a child of g");
+    }
+
+    #[test]
+    fn decl_comments_are_stripped() {
+        let d = |k: &str, v: &str| (k.to_string(), v.to_string(), false);
+        assert_eq!(parse_decls("fill:red /* note */; stroke:blue"), [d("fill", "red"), d("stroke", "blue")]);
+        assert_eq!(parse_decls("fill:red /* a;b */ ; stroke:blue"), [d("fill", "red"), d("stroke", "blue")]);
+        assert_eq!(parse_decls("font-family:'A /* x */ B'"), [d("font-family", "'A /* x */ B'")]);
     }
 }

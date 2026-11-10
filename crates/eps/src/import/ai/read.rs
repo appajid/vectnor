@@ -448,6 +448,10 @@ impl<'a> Reader<'a> {
                 Tok::Data(d) => self.image(d)?,
             }
         }
+        let in_layer = self.frames.iter().any(|f| matches!(f.kind, Kind::Layer(_)));
+        if self.pattern.is_none() && !in_layer && self.frames.iter().any(|f| !matches!(f.kind, Kind::Obj(_))) {
+            return Err("it ends inside a group or compound path".into());
+        }
         if self.frames.iter().any(|f| matches!(f.kind, Kind::Layer(_))) {
             return Err("it ends inside a layer".into());
         }
@@ -764,6 +768,14 @@ impl<'a> Reader<'a> {
             // highlight `-- -- angle length Bh`): a NaN keeps the other operands where they are.
             "--" => return self.push(V::Num(f64::NAN)),
             "[" => {
+                // Drop marks that operators have taken off, so `marks` is the open nesting.
+                while self.marks.last().is_some_and(|&m| !matches!(self.stack.get(m), Some(V::Mark))) {
+                    self.marks.pop();
+                }
+                // Arrays nest as deep as their `[`s; dropping a deeper one would overflow the stack.
+                if self.marks.len() >= MAX_DEPTH {
+                    return Err("its objects are nested too deeply".into());
+                }
                 self.marks.push(self.stack.len());
                 return self.push(V::Mark);
             }

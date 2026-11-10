@@ -149,6 +149,12 @@ pub fn illustrator_data(bytes: &[u8], password: Option<&str>) -> Option<Vec<u8>>
     (!data.is_empty()).then_some(data)
 }
 
+/// Whether the first page carries AI editing-data keys, without decoding their streams.
+/// Password-protected files return false until opened with their password.
+pub fn has_illustrator_data(bytes: &[u8], password: Option<&str>) -> bool {
+    open(bytes, password).ok().is_some_and(|pdf| pdf.pages().first().is_some_and(has_private_data))
+}
+
 /// `stream` decoded, up to `most` bytes: the decoder is run here rather than by the PDF reader's
 /// `decoded()`, which has no limit, so a stream of zeros can't grow to the size of the memory. Only a
 /// stream that is plain or only deflated is read (the private data is no other); else, or when it

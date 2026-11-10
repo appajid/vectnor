@@ -1,6 +1,6 @@
 # Type parity
 
-> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed upstream import and text fixes; scores unchanged) · **Target:** public documentation and owner requirements
+> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed upstream import and text fixes; scores unchanged) · **Target:** public documentation and owner requirements
 
 Type is Illustrator's largest single area by use (weight 13 of 105 across "Type core" and "Type advanced" in
 [target-app-parity.md](target-app-parity.md)). This checklist lists the features one by one. Status is from the
@@ -82,6 +82,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-11 | minor | Fifteen reviewed upstream scopes: inherited AI character styles, editing-data opening/decoding, bounded font/layout parsing, Unicode/colour input and canvas release position. Existing Indic text and original-frame recovery retained; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-31 | minor | Reviewed whole-grapheme fallback and available font-style selection. Synthetic Indic tests check common-face selection for base/vowel signs; existing shaping/editing tests retained. AI All Caps and Small Caps preserve original characters; custom source Small Caps size remains unread. No new font files; see docs/vectnor/UPSTREAM_AUDIT.md. |
 | 2026-10-25 | minor | Reviewed upstream #3755/#3861/#3921/#3735/#3827: split PostScript font names resolve after installation, concurrent font lookups publish complete families and retry loaded fallback faces, collection enumeration is bounded, and Convert To Point Type removes a linked frame with its own text once. No font files added; missing fonts remain a document limitation. See docs/vectnor/UPSTREAM_AUDIT.md. |
 | 2026-10-25 | minor | General AI text-overflow notes after linked-story reflow; contents and original frame sizes retained. Scores unchanged. [Evidence](vectnor/AI_IMPORT.md#general-ai-overflow-reporting--2026-10-25). |

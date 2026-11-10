@@ -969,7 +969,7 @@ impl Pen<'_> {
                 Some(b) => self.next_baseline(b, est) + r.gap,
             };
             loop {
-                if baseline + est.desc > r.bottom() + 0.01 {
+                if baseline + est.desc > r.bottom() + 0.01 || baseline + est.lead.max(1.0) <= baseline || baseline.is_nan() {
                     break;
                 }
                 let fits = |&(a, b): &(f64, f64)| b - a - ind_l - ind_r > est.asc.max(1.0);

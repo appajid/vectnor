@@ -114,15 +114,15 @@ pub(super) fn show_preview(ui: &mut egui::Ui, tex: Option<&egui::TextureHandle>,
 
 /// Open `bytes` (or place them with the `file.place` params `place`) through the dialog when the
 /// file is a PDF (or `.ai`/`.ait`) with several pages or a password; false when there's nothing to
-/// ask (the caller goes on), including a file that carries its Vectnor document when opening.
+/// ask (the caller goes on), including an AI editing-data file or a file carrying its native document.
 pub fn offer(app: &mut VectnorApp, name: &str, bytes: &[u8], path: Option<String>, place: Option<&Value>) -> bool {
-    if !fileio::detect(name, bytes).is_some_and(|f| matches!(f.id, "pdf" | "ai" | "ait")) {
+    let Some(format) = fileio::detect(name, bytes).map(|f| f.id).filter(|id| matches!(*id, "pdf" | "ai" | "ait")) else {
         return false;
-    }
+    };
     // A file carrying its Vectnor document (a saved .ai, or a PDF saved with Preserve Editing)
-    // opens as that document, every artboard and layer: there are no pages to pick. Placing still
-    // asks, since a place takes one page.
-    if place.is_none() && vectnor_pdf::editing_with(bytes, None).is_some() {
+    // opens as that document, every artboard and layer. AI editing data also holds every artboard:
+    // it opens directly; a PDF with the same keys still asks. Placing asks since it takes one page.
+    if place.is_none() && (vectnor_pdf::editing_with(bytes, None).is_some() || (format != "pdf" && vectnor_pdf::has_illustrator_data(bytes, None))) {
         return false;
     }
     let (pages, locked) = match vectnor_pdf::info(bytes, None) {

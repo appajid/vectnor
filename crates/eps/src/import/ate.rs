@@ -233,6 +233,11 @@ fn read(bytes: &[u8]) -> Option<Val> {
     }
 }
 
+/// Most character styles read of a text document, and most styles a run's style is followed
+/// through to the ones they are based on.
+const MAX_SHEETS: usize = 4096;
+const MAX_SHEETS_BASED_ON: usize = 16;
+
 /// Most frames read of one story, and most path segments of a frame.
 const MAX_FRAMES: usize = 4096;
 const MAX_SEGMENTS: usize = 1 << 16;
@@ -305,6 +310,9 @@ pub(super) struct Texts {
     /// The character and paragraph styles a story starts from.
     defaults: Val,
     para_defaults: Val,
+    /// The document's character styles (`[Normal Character Style]` first), each a name, the
+    /// character style it is based on (key 5, an index into these) and its attributes (key 6).
+    char_sheets: Vec<Val>,
     frames: Vec<Val>,
 }
 
@@ -348,6 +356,16 @@ impl Texts {
             fonts,
             defaults: main.get("2")?.clone(),
             para_defaults: main.get("3").cloned().unwrap_or(Val::Dict(BTreeMap::new())),
+            char_sheets: doc
+                .get("0")?
+                .get("5")
+                .and_then(|s| s.get("0"))
+                .map(Val::list)
+                .unwrap_or_default()
+                .iter()
+                .take(MAX_SHEETS)
+                .map(|s| s.get("0").cloned().unwrap_or(Val::Dict(BTreeMap::new())))
+                .collect(),
             frames: doc.get("0")?.get("8")?.get("0")?.list().to_vec(),
         })
     }
@@ -476,8 +494,7 @@ impl Texts {
         let mut runs = vec![];
         for run in s.get("0")?.get("6").map(|p| p.get("0").map(Val::list).unwrap_or_default()).unwrap_or_default() {
             let n = run.get("1").and_then(Val::num)? as usize;
-            let props = run.get("0").and_then(|r| r.get("0")).and_then(|r| r.get("6"));
-            runs.push((n, self.style(props)));
+            runs.push((n, self.style(run.get("0").and_then(|r| r.get("0")))));
         }
         if runs.is_empty() {
             runs.push((text.chars().count(), self.style(None)));
@@ -500,9 +517,19 @@ impl Texts {
         }
     }
 
-    /// A character style: its own keys, else the document's.
-    fn style(&self, s: Option<&Val>) -> Style {
-        let pick = |k: &str| s.and_then(|s| s.get(k)).or_else(|| self.defaults.get(k));
+    /// A run's character style (`run`: its attributes, key 6, and the character style it is based
+    /// on, key 5): its own keys, else those of its character style and the ones that is based on,
+    /// else the document's.
+    fn style(&self, run: Option<&Val>) -> Style {
+        // The run's attributes, then its character style's, then the styles each is based on.
+        let mut chain = vec![];
+        let mut at = run;
+        for _ in 0..=MAX_SHEETS_BASED_ON {
+            let Some(style) = at else { break };
+            chain.extend(style.get("6"));
+            at = style.get("5").and_then(Val::num).filter(|i| i.is_finite() && *i >= 0.0).and_then(|i| self.char_sheets.get(i as usize));
+        }
+        let pick = |k: &str| chain.iter().find_map(|s| s.get(k)).or_else(|| self.defaults.get(k));
         let num = |k: &str| pick(k).and_then(Val::num);
         let on = |k: &str| !matches!(pick(k), Some(Val::Bool(false)));
         let font = num("0").and_then(|i| self.fonts.get(i as usize)).filter(|f| !f.is_empty()).cloned();
@@ -866,6 +893,7 @@ mod tests {
             fonts: vec![],
             defaults: Val::Dict(BTreeMap::new()),
             para_defaults: Val::Dict(BTreeMap::new()),
+            char_sheets: vec![],
             frames: vec![read(doc.as_bytes()).unwrap()],
         };
         texts.frame(0)
@@ -947,6 +975,7 @@ mod tests {
             fonts: vec![],
             defaults: Val::Dict(BTreeMap::new()),
             para_defaults: Val::Dict(BTreeMap::new()),
+            char_sheets: vec![],
             frames: read(frames).unwrap().get("0").unwrap().list().to_vec(),
         }
     }
@@ -973,7 +1002,7 @@ mod tests {
         for (value, expected) in
             [(1, CharPosition::Superscript(ScriptMetrics::DEFAULT)), (2, CharPosition::Subscript(ScriptMetrics::DEFAULT)), (0, CharPosition::Normal)]
         {
-            let v = read(format!("/0 << /1 20 /13 {value} >>").as_bytes()).unwrap();
+            let v = read(format!("/0 << /6 << /1 20 /13 {value} >> >>").as_bytes()).unwrap();
             assert_eq!(char_style(&t.style(v.get("0")), 1.0, None).position, expected);
         }
     }
@@ -1018,5 +1047,18 @@ mod tests {
         let NodeKind::Text(text) = node.kind else { panic!("text") };
         assert_eq!(text.para.space_after, 8.0);
         assert!(text.runs.iter().all(|r| r.style.leading.is_none()), "saved baseline gap includes paragraph space, not an explicit leading override");
+    }
+
+    #[test]
+    fn character_style_inheritance_is_bounded_and_run_attributes_win() {
+        let mut t = frame_reader(b"/0 []");
+        t.defaults = read(b"/1 12 /8 10").unwrap();
+        t.char_sheets = vec![read(b"/5 0 /6 << /1 18 /8 20 >>").unwrap()];
+        let run = read(b"/5 0 /6 << /1 24 >>").unwrap();
+        let st = t.style(Some(&run));
+        assert_eq!((st.size, st.tracking), (24.0, 20.0));
+        let missing = read(b"/5 4096 /6 << /1 24 >>").unwrap();
+        let st = t.style(Some(&missing));
+        assert_eq!((st.size, st.tracking), (24.0, 10.0));
     }
 }

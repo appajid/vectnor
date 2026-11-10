@@ -614,7 +614,8 @@ fn handle_input(app: &mut VectnorApp, ui: &Ui, resp: &egui::Response, rect: egui
     } else if let Some(d) = drag {
         // The pointer gone (a pen lifted with its press), the drag ends where it was last seen.
         let p = pointer.interact_pos().or_else(|| ui.data(|dd| dd.get_temp(drag_pos_id()))).unwrap_or(rect.center());
-        let held = if middle_pan { pointer.button_down(egui::PointerButton::Middle) } else { pointer.primary_down() };
+        let button = if middle_pan { egui::PointerButton::Middle } else { egui::PointerButton::Primary };
+        let held = pointer.button_down(button);
         if held {
             ui.data_mut(|dd| dd.insert_temp(drag_pos_id(), p));
             match d {
@@ -673,6 +674,15 @@ fn handle_input(app: &mut VectnorApp, ui: &Ui, resp: &egui::Response, rect: egui
                 }
             }
         } else {
+            // Moves after button-up in the same frame are hover; the drag ends at its release.
+            let p = ui
+                .input(|i| {
+                    i.events.iter().find_map(|event| match event {
+                        egui::Event::PointerButton { pos, button: b, pressed: false, .. } if *b == button => Some(*pos),
+                        _ => None,
+                    })
+                })
+                .unwrap_or(p);
             ui.data_mut(|dd| {
                 dd.remove::<Drag>(drag_id());
                 dd.remove::<Pos2>(drag_pos_id());
@@ -699,6 +709,12 @@ fn handle_input(app: &mut VectnorApp, ui: &Ui, resp: &egui::Response, rect: egui
                 }
                 Drag::ZoomScrub { .. } => {}
                 Drag::Tool => {
+                    // Tools commit their last preview. A completed drag must see its release
+                    // position before Up; an ordinary click keeps its existing behavior.
+                    if resp.drag_stopped() {
+                        let ev = PointerEvent { kind: PointerKind::Drag, pos: xf.to_doc(p), mods: mods(m, space), pressure: pen_pressure(ui, false) };
+                        dispatch(app, &ev, view);
+                    }
                     let ev = PointerEvent { kind: PointerKind::Up, pos: xf.to_doc(p), mods: mods(m, space), pressure: pen_pressure(ui, false) };
                     dispatch(app, &ev, view);
                 }
@@ -4122,5 +4138,67 @@ mod tests {
         assert_eq!((plain(&app, id).as_str(), app.ui.view.grid), ("a\n", !grid), "Cmd+Enter runs Show Grid only");
         typing_frame(&mut app, &ctx, tap(egui::Key::Enter).to_vec());
         assert_eq!(plain(&app, id), "a\n\n", "Enter types a line break");
+    }
+    #[test]
+    fn a_drag_ends_where_the_button_went_up_in_its_frame() {
+        use egui::{Event, Modifiers};
+        let mut app = VectnorApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        app.ui.view.smart_guides = false;
+        app.ui.view.snap_to_point = false;
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+        let button = |pos, pressed| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: Modifiers::NONE };
+        let last_bounds = |app: &VectnorApp| {
+            let st = app.session.active().unwrap();
+            st.doc.node(st.selection.objects[0]).unwrap().geometric_bounds().unwrap()
+        };
+        let center = app.canvas_rect.unwrap().center();
+        let far = center + vec2(150.0, 100.0);
+
+        app.select_tool("rectangle");
+        let a = center - vec2(100.0, 60.0);
+        let end = a + vec2(80.0, 50.0);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(a)]);
+        frame(&mut app, &ctx, vec![button(a, true)]);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(a + vec2(40.0, 20.0))]);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(end), button(end, false), Event::PointerMoved(far)]);
+        let r = last_bounds(&app);
+        let want = xf.to_doc(end);
+        assert!((r.x1 - want.x).abs() < 1e-3 && (r.y1 - want.y).abs() < 1e-3, "the rectangle ends at the release: {r:?}, {want:?}");
+
+        app.session.execute("select.none", &json!({})).unwrap();
+        app.select_tool("pencil");
+        let a = center - vec2(100.0, 0.0);
+        let end = a + vec2(120.0, 0.0);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(a)]);
+        frame(&mut app, &ctx, vec![button(a, true)]);
+        for x in [20.0, 40.0, 60.0] {
+            frame(&mut app, &ctx, vec![Event::PointerMoved(a + vec2(x, 0.0))]);
+        }
+        frame(&mut app, &ctx, vec![Event::PointerMoved(a + vec2(90.0, 0.0)), Event::PointerMoved(end), button(end, false), Event::PointerMoved(far)]);
+        let r = last_bounds(&app);
+        let (left, right) = (xf.to_doc(a), xf.to_doc(end));
+        assert!((r.x0 - left.x).abs() < 1.0 && (r.x1 - right.x).abs() < 1.0 && r.height() < 1.0, "the stroke ends at the release: {r:?}");
+
+        app.session.execute("shape.rectangle", &json!({"x": 250, "y": 40, "width": 60, "height": 40})).unwrap();
+        app.session.execute("paint.setFill", &json!({"color": "#3366cc"})).unwrap();
+        app.session.execute("select.none", &json!({})).unwrap();
+        app.select_tool("selection");
+        let before = Rect::new(250.0, 40.0, 310.0, 80.0);
+        let grab = xf.to_screen(Point::new(280.0, 60.0));
+        let to = grab + vec2(30.0, 40.0);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(grab)]);
+        frame(&mut app, &ctx, vec![button(grab, true)]);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(grab + vec2(10.0, 10.0))]);
+        frame(&mut app, &ctx, vec![Event::PointerMoved(to), button(to, false), Event::PointerMoved(far)]);
+        let moved = last_bounds(&app);
+        let d = xf.to_doc(to) - xf.to_doc(grab);
+        assert!(
+            (moved.x0 - before.x0 - d.x).abs() < 1e-3 && (moved.y0 - before.y0 - d.y).abs() < 1e-3,
+            "the art moves to the release: {moved:?}, {d:?}"
+        );
+        assert!(app.session.active().unwrap().interaction.is_none(), "committed");
     }
 }

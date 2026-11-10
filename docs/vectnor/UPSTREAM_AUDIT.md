@@ -1,6 +1,75 @@
 # Upstream review
 
-> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed import, cluster fallback and editing fixes; scores unchanged)
+> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed AI style, parsing and release-position fixes; scores unchanged)
+
+## 2026-11-11 local update — M0.upstream-import-robustness
+
+Screened **1,501 PRs updated since the previous capture** (2026-10-31 11:43:55 UTC):
+**1,226 merged, 198 open and 77 closed without merge**. Capture: 2026-11-10T20:49:04.621639+00:00.
+Sixteen public REST pages held 1,600 distinct records; page sixteen crossed the cutoff.
+Only [VectorCraft](https://github.com/storytold/vectorcraft) was checked. Metadata screening is
+not full source review: scoped 29 candidate diffs and adapted **15 merged PR scopes**. Verified
+33 Rust postimage blob identities, including reviewed files from deferred scopes not copied.
+The [dated snapshot](upstream-audit-2026-11-11.json) pins authors, heads, raw diff SHA-256,
+postimages and every screened record/decision. Existing MIT OR Apache-2.0 notices remain.
+
+| PR | Source author / immutable head | Adapted scope |
+|---|---|---|
+| [#5374](https://github.com/storytold/vectorcraft/pull/5374) | @dylanmtaylor / `9d3c45a7b563` | Refuse editing-data arrays nested past the existing 256-depth limit; discard stale operand marks before checking nesting. |
+| [#4945](https://github.com/storytold/vectorcraft/pull/4945) | @dotCooCoo / `d2d431552449` | Keep a zero byte that belongs to a Zstandard frame; identify padding only after consuming complete frames. Existing frame/window/output caps remain. |
+| [#4801](https://github.com/storytold/vectorcraft/pull/4801) | @mockydevs / `3602bd6ea358` | Read character-style sheet inheritance in AI editing data, giving run attributes precedence over based-on sheets and document defaults. Cap sheets at 4096 and inheritance at 16 links; preserve original frame identities, geometry and linked-story recovery. |
+| [#5497](https://github.com/storytold/vectorcraft/pull/5497) | @dylanmtaylor / `daf224755a83` | Cap localized font-name enumeration at 1024 records and 1 MiB decoded text per name ID in the existing font database. No font files added. |
+| [#5924](https://github.com/storytold/vectorcraft/pull/5924) | @jayzed80 / `7d465d4fa356` | Stop area-layout baseline searches that cannot advance at extreme gutters. Fit to the existing stepping loop and shared gutter model; newer row-gutter API not imported. |
+| [#6128](https://github.com/storytold/vectorcraft/pull/6128) | @Silvertree2010 / `194364304bec` | Strip CSS comments from inline style declarations and rules while retaining comment markers inside quoted strings; retain prior semicolon/parenthesis handling. |
+| [#5107](https://github.com/storytold/vectorcraft/pull/5107) | @TheGalitube / `87979644cddf` | Decode paired DXF UTF-16 surrogate escapes as one Unicode character and retain malformed pairs literally under the existing plain/MTEXT parser. |
+| [#6253](https://github.com/storytold/vectorcraft/pull/6253) | @Silvertree2010 / `5a4772d24a38` | Require plain decimal digits in MCP object-resource IDs; signed, empty and overflowing IDs remain invalid. Vectnor URI identity retained. |
+| [#5473](https://github.com/storytold/vectorcraft/pull/5473) | @dotCooCoo / `1ad74d1ddffa` | Reject more than one leading sign in OpenType feature tags. Existing supported-feature set retained; refused edits leave text and undo history unchanged. |
+| [#5328](https://github.com/storytold/vectorcraft/pull/5328) | @dotCooCoo / `c633e09d3ad9` | Do not select empty text runs for Select Same character matching. Regression covers the existing Fill Color and Stroke Color commands; newer combined command is absent. |
+| [#6096](https://github.com/storytold/vectorcraft/pull/6096) | @Silvertree2010 / `b73a880b3cb1` | Truncate PSD Unicode layer names before a character would exceed 255 UTF-16 units, retaining whole surrogate pairs. |
+| [#5299](https://github.com/storytold/vectorcraft/pull/5299) | @dylanmtaylor / `1bd47ea30d9e` | Reject repeated ICC tag signatures before profile decoding. Fit to the existing ICC reader; newer localized-text budget infrastructure not imported. |
+| [#6225](https://github.com/storytold/vectorcraft/pull/6225) | @slafebre / `b34de477a8b1` | Open AI/AI-template editing-data documents without an Import PDF dialog. Add a metadata-only private-key query using the existing bounded PDF dictionary walk; no stream inflation for the query. PDFs, password-protected files, AI files containing only PDF pages, and Place retain their dialog behavior. The newer shared PDF-reader API is not imported. |
+| [#5198](https://github.com/storytold/vectorcraft/pull/5198) | @dotCooCoo / `2a41c746900b` | Reject unclosed document groups and compound paths. Use the existing pattern flag to leave pattern subreaders their own balance check; retain the existing unclosed-layer error. |
+| [#5195](https://github.com/storytold/vectorcraft/pull/5195) | @dotCooCoo / `ac298b683b22` | End canvas tool drags at the actual button-up position, before subsequent hover moves in the same frame. Feed the release position to the existing preview before Up only for a completed egui drag; ordinary clicks keep their behavior. No stylus/multi-sample pipeline migration. |
+
+The AI character-style change resolves run overrides before inherited sheets and document defaults;
+it preserves the local original-frame/linked-story recovery path. Inheritance and name decoding are
+bounded. The Import PDF dialog is skipped only when opening an AI/AI-template document carrying
+editing-data keys or a native editing copy. A protected PDF still asks for its password, and ordinary
+PDF/AI-page selection and Place retain the dialog. The local metadata query uses the existing bounded
+dictionary walk without decompressing private streams; the newer shared PDF-open API is deferred.
+The canvas change fits the existing egui 0.36 preview/Up contract; newer stylus sampling is deferred.
+
+Deferred scoped chains: per-character language-aware shaping (#4959) and Indic hyphenation with
+external patterns (#5946), legacy tab stops and layout (#5811/#5885/#6148), newer AI baseline,
+filled clipping paths, smooth anchors and default paragraph sheets (#4791/#6032/#5122/#5777),
+DocSetup normalization (#4952), the newer Unicode-code insertion API (#6240), pixelated-image
+model/rendering (#4888), mask/pattern mode routing (#4458), and stylus sample filtering (#5268).
+Other records remain metadata-only with decisions in the snapshot. No new format or broader
+AI/CDR/DWG fidelity claim. Earlier adaptations are not counted again.
+
+English UI, Indic document text, original AI boxes/stories, `.vcnr`, source-overwrite protection,
+overflow notices, Contributors and Models remain. No new dependency, fonts, artwork, pattern assets,
+community controls or publication workflow. Owner AGENTS.md/CLAUDE.md edits preserved; no Pagenor
+messages. Version, estimates and scores unchanged. No source/build upload.
+
+Verification: **all eight CI gates pass — 5,345 tests passed, zero failed, four existing ignored**;
+UI suite: 947. Strict Clippy, attribution, branding, dependency layers and core WASM checks pass.
+Optimized-development 0.9.0 native/CLI build and actual browser WASM check pass; the latter retains
+the existing unused `ask_update_changed` warning in unchanged `missing_links.rs`. Binaries in
+`dist/Vectnor.app` are refreshed and SHA-256 checked against the completed build.
+
+Both supplied AI files retain exactly their previous CLI summaries and full command/layer JSON.
+Desktop File Open skips the Import PDF dialog and retains ten original announcement text objects,
+two linked pairs and four point-text objects in the three-lines file. Standalone characters,
+complete linked stories and frame geometry are exact; font-dependent reflow between existing
+linked frames is allowed. Whole-paragraph Type selection, Telugu/ZWNJ insertion, neighboring-frame
+isolation and exact undo/redo pass. Native save/reopen retains node/thread JSON, both artboard PNG
+hashes and dirty=false. Three overflow frames reported by File Open match actual current-font area
+queries; missing fonts remain missing. Synthetic regressions cover inherited character styles,
+bounded cyclic inheritance, invalid inputs, Unicode names, extreme gutters, PDF-dialog exceptions
+and rectangle/pencil/selection releases. Screenshots inspected; isolated app on port 18008 quit.
+Both original AI sources and owner instruction-file edits are SHA-256 unchanged. Evidence:
+`/tmp/vectnor-upstream-2026-11-11/`. Version and scores unchanged; nothing uploaded.
 
 ## 2026-10-31 local update — M0.upstream-import-editing
 

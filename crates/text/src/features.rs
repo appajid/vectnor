@@ -94,7 +94,7 @@ impl OtFeatures {
 
     /// Is `tag` (optionally prefixed with `-` or `+`) one this set understands?
     pub fn known_tag(tag: &str) -> bool {
-        let t = tag.trim_start_matches(['-', '+']);
+        let t = tag.strip_prefix(['-', '+']).unwrap_or(tag);
         matches!(t, "liga" | "calt" | "dlig" | "smcp" | "frac" | "onum" | "tnum" | "ordn" | "swsh")
     }
 
@@ -206,5 +206,8 @@ mod tests {
         assert_eq!(OtFeatures::from_tags(["-liga", "dlig"]).to_tags(), ["-liga", "dlig"]);
         assert!(OtFeatures::default().to_tags().is_empty());
         assert!(OtFeatures::known_tag("-onum") && !OtFeatures::known_tag("zzzz"));
+        for tag in ["--liga", "+-dnom", "-+ss01", "++liga"] {
+            assert!(!OtFeatures::known_tag(tag), "{tag}");
+        }
     }
 }

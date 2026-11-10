@@ -637,6 +637,19 @@ fn many_zstandard_frames_are_read_in_one_pass_and_capped() {
     assert!(started.elapsed() < std::time::Duration::from_secs(20), "{:?}", started.elapsed());
 }
 
+/// A Zstandard frame that ends in a zero byte keeps it: only the zeros after the last frame are
+/// padding.
+#[test]
+fn a_zstandard_frame_ending_in_a_zero_byte_is_read_whole() {
+    // Magic number, a single-segment header with a 1-byte content size of 3, and one raw block
+    // (last, 3 bytes) holding `ab` and a zero byte.
+    let frame = [0x28, 0xB5, 0x2F, 0xFD, 0x20, 3, 0x19, 0, 0, b'a', b'b', 0];
+    for padding in [0, 64] {
+        let raw = [&b"%AI24_ZStandard_Data"[..], &frame, &frame, &vec![0; padding]].concat();
+        assert_eq!(decode_private(&raw).unwrap(), b"ab\0ab\0");
+    }
+}
+
 #[test]
 fn closing_brackets_without_their_opening_dont_rescan_the_stack() {
     let n = 200_000;
@@ -653,4 +666,26 @@ fn undefined_numbers_in_arrays_are_not_used_as_geometry() {
         let error = read(file.as_bytes()).unwrap_err();
         assert!(error.contains("`--`"), "{error}");
     }
+}
+
+#[test]
+fn arrays_nested_past_the_depth_limit_are_refused() {
+    let deep = |n: usize| layer(&format!("{}{} pop", "[".repeat(n), "]".repeat(n)));
+    let nested = |n: usize| read(stream(&deep(n)).as_bytes()).err().is_some_and(|e| e.contains("nested too deeply"));
+    assert!(!nested(200));
+    assert!(nested(100_000));
+}
+
+#[test]
+fn a_group_still_open_at_the_end_is_an_error() {
+    let square = format!("{}f\n", rect_path(0.0, 0.0, 10.0, 10.0));
+    for open in ["u", "q", "*u", "%_u"] {
+        let e = read(stream(&format!("{}{open}\n{square}", layer(""))).as_bytes()).unwrap_err();
+        assert_eq!(e, "it ends inside a group or compound path", "{open}");
+    }
+    // A group open inside a layer that doesn't end is the layer's error.
+    let unended = format!("%AI5_BeginLayer\n1 1 1 1 0 0 1 0 79 128 255 0 50 0 Lb\n(L) Ln\nu\n{square}");
+    assert_eq!(read(stream(&unended).as_bytes()).unwrap_err(), "it ends inside a layer");
+    // Patterns read with a group of their own still read.
+    assert!(read_ok(&format!("{DOTS}{}", layer(""))).doc.pattern("Dots").is_some());
 }

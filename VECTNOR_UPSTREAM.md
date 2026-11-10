@@ -1,6 +1,6 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-10-31 · **Last updated:** 2026-10-31 · **Change:** minor (reviewed import and editing fixes; scores unchanged)
+> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed import and editing fixes; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
@@ -77,6 +77,16 @@ AI capitalization/gradient metadata, SVG CSS parsing, bounded/malformed input ha
 creation and subpixel canvas mapping. [Review](docs/vectnor/UPSTREAM_AUDIT.md) and
 [pinned source snapshot](docs/vectnor/upstream-audit-2026-10-31.json) record exact authors, heads,
 postimages, local compatibility bounds and exclusions. No font files, dependencies or publication.
+
+## Local update — M0.upstream-import-robustness, 2026-11-11
+
+Screened 1,501 VectorCraft PR updates after the October 31 capture, scoped 29 candidate diffs
+and adapted 15 merged scopes for inherited AI character styles, editing-data decoding/depth,
+font-name/layout limits, SVG/DXF/ICC/PSD parsing, command inputs and drag-release positioning.
+AI editing-data files open without the PDF page dialog. [Review](docs/vectnor/UPSTREAM_AUDIT.md)
+and [pinned snapshot](docs/vectnor/upstream-audit-2026-11-11.json) record authors, immutable heads,
+compatibility boundaries and deferred language-model/Indic hyphenation chains. Existing original
+AI frames, English UI and Indic editing remain. No new assets/dependencies, version change or upload.
 
 ## Revision history
 

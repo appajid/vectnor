@@ -761,3 +761,16 @@ fn layout_10k_area_text_is_fast() {
         assert!(per < budget, "{justify:?} {composer:?}: {per} ms");
     }
 }
+
+/// A gutter so huge that a line's height no longer moves the baseline past it: the cells beyond it
+/// have no room, and looking down all 10,000 of them for a line must not freeze the layout.
+#[test]
+fn a_gutter_too_huge_to_step_past_has_no_room_for_lines() {
+    let mut t = area(COPY, style(12.0), Rect::new(0.0, 0.0, 420.0, 300.0), Justify::Left);
+    (t.area.rows, t.area.gutter) = (2, 1e300);
+    let l = layout(db(), &t);
+    assert!(l.lines.is_empty() && l.overflow);
+    (t.area.rows, t.area.columns, t.area.gutter) = (100, 100, 1e300);
+    let l = layout(db(), &t);
+    assert!(l.lines.is_empty() && l.overflow);
+}

@@ -1,6 +1,6 @@
 # Local AI opening verification
 
-> Last reviewed/updated: 2026-10-25 · minor: general AI text-overflow reporting; scores unchanged.
+> Last reviewed/updated: 2026-11-11 · minor: inherited character styles and direct editing-data opening; scores unchanged.
 
 Status: 2026-10-22; local implementation and verification complete. No upload.
 
@@ -259,3 +259,14 @@ joiners and current caret behavior remain. Font creation/family changes retain a
 when the family has no Regular, while an explicitly requested style is preserved.
 
 [Provenance, tests and deferred dependency chains](UPSTREAM_AUDIT.md).
+
+## 2026-11-11 reviewed import update
+
+AI editing-data character styles now follow their based-on styles, with run overrides first,
+then inherited character sheets, then document defaults. The walk is bounded and source characters,
+original frame geometry and linked identities remain the basis of recovery. Zstandard frames retain
+trailing zero bytes that belong to their compressed content; excessive array depth and unclosed
+containers are refused. An AI/AI-template with editing-data keys opens directly without a PDF page
+picker; ordinary PDFs, protected files, Place and AI files containing only PDF pages retain the dialog.
+The query reads only metadata through the existing bounded PDF dictionary walk. This does not make
+native artwork dependent on its PDF drawing. [Scope and evidence](UPSTREAM_AUDIT.md).

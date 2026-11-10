@@ -592,3 +592,18 @@ fn a_family_without_its_style_takes_its_closest_style() {
     s.execute("text.setStyle", &json!({"ids": [set.0], "font": FAMILY})).unwrap();
     assert_eq!(style(&s, set), "W6", "a style the family has is kept");
 }
+
+#[test]
+fn doubly_signed_feature_tags_leave_text_and_history_unchanged() {
+    let mut s = session();
+    let id = text(&mut s, "Text");
+    let before = obj(&s, id);
+    let history = undo_labels(&s);
+    for cmd in ["text.setStyle", "text.setRangeStyle"] {
+        for tag in ["--liga", "+-dnom", "-+liga", "++liga"] {
+            assert!(s.execute(cmd, &json!({"id": id.0, "start": 0, "end": 4, "features": [tag]})).is_err(), "{cmd}: {tag}");
+        }
+    }
+    assert_eq!(obj(&s, id), before);
+    assert_eq!(undo_labels(&s), history);
+}

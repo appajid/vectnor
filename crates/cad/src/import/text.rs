@@ -70,11 +70,10 @@ fn escapes(s: &str) -> String {
     while let Some(c) = rest.chars().next() {
         let after = rest.get(c.len_utf8()..).unwrap_or("");
         if c == '\\'
-            && let Some(hex) = after.strip_prefix("U+").or_else(|| after.strip_prefix("u+")).and_then(|h| h.get(..4))
-            && let Some(ch) = u32::from_str_radix(hex, 16).ok().and_then(char::from_u32)
+            && let Some((ch, consumed)) = unicode_escape(after)
         {
             out.push(ch);
-            rest = after.get(6..).unwrap_or("");
+            rest = after.get(consumed..).unwrap_or("");
             continue;
         }
         if c == '^'
@@ -131,6 +130,31 @@ fn percent_codes(s: &str) -> String {
     out
 }
 
+fn unicode_escape(after: &str) -> Option<(char, usize)> {
+    let hex = after.strip_prefix("U+").or_else(|| after.strip_prefix("u+"))?.get(..4)?;
+    if !hex.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return None;
+    }
+    let value = u32::from_str_radix(hex, 16).ok()?;
+    if (0xD800..=0xDBFF).contains(&value) {
+        let next = after.get(6..)?;
+        let low = next.strip_prefix("\\U+").or_else(|| next.strip_prefix("\\u+"))?.get(..4)?;
+        if !low.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return None;
+        }
+        let low = u32::from_str_radix(low, 16).ok()?;
+        if !(0xDC00..=0xDFFF).contains(&low) {
+            return None;
+        }
+        let scalar = 0x1_0000 + ((value - 0xD800) << 10) + (low - 0xDC00);
+        return char::from_u32(scalar).map(|ch| (ch, 13));
+    }
+    if (0xDC00..=0xDFFF).contains(&value) {
+        return None;
+    }
+    char::from_u32(value).map(|ch| (ch, 6))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -153,5 +177,12 @@ mod tests {
         assert_eq!(mtext("x\\S3^ 4;").0, "x3/4");
         assert_eq!(mtext("x\\S3#4;").0, "x3/4");
         assert_eq!(mtext("trailing\\").0, "trailing\\");
+    }
+    #[test]
+    fn unicode_escape_decodes_surrogate_pairs() {
+        assert_eq!(plain("\\U+D83D\\U+DE00"), "😀");
+        assert_eq!(plain("\\U+D83D"), "\\U+D83D");
+        assert_eq!(plain("\\U+DE00"), "\\U+DE00");
+        assert_eq!(plain("\\U+D83D\\U+0041"), "\\U+D83DA");
     }
 }
