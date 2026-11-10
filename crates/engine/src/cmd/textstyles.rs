@@ -153,6 +153,7 @@ pub fn char_attrs(v: &CharStyle) -> Map<String, Value> {
         ("position", json!(v.position)),
         ("small_caps", json!(v.small_caps)),
         ("charAlign", json!(v.char_align)),
+        ("language", json!(v.language)),
     ] {
         m.insert(k.into(), x);
     }
@@ -349,7 +350,13 @@ fn attrs_param(p: &Value, kind: Kind, verb: &str) -> Result<Option<Map<String, V
             // form (so comparing a style with its text's attributes is exact).
             let c = kind.cmd(verb);
             let full = match kind {
-                Kind::Char => char_attrs(&with_attrs(&CharStyle::default(), m, &c)?),
+                Kind::Char => {
+                    let mut st = with_attrs(&CharStyle::default(), m, &c)?;
+                    if let Some(language) = &st.language {
+                        st.language = vectnor_doc::setup::char_language(language).map_err(|e| bad(&c, e))?.map(str::to_string);
+                    }
+                    char_attrs(&st)
+                }
                 Kind::Para => para_attrs(&with_attrs(&ParaStyle::default(), m, &c)?),
             };
             Ok(Some(m.keys().filter_map(|k| full.get(k).map(|v| (k.clone(), v.clone()))).collect()))

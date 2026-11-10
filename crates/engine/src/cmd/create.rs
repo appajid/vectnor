@@ -526,5 +526,6 @@ pub(crate) fn new_type_style(s: &Session, p: &Value) -> CharStyle {
         None if !s.paint.fill.is_none() && s.paint.fill != vectnor_color::Paint::solid(vectnor_color::Color::WHITE) => s.paint.fill.clone(),
         None => vectnor_color::Paint::solid(vectnor_color::Color::BLACK),
     };
+    style.language = s.doc().ok().and_then(|d| vectnor_doc::setup::char_language(&d.doc.setup.language).ok().flatten()).map(str::to_string);
     style
 }

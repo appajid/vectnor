@@ -8,7 +8,7 @@ use std::path::Path;
 
 const ASSET_EXT: &[&str] = &[
     "png", "jpg", "jpeg", "gif", "webp", "bmp", "tif", "tiff", "ico", "icns", "svg", "pdf", "ai", "eps", "psd", "icc", "icm", "ttf", "otf", "woff",
-    "woff2", "ase", "aco", "abr", "vcnr", "mp4", "wav", "mp3",
+    "tex", "woff2", "ase", "aco", "abr", "vcnr", "mp4", "wav", "mp3",
 ];
 const ASSET_DIRS: &[&str] = &["assets/", "docs/images/", "examples/"];
 
@@ -43,6 +43,7 @@ mod tests {
         let files = vec!["assets/icons/a.svg".to_string(), "crates/x/src/lib.rs".into(), "docs/images/b.png".into(), "tests/fixture.png".into()];
         let md = "| `assets/icons/a.svg` | me | here | MIT |";
         assert_eq!(missing(&files, md), vec!["docs/images/b.png".to_string(), "tests/fixture.png".into()]);
+        assert!(is_asset("crates/text/patterns/hyph-te.tex"));
         assert!(!is_asset("crates/x/src/lib.rs"));
         assert!(is_asset("assets/fonts/OFL.txt"));
     }

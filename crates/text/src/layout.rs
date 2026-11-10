@@ -11,7 +11,7 @@ use vectnor_geom::{ArcPath, PathData};
 
 use crate::composer::{Breakpoint, Params, compose};
 use crate::fontdb::FontDb;
-use crate::hyphen::hyphen_points;
+use crate::hyphen::points_for;
 use crate::shape::{
     Punct, SGlyph, Tcy, cap_x_heights, hyphen_glyph, is_cjk, no_line_end, no_line_start, punct, shape_range, soft_line_start, style_metrics,
 };
@@ -1169,6 +1169,7 @@ mod wrapping_tests {
                 ch,
                 tcy: None,
                 inline: None,
+                hyphen_language: crate::hyphen::Language::English,
                 lead: 0.0,
                 level: unicode_bidi::Level::ltr(),
             })
@@ -1179,6 +1180,40 @@ mod wrapping_tests {
         let first = glyphs.get(start).expect("nonempty source range");
         let last = glyphs.get(end - 1).expect("nonempty source range");
         first.byte..last.byte + last.len
+    }
+
+    #[test]
+    fn indic_hyphenation_reaches_both_composers_without_splitting_marks() {
+        for (tag, syllable) in [
+            ("hi", "कि"),
+            ("mr", "कि"),
+            ("gu", "કિ"),
+            ("bn", "কি"),
+            ("pa", "ਕਿ"),
+            ("ta", "கி"),
+            ("te", "కి"),
+            ("kn", "ಕಿ"),
+            ("ml", "കി"),
+            ("or", "କି"),
+            ("as", "কি"),
+        ] {
+            let text = syllable.repeat(8);
+            let specs: Vec<_> = text.char_indices().map(|(byte, ch)| (byte, ch.len_utf8(), 1.0, ch)).collect();
+            let mut glyphs = synthetic_glyphs(&specs);
+            for glyph in &mut glyphs {
+                glyph.hyphen_language = crate::hyphen::Language::from_tag(Some(tag));
+                glyph.sx = 0.001;
+            }
+            let cands = candidates(&text, &glyphs, true, Kinsoku::None);
+            assert_eq!(cands.iter().filter(|b| b.hyphen > 0.0).map(|b| b.end).collect::<Vec<_>>(), [4, 6, 8, 10, 12], "{tag}");
+            assert_eq!(break_line(&text, &glyphs, 0, 4.5, true, Burasagari::None, Kinsoku::None), (4, true), "{tag}");
+            let params = Params { justify_last: false, ragged: true, tolerance: 1.0, uniform_from: 0 };
+            let lines = compose(&glyphs, &|_| 4.5, &|_| 0.0, &cands, &params).unwrap();
+            assert!(lines.iter().any(|(_, hyphen)| *hyphen), "{tag}");
+            assert!(lines.iter().all(|(end, _)| end % 2 == 0), "{tag}");
+            glyphs[2].hyphen_language = crate::hyphen::Language::None;
+            assert!(hyphen_breaks(&text, &glyphs, 0, glyphs.len()).is_empty(), "mixed-language word stays whole");
+        }
     }
 
     #[test]
@@ -1302,13 +1337,13 @@ fn hyphen_breaks(text: &str, g: &[SGlyph], ws: usize, we: usize) -> Vec<usize> {
     while b > a && !g[b - 1].is_letter() {
         b -= 1;
     }
-    if b <= a || g[a..b].iter().any(|g| !g.is_letter()) {
+    if b <= a || g[a..b].iter().any(|glyph| !glyph.is_letter() || glyph.hyphen_language != g[a].hyphen_language) {
         return vec![];
     }
     let (s, e) = (g[a].byte, g[b - 1].byte + g[b - 1].len);
     let Some(word) = text.get(s..e) else { return vec![] };
     let offs: Vec<usize> = word.char_indices().map(|(o, _)| s + o).collect();
-    hyphen_points(word)
+    points_for(word, g[a].hyphen_language)
         .into_iter()
         .filter_map(|ci| {
             let byte = *offs.get(ci)?;

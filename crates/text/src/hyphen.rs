@@ -1,13 +1,79 @@
-//! Pattern-free English hyphenation: break long words between syllables at vowel–consonant
+//! Language-aware hyphenation. English breaks long words between syllables at vowel–consonant
 //! boundaries (V-CV: "ty-po", and VC-CV: "hap-pen"), never leaving fewer than [`MIN_BEFORE`]
 //! letters before or [`MIN_AFTER`] after the hyphen.
 //!
 //! Preferences › Hyphenation › Exceptions (comma separated) override the points for named words:
 //! `typography` never breaks, `ty-pog-ra-phy` breaks only where the hyphens mark. See
-//! [`set_hyphenation_exceptions`].
+//! [`set_hyphenation_exceptions`]. Eleven Indic languages use licensed bundled patterns;
+//! other languages use explicit exceptions. All breaks retain complete graphemes.
 
 use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard, OnceLock};
+
+mod indic;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Language {
+    None,
+    English,
+    Indic(u8),
+}
+impl Language {
+    pub(crate) fn from_tag(tag: Option<&str>) -> Self {
+        if tag.is_some_and(|s| s.is_empty() || s.len() > 35 || !s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')) {
+            return Self::None;
+        }
+        let primary = tag.unwrap_or("en").split('-').next().unwrap_or_default();
+        if primary.eq_ignore_ascii_case("en") {
+            Self::English
+        } else {
+            indic::TAGS.iter().position(|t| primary.eq_ignore_ascii_case(t)).and_then(|i| u8::try_from(i).ok()).map_or(Self::None, Self::Indic)
+        }
+    }
+}
+
+/// Letters, attached marks and joiners belong to one hyphenation word.
+pub(crate) fn is_word_char(ch: char) -> bool {
+    use unicode_general_category::{GeneralCategory, get_general_category};
+    ch.is_alphabetic()
+        || matches!(ch, '\'' | '’' | '\u{200c}' | '\u{200d}')
+        || matches!(get_general_category(ch), GeneralCategory::NonspacingMark | GeneralCategory::SpacingMark | GeneralCategory::EnclosingMark)
+}
+
+/// Whether a document-text language has automatic patterns; unsupported languages use exceptions.
+pub fn language_has_patterns(language: Option<&str>) -> bool {
+    !matches!(Language::from_tag(language), Language::None)
+}
+
+/// Language-specific character-index breaks, using the existing 6/3/3 paragraph limits.
+pub fn hyphen_points_for_language(word: &str, language: Option<&str>) -> Vec<usize> {
+    points_for(word, Language::from_tag(language))
+}
+
+pub(crate) fn points_for(word: &str, language: Language) -> Vec<usize> {
+    if let Some(ex) = exception_for(word) {
+        let mut points = match ex {
+            Exception::Never => vec![],
+            Exception::Only(points) => points,
+        };
+        indic::retain_boundaries(word, &mut points);
+        return points;
+    }
+    match language {
+        Language::None => vec![],
+        Language::English => english_points(word),
+        Language::Indic(index) => {
+            let n = word.chars().count();
+            if n < MIN_WORD || !word.chars().all(is_word_char) {
+                return vec![];
+            }
+            let mut points = indic::points(word, usize::from(index));
+            points.retain(|p| *p >= MIN_BEFORE && n.saturating_sub(*p) >= MIN_AFTER);
+            indic::retain_boundaries(word, &mut points);
+            points
+        }
+    }
+}
 
 /// Only words at least this long are hyphenated (Illustrator's default: longer than 5 letters).
 pub const MIN_WORD: usize = 6;
@@ -124,12 +190,10 @@ fn onset_pair(a: char, b: char) -> bool {
 /// Words containing non-letters (other than a trailing apostrophe) are not hyphenated.
 /// Preferences exceptions override the pattern for a matching word.
 pub fn hyphen_points(word: &str) -> Vec<usize> {
-    if let Some(ex) = exception_for(word) {
-        return match ex {
-            Exception::Never => vec![],
-            Exception::Only(pts) => pts,
-        };
-    }
+    points_for(word, Language::English)
+}
+
+fn english_points(word: &str) -> Vec<usize> {
     let c: Vec<char> = word.chars().collect();
     let n = c.len();
     if n < MIN_WORD || !c.iter().all(|c| c.is_alphabetic() || matches!(c, '\'' | '’')) {
@@ -231,5 +295,47 @@ mod tests {
         assert_eq!(hyphenation_exceptions(), "typography, hap-pen");
         set_hyphenation_exceptions("");
         assert!(hyphenation_exceptions().is_empty());
+    }
+
+    #[test]
+    fn indic_patterns_preserve_syllables_and_current_margins() {
+        for (tag, syllable) in [
+            ("hi", "कि"),
+            ("mr", "कि"),
+            ("gu", "કિ"),
+            ("bn", "কি"),
+            ("pa", "ਕਿ"),
+            ("ta", "கி"),
+            ("te", "కి"),
+            ("kn", "ಕಿ"),
+            ("ml", "കി"),
+            ("or", "କି"),
+            ("as", "কি"),
+        ] {
+            let word = syllable.repeat(4);
+            assert_eq!(hyphen_points_for_language(&word, Some(tag)), [4], "{tag}");
+            assert_eq!(hyphen_points_for_language(&word, Some(&format!("{}-IN", tag.to_uppercase()))), [4]);
+            assert!(language_has_patterns(Some(tag)));
+            assert!(hyphen_points_for_language(&word, Some("zz")).is_empty());
+        }
+        assert!(!language_has_patterns(Some("sa")));
+        assert!(hyphen_points_for_language("typography", Some("sa")).is_empty());
+    }
+
+    #[test]
+    fn indic_marks_conjuncts_joiners_and_exceptions_are_never_split() {
+        use unicode_segmentation::UnicodeSegmentation;
+        for word in ["अक्षरअक्षर", "क्\u{200d}षक्\u{200d}ष", "क्\u{200c}षक्\u{200c}ष", "किंकिंकिं", "क़िक़िक़ि", "किकि123कि"]
+        {
+            let boundaries: Vec<_> = word.grapheme_indices(true).map(|(b, _)| word[..b].chars().count()).collect();
+            assert!(hyphen_points_for_language(word, Some("hi")).iter().all(|p| boundaries.contains(p)), "{word}");
+        }
+        with_exceptions("क-ि-क्-ष-क-ि", || {
+            assert_eq!(hyphen_points_for_language("किक्षकि", Some("hi")), [2, 5]);
+            assert_eq!(hyphen_points_for_language("किक्षकि", Some("sa")), [2, 5]);
+        });
+        with_exceptions("कि-किकिकि", || {
+            assert_eq!(hyphen_points_for_language("किकिकिकि", Some("sa")), [2]);
+        });
     }
 }

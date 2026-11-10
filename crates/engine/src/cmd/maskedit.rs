@@ -28,7 +28,7 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Window", "Transparency"],
             None,
             "{id?} edit the mask art of `id` (default: the first selected object with a mask) in place, as clicking the mask thumbnail in the Transparency panel does → {layer}",
-            has_doc,
+            can_edit_mask,
             enter
         ),
         cmd!(
@@ -46,7 +46,7 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Window", "Transparency"],
             None,
             "{on?: bool (default: toggle), id?} show only the opacity mask of `id` (default: the object whose mask is edited, else the first selected object with a mask) on the canvas, as greyscale coverage, and edit it, as Alt-clicking the mask thumbnail does; off shows the artwork again (still editing) → {on, id}",
-            has_doc,
+            can_edit_mask,
             view_mask
         ),
     ]
@@ -77,6 +77,22 @@ pub(crate) fn mask_parts(art: &Arc<Node>) -> Vec<Arc<Node>> {
     }
 }
 
+pub(crate) fn can_edit_mask(s: &Session) -> std::result::Result<(), String> {
+    let st = s.active().ok_or("no document open")?;
+    if st.doc.pattern_edit.is_some() {
+        return Err("finish editing the pattern first".into());
+    }
+    if st.isolation.is_some() && st.doc.mask_edit.is_none() {
+        return Err("exit isolation mode first".into());
+    }
+    Ok(())
+}
+
+pub(crate) fn outside_mask_editing(s: &Session) -> std::result::Result<(), String> {
+    let st = s.active().ok_or("no document open")?;
+    if st.doc.mask_edit.is_some() { Err("stop editing the opacity mask first".into()) } else { Ok(()) }
+}
+
 fn enter(s: &mut Session, p: &Value) -> Result<Value> {
     const C: &str = "transparency.editOpacityMask";
     let st = s.doc()?;
@@ -95,6 +111,7 @@ fn first_masked(st: &crate::DocState) -> Option<NodeId> {
 
 /// Enter mask editing for `id` (one undo step) and isolate the editing layer. Returns the layer.
 fn start(s: &mut Session, id: NodeId) -> Result<NodeId> {
+    can_edit_mask(s).map_err(EngineError::Other)?;
     let layer = s.edit("Edit Opacity Mask", |d, sel| begin(d, sel, id))?;
     show_editing(s, Some(layer))?;
     Ok(layer)

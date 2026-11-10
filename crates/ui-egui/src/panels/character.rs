@@ -5,6 +5,7 @@ use std::sync::{Mutex, OnceLock};
 
 use egui::{Key, Ui, vec2};
 use serde_json::{Value, json};
+use vectnor_doc::setup::{LANGUAGES, char_language_name};
 use vectnor_doc::{CharStyle, NodeId, NodeKind};
 use vectnor_tools::{Mods, ToolKey};
 
@@ -543,6 +544,15 @@ pub fn show(app: &mut VectnorApp, ui: &mut Ui) {
             if style_toggle(ui, kind, tip, on, enabled) && !key.is_empty() {
                 format(app, json!({key: !on}));
             }
+        }
+    });
+    ui.add_space(4.0);
+    let names: Vec<&str> = LANGUAGES.iter().map(|(name, _, _)| *name).collect();
+    let current = shared(app, |s| s.language.clone())
+        .map_or_else(String::new, |language| char_language_name(language.as_deref()).map_or_else(|| language.unwrap_or_default(), str::to_string));
+    widgets::label_row(ui, tl!("Language:"), 64.0, |ui| {
+        if let Some(name) = widgets::dropdown(ui, "ch-language", &current, &names, w - 72.0).and_then(|i| names.get(i)) {
+            format(app, json!({"language": name}));
         }
     });
 }

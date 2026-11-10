@@ -75,7 +75,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Character",
             [],
             None,
-            "{ids?|id?, font?, style?, size?: pt, leading?: pt|\"auto\", tracking?: 1/1000 em, justify?: \"auto\" (the start of each paragraph's direction)|\"left\"|\"center\"|\"right\"|\"justifyAll\", fill?: colour, features?: [\"dlig\", \"-liga\", …] OpenType, start?: byte, end?: byte} (with a range: the character attributes style that range and justify the paragraphs it touches; without: all the text)",
+            "{ids?|id?, font?, style?, size?: pt, leading?: pt|\"auto\", tracking?: 1/1000 em, justify?: \"auto\" (the start of each paragraph's direction)|\"left\"|\"center\"|\"right\"|\"justifyAll\", fill?: colour, language?: name|BCP47 tag (document-text shaping language, such as Telugu or te; English: USA resets), features?: [\"dlig\", \"-liga\", …] OpenType, start?: byte, end?: byte} (with a range: the character attributes style that range and justify the paragraphs it touches; without: all the text)",
             has_doc,
             set_style
         ),
@@ -398,6 +398,7 @@ fn set_style(s: &mut Session, p: &Value) -> Result<Value> {
         Some(v) => Some(vectnor_color::Paint::solid(color_value(v).ok_or_else(|| bad(C, "bad fill colour"))?)),
     };
     let features = super::textedit::features_param(p, C)?;
+    let language = super::textedit::language_param(p, C)?;
     if font.is_none()
         && style.is_none()
         && size.is_none()
@@ -406,6 +407,7 @@ fn set_style(s: &mut Session, p: &Value) -> Result<Value> {
         && justify.is_none()
         && fill.is_none()
         && features.is_none()
+        && language.is_none()
     {
         return Err(bad(C, "nothing to change"));
     }
@@ -445,6 +447,9 @@ fn set_style(s: &mut Session, p: &Value) -> Result<Value> {
                 }
                 if let Some(f) = &features {
                     st.features = f.clone();
+                }
+                if let Some(v) = &language {
+                    st.language.clone_from(v);
                 }
             });
             if let Some(before) = before {

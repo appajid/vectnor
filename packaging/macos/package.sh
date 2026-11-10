@@ -111,6 +111,7 @@ plutil -lint "$APP/Contents/Info.plist"
 printf 'APPL????' >"$APP/Contents/PkgInfo"
 # The licences of the craft-fonts fonts embedded in the binary (release builds).
 copy_font_licences "$APP/Contents/Resources"
+cp "$ROOT/crates/text/patterns/LICENSE-MIT.txt" "$APP/Contents/Resources/Indic-hyphenation-LICENSE-MIT.txt"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.

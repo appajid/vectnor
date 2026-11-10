@@ -162,6 +162,7 @@ fn masked_targets(s: &Session, p: &Value) -> Result<Vec<NodeId>> {
 }
 
 fn make(s: &mut Session, p: &Value) -> Result<Value> {
+    super::maskedit::can_edit_mask(s).map_err(EngineError::Other)?;
     const C: &str = "transparency.makeOpacityMask";
     let d = &s.doc()?.doc;
     if d.mask_edit.is_some() {

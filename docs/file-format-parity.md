@@ -147,6 +147,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-11 | minor | Deferred follow-up: language-aware shaping, eleven licensed Indic hyphenation pattern sets using current 6/3/3 limits, AI Normal-style inheritance and mutual mask/pattern guards. English UI; no new fonts/dependencies; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-11-11 | minor | Fifteen reviewed upstream scopes: inherited AI character styles, editing-data opening/decoding, bounded font/layout parsing, Unicode/colour input and canvas release position. Existing Indic text and original-frame recovery retained; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-31 | minor | Reviewed upstream AI capitalization and undefined-gradient highlights; SVG CSS quotes, semicolons and comment markers; EPS radix/glyph-name and DXF integer validation. Native-first AI opening, original frames and source protection retained. See docs/vectnor/UPSTREAM_AUDIT.md; no new format or image-capacity claim. |
 | 2026-10-25 | minor | Reviewed upstream #3941/#3685/#3927: supported AI editing-data palettes keep unused inks/groups and Registration; text on closed paths keeps wrapped end brackets; oversized editing-data images trigger the existing artwork fallback with a warning. Native-first opening and original frame recovery remain. No image-limit increase or new format claim. See docs/vectnor/UPSTREAM_AUDIT.md. |

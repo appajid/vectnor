@@ -286,3 +286,30 @@ fn new_layers_are_refused_while_a_mask_is_edited() {
     s.execute("layer.new", &json!({})).unwrap();
     assert_eq!(doc(&s).layers.len(), layers + 1);
 }
+
+#[test]
+fn pattern_and_opacity_mask_editing_refuse_cross_entry_without_changes() {
+    let mut s = session();
+    rect(&mut s, 0.0, 20.0);
+    s.execute("object.pattern.make", &json!({"name":"Tile","edit":false})).unwrap();
+    let object = editing_mask(&mut s);
+    let before = serde_json::to_value(doc(&s)).unwrap();
+    let history = s.doc().unwrap().history.undo.len();
+    for (command, params) in [("object.pattern.edit", json!({"name":"Tile"})), ("object.pattern.make", json!({"name":"Other"}))] {
+        assert!(s.execute(command, &params).unwrap_err().to_string().contains("opacity mask"));
+        assert_eq!(serde_json::to_value(doc(&s)).unwrap(), before);
+        assert_eq!(s.doc().unwrap().history.undo.len(), history);
+    }
+    s.execute("transparency.stopEditingOpacityMask", &json!({})).unwrap();
+    s.execute("object.pattern.edit", &json!({"name":"Tile"})).unwrap();
+    let before = serde_json::to_value(doc(&s)).unwrap();
+    let history = s.doc().unwrap().history.undo.len();
+    for command in ["transparency.editOpacityMask", "transparency.viewOpacityMask", "transparency.makeOpacityMask"] {
+        assert!(s.execute(command, &json!({"id":object.0,"on":true})).unwrap_err().to_string().contains("pattern"));
+        assert_eq!(serde_json::to_value(doc(&s)).unwrap(), before);
+        assert_eq!(s.doc().unwrap().history.undo.len(), history);
+    }
+    s.execute("object.pattern.cancel", &json!({})).unwrap();
+    s.execute("transparency.editOpacityMask", &json!({"id":object.0})).unwrap();
+    assert!(doc(&s).mask_edit.is_some());
+}

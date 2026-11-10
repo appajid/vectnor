@@ -88,6 +88,16 @@ and [pinned snapshot](docs/vectnor/upstream-audit-2026-11-11.json) record author
 compatibility boundaries and deferred language-model/Indic hyphenation chains. Existing original
 AI frames, English UI and Indic editing remain. No new assets/dependencies, version change or upload.
 
+## Deferred follow-up — M0.deferred-indic-styles, 2026-11-11
+
+Four previously deferred scopes now adapted: character-language-aware shaping (#4959), eleven
+licensed Indic hyphenation patterns fitted to existing paragraph limits (#5946), AI Normal-style
+inheritance (#5777) and mutual pattern/mask editing guards (#4458). The English interface,
+existing original AI frames and `.vcnr` identity remain. No new fonts/dependencies or upload.
+[Review](docs/vectnor/UPSTREAM_AUDIT.md) and
+[pinned follow-up snapshot](docs/vectnor/upstream-audit-2026-11-11-deferred.json) record exact scope,
+asset provenance, verification and remaining deferred infrastructure. Version/scores unchanged.
+
 ## Revision history
 
 | Date | Change | Summary |

@@ -53,6 +53,7 @@ copy_docs() {
   for f in LICENSE-MIT LICENSE-APACHE; do
     if [ -f "$ROOT/assets/brand/$f" ]; then cp "$ROOT/assets/brand/$f" "$dest/Vectnor-brand-$f"; fi
   done
+  cp "$ROOT/crates/text/patterns/LICENSE-MIT.txt" "$dest/Indic-hyphenation-LICENSE-MIT.txt"
   copy_font_licences "$dest"
 }
 

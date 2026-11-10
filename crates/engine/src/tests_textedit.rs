@@ -607,3 +607,50 @@ fn doubly_signed_feature_tags_leave_text_and_history_unchanged() {
     assert_eq!(obj(&s, id), before);
     assert_eq!(undo_labels(&s), history);
 }
+
+#[test]
+fn language_is_a_character_attribute_saved_only_when_set() {
+    let mut s = Session::new();
+    s.execute("file.new", &json!({"width": 400, "height": 400})).unwrap();
+    let id = s.execute("text.create", &json!({"x": 10, "y": 50, "text": "fi i fikir"})).unwrap()["id"].as_u64().unwrap();
+    let runs = |s: &Session| match &s.doc().unwrap().doc.node(NodeId(id)).unwrap().kind {
+        NodeKind::Text(t) => t.runs.clone(),
+        _ => panic!("text"),
+    };
+    let set = |s: &Session| runs(s).iter().map(|r| (r.text.clone(), r.style.language.clone())).collect::<Vec<_>>();
+    assert_eq!(runs(&s)[0].style.language, None);
+    assert!(serde_json::to_value(&runs(&s)[0].style).unwrap().get("language").is_none());
+    s.execute("select.set", &json!({"ids": [id]})).unwrap();
+    s.execute("text.setFormat", &json!({"language": "Turkish"})).unwrap();
+    assert_eq!(set(&s), [("fi i fikir".to_string(), Some("tr".to_string()))]);
+    assert_eq!(serde_json::to_value(&runs(&s)[0].style).unwrap()["language"], "tr");
+    for wrong in [json!("Klingon"), json!(5)] {
+        let err = s.execute("text.setFormat", &json!({ "language": wrong })).unwrap_err().to_string();
+        assert!(err.contains("language"), "{err}");
+    }
+    // Characters selected with the Type tool: only the range takes it; the default is none.
+    s.execute("text.setRangeStyle", &json!({"id": id, "start": 0, "end": 2, "language": "en-US"})).unwrap();
+    assert_eq!(set(&s), [("fi".to_string(), None), (" i fikir".to_string(), Some("tr".to_string()))]);
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert_eq!(set(&s), [("fi i fikir".to_string(), Some("tr".to_string()))]);
+    s.execute("edit.redo", &json!({})).unwrap();
+    // Saved and reopened as it was.
+    let back = vectnor_format::load(&vectnor_format::save(&s.doc().unwrap().doc, false)).unwrap();
+    let NodeKind::Text(t) = &back.node(NodeId(id)).unwrap().kind else { panic!("text") };
+    let reopened: Vec<_> = t.runs.iter().map(|r| (r.text.clone(), r.style.language.clone())).collect();
+    assert_eq!(reopened, set(&s));
+    // A character style captured from the characters carries it, the default included; one given
+    // a language by name stores its tag.
+    assert_eq!(crate::cmd::textstyles::char_attrs(&runs(&s)[1].style)["language"], "tr");
+    assert_eq!(crate::cmd::textstyles::char_attrs(&runs(&s)[0].style).get("language"), Some(&serde_json::Value::Null));
+    s.execute("charStyle.new", &json!({"name": "Marathi", "attrs": {"language": "Marathi"}})).unwrap();
+    let listed = s.execute("charStyle.list", &json!({})).unwrap();
+    let marathi = listed["styles"].as_array().unwrap().iter().find(|st| st["name"] == "Marathi").unwrap();
+    assert_eq!(marathi["attrs"]["language"], "mr");
+    assert!(s.execute("charStyle.new", &json!({"name": "Bad", "attrs": {"language": "Klingon"}})).is_err());
+    // New type in a Turkish document is in Turkish.
+    s.execute("document.setup", &json!({"language": "Turkish"})).unwrap();
+    let id2 = s.execute("text.create", &json!({"x": 10, "y": 150, "text": "fikir"})).unwrap()["id"].as_u64().unwrap();
+    let NodeKind::Text(t) = &s.doc().unwrap().doc.node(NodeId(id2)).unwrap().kind else { panic!("text") };
+    assert_eq!(t.runs[0].style.language.as_deref(), Some("tr"));
+}

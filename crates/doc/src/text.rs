@@ -95,6 +95,9 @@ pub struct CharStyle {
     /// their line line up with it.
     #[serde(default, rename = "charAlign", skip_serializing_if = "crate::skip::is_default")]
     pub char_align: CharAlign,
+    /// BCP 47 shaping language; none preserves the existing English default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
 }
 
 /// Where a character smaller than the largest on its line lines up with it: on the Roman
@@ -205,6 +208,7 @@ impl Default for CharStyle {
             stroke_dash: None,
             position: CharPosition::Normal,
             char_align: CharAlign::RomanBaseline,
+            language: None,
             small_caps: None,
         }
     }

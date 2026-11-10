@@ -75,3 +75,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Vectnor branding artwork in "Vectnor logos icons svg/": original AI-assisted
 work supplied by Appaji Ambarisha, under MIT OR Apache-2.0.
 See ASSETS.md and the licence texts beside those SVGs.
+
+Indic hyphenation patterns (crates/text/patterns/):
+Copyright (C) 2016 Santhosh Thottingal, used under the MIT license option.
+Original copyright and full permission notices are preserved in each hyph-*.tex file.
+Source: hyphenation/tex-hyphen, commit 5684c0f51c0b81133db2efbe60a408b4155a3ff5.

@@ -1,0 +1,586 @@
+{
+  "review_date": "2026-11-11",
+  "task": "M0.deferred-indic-styles",
+  "baseline": "2ff473f",
+  "followup_to": "upstream-audit-2026-11-11.json",
+  "upstream": "https://github.com/storytold/vectorcraft",
+  "review_scope": "Four previously deferred merged PR scopes from the prior pinned review; no new PR discovery, metadata recount or head-update claim. Fifty immutable source/asset postimages verified, including excluded newer code and docs.",
+  "selected_count": 4,
+  "verified_postimages_count": 50,
+  "selected": [
+    {
+      "number": 4959,
+      "title": "Fix #4940, #4946: text is shaped in its language, with a Language setting per text and Indian languages (#4943)", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "bflatastic",
+      "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+      "url": "https://github.com/storytold/vectorcraft/pull/4959",
+      "merged_at": "2026-10-31T18:53:48Z",
+      "diff_sha256": "9b68829db2107879ef76c818536768f146bb3244d64b9ebd7a3265105c95784f",
+      "scope": "Document/character language names and canonical BCP47 tags; persistent optional character language, new-type document default, range/whole-text/panel commands and character style capture/reset. Pass validated tags to Harfrust and retain existing equality-based shaping spans, original source-run attribution, joiners and fallback. Add the English-labelled Character language menu; omit translation catalogs and newer digits/font-axis APIs.",
+      "postimages": [
+        {
+          "pr": 4959,
+          "path": "crates/doc/src/setup.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "62276ece9087e185b3a898620970fa79254bd47d",
+          "sha256": "d643fae5e9fceb870ae001fc77bbb655beb74f897cb233cecd75b6217cebbb2c"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/doc/src/text/char_style.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "26c8b3c4f84b1cb6896194db5817515dad565871",
+          "sha256": "9cc194b40e139286d80fc9e0b00917080afac2ab8f67edaf2ff6d1db0332fa47"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/doc/src/text/tests.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "25e46a049097d3918acf0142ce1673fa52ee5172",
+          "sha256": "19b1e8c90aa17829b11279678e3d48ea976f0e2ed720108acab042e006bd921d"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/create.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "65a6ee0c379ff664fe69ddd2e2fa6615a6ec0e31",
+          "sha256": "4c9694db822cb27c23540a56e6a4ee5c616b870d0c1bd4668bb0239794005b68"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/docsetup.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "f5cb1d6b72095adaa16b9c3a5f73eda5d01f0bd3",
+          "sha256": "8ebfabecaa92322abbf5d0a2edaf5dd90b2a64917347311905271de1f14c381f"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/panelcmds.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "081678341b94b92cd9aa238dbba709a4fdd451a9",
+          "sha256": "e8ad7521160cc787eee8ad9457e053bf02575be7d8081d1f1cfb7d31bd4d23e9"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/textedit.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "0efc70bc6be48b899d50c16f5513694e9a5eb10e",
+          "sha256": "51a1940fbbf1a688edb4843b376561d162d47ea6f381c96dcb3d41f375928e1d"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/textstyles.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "e70af82a08718bd946df88c9e3652d809da4ad2a",
+          "sha256": "ee3e98fbcf657ff39e77c1733ae79ec6904881e4d528c07c5f37634f79ed73cf"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/engine/src/cmd/typecmd/area_tests.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "1f93079acefeed97418765b4bbeb2396c1840e47",
+          "sha256": "becace8d2054ff9018909ac01f942f9d06a2b2c87cfdb21d9117bdf1c564b53d"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/text/src/features.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "dd9c68c756c21b268f52df0627be7a94411a8d6e",
+          "sha256": "3767f4a584e705a554680329fc9a44805a4acd544efa1d1f780e61258622a7ff"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/text/src/shape.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "f0fbb0c4de2aff22013224064aa315c9a59bf1aa",
+          "sha256": "30467342ff5c39e2def22b51ae4dce642eda15805a2b07b444be5ef749a32fd6"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/ui-egui/src/dialogs/document_setup.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "a449156e746bd9e3fae104e3bcd1d4e256c0dcbb",
+          "sha256": "1f9f3a1860b8bab82439d85b170cbc0a5f228e5c7ab510680967dc64bb3db9e2"
+        },
+        {
+          "pr": 4959,
+          "path": "crates/ui-egui/src/panels/character.rs",
+          "head": "214fca7ca70611b673ce4d90e0137f28787bee44",
+          "blob": "ebd80f1ed2dca78c5c12b72bca7a7c9bbae80e25",
+          "sha256": "6bcc4c93ccaaeadb2042b5f44a40f26237a29a986ff179db33a6cf1155cc8652"
+        }
+      ]
+    },
+    {
+      "number": 5946,
+      "title": "Add hyphenation for eleven Indian languages", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "ruchirguitar",
+      "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+      "url": "https://github.com/storytold/vectorcraft/pull/5946",
+      "merged_at": "2026-11-07T01:10:38Z",
+      "diff_sha256": "4a1063209f96b375723abe43d2e41ec45de376ce1de7fe5719222b6bbd467c8b",
+      "scope": "Eleven independently verified, unmodified MIT-option Indic pattern files with preserved notices. Route both composers by source-run language, retain graphemes/viramas/joiners, protect explicit exceptions too, and refuse automatic mixed-language word breaks. Retain existing fixed 6/3/3 limits and paragraph model; no configurable Hyphen Limit/Zone or new preference/language detection. Sanskrit/unknown languages use exceptions only. Bound tag inspection; no new fonts/dependencies.",
+      "postimages": [
+        {
+          "pr": 5946,
+          "path": "ASSETS.md",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "34ff73361429ad38c4083f9732dbbabde91c7ad2",
+          "sha256": "e42a37b5f88d1c4d327c0902ebdf570c665fdf564012dce70885b788d593287a"
+        },
+        {
+          "pr": 5946,
+          "path": "ATTRIBUTION.md",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "f28ed3dde9c92a969b9f3a08b8a2dd8383e03f48",
+          "sha256": "77291a19a68d955d26844343a67298cf2a7d3cbc8631f50b50b1ef3c16386c1d"
+        },
+        {
+          "pr": 5946,
+          "path": "NOTICE",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "ea3c311a39f64a3569de6d5cb5e104614181c4e1",
+          "sha256": "548087f8480c6397ae01c73067574de7ee521db58ee94d782daff8220c134920"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/doc/src/setup.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "99eee0336fe1c72f0c904d1ed1f76d3f100cac41",
+          "sha256": "729dbe55de28df283f665b4de017ea71769bdc07c3f515210213e6b0ed6d8680"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/engine/src/cmd/prefscmds.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "f123615485781551e72085a9be0e07557eb3be38",
+          "sha256": "cf0d03bcfffe04bc949fe370abb30be1c817f84a29cfa621f878c17a7123d9df"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/README.md",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "2a310e033d0bb9139243645d8e39947921c976b9",
+          "sha256": "d0e99191f6752c143df4af8485b7db2f8128431e26dac7167190db5b7adf8cea"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-as.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "2e16711bd227b6423aa55d7326acce508a438727",
+          "sha256": "c0d23a0364983038ee73fdc9ee54dc8faa23d38111991b7c5c2b31833f22a050"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-bn.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "985a4eb1ba33ce4c3e1d883f4cd1f59e48c5d633",
+          "sha256": "b44ca65373a702020d5ffbf1acdffa78f5b4d3259b4f18a12a88b2a71ae2445d"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-gu.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "df8f0d0878f15e497fb426692f2f47578f61eb22",
+          "sha256": "7b9f11a5fb0ab27bad7ed3a0b9dbb1ef33d67050069610cc7630de35d2a34cda"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-hi.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "435f434f1dfc6a1d62225ddc2a81b5d9a582dca4",
+          "sha256": "a55a2766d7e1c2d36991f4fccfef639016721b41593029043c2d13bc340ef632"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-kn.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "5b2ba9831a91515186835ad5096e0f0d564824de",
+          "sha256": "2f88ea093e99239f7c22a2b26455fcebec7a9dbcbfbfd73683582ea3af5fc99c"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-ml.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "b34499500bd23f787cc5f75d3be99f53ce7ae59e",
+          "sha256": "b37b1446d79587003d85887731df822aa01afea2f6d8cc5728d55e00a92edb8d"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-mr.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "8f3c5675db92fa303dfcb3fba6d54f1b1ecf94d6",
+          "sha256": "dd033b789f381081fbf05a976e34790b566f40ddcd276790f581b15b62eca844"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-or.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "a601e2a9fd5b0bec971b7aef912cda4f9ae30057",
+          "sha256": "a028fb9f5554f709cbc3f073873e5771b2b669e3725c9888d917c38152d8ea0b"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-pa.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "56476383a6fff672de58873a3a47bae5e347d35d",
+          "sha256": "7582a5ac2e6959d64c13b3f2cee41222c810f1e0ed6b29c870da657fee09442a"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-ta.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "54f0d43743c30d2649a9dde5872bc56cf70e9574",
+          "sha256": "7154ee4519ae5fcebbb2c1d05fd7f19820b53db8b84dbaea34e6a6f6a8fd4642"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/patterns/hyph-te.tex",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "e12228bda36a857a5a90518e0808588e5996c508",
+          "sha256": "101a8f1664ea5a7520e06f07f0275c9bdf6ad3de63d6f74c4f44fd1369396ccd"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/hyphen.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "adb3a62bfc5d990c7f4a1f5a81dc353ccc980008",
+          "sha256": "10140ebf7b11969714cce1751679c8c3c2fddff6d942fb4a0e9b1b1758bcbabc"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/hyphen/indic.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "ea8b577ce8438e0c96f139a7cecb8e3e21281b15",
+          "sha256": "c6c1d2af7862c984802f5648eeeceddb573d2afb08be11303aea45fc56edbc06"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/layout.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "c36514eef702a0ff7ec9baa55f67c1af24f99d96",
+          "sha256": "c66dd1d77596d65a833466e3673b3c67b4f29cdd5f3f37e78ffd5143564500f7"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/layout/breaking.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "fd663c9a9c5e32e0872d1b9037dae1c5dcfd4ae2",
+          "sha256": "ecae06afc7b3c9b9f14c776a5088ecaf75c7b3ac278e0a4cc7d2c865944a617e"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/layout/wrapping_tests.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "413ea72d7896f87eb8b867243e7f29720f503bdf",
+          "sha256": "cf8792d30e958bf7f06196a8fae94c4f91606408326086a40cdf3719bc1b238b"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/shape.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "1a6716c5f229ffaf6d0e16d419e77ea6d7a6b0c1",
+          "sha256": "e47a2ba0e6d9e98a92e1435c9c711688015b51f74ef468a0fbfcd1eb58db62b6"
+        },
+        {
+          "pr": 5946,
+          "path": "crates/text/src/tests/typo.rs",
+          "head": "5bb21cdddf5009d233515a3718ba3d4c9cf9a580",
+          "blob": "8f37e5905f93fccaf099843bbeb713dc15e21ac9",
+          "sha256": "164bd4a1d90f299d0d0f87f047960e00d6a80d4dcbe04d1c14e9b462cab1781d"
+        }
+      ]
+    },
+    {
+      "number": 5777,
+      "title": ".ai/EPS import: type that names no style takes the normal styles", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "dotCooCoo",
+      "head": "6dd86b337a31ba40938734ffe06d829cd0cf7c9d",
+      "url": "https://github.com/storytold/vectorcraft/pull/5777",
+      "merged_at": "2026-11-05T09:48:56Z",
+      "diff_sha256": "077d78b792b6da708a1a1be724e945c22bce6df1ebe402796d2c1c5824d2992d",
+      "scope": "AI editing data inherits Normal Character/Paragraph Style before base defaults when no style is named or runs are absent. Add bounded paragraph sheet inheritance beside existing character sheets. Keep local original text-frame recovery, first baselines, linked stories and source-overwrite protection. Regression uses the existing unscaled EPS planner; no Large Canvas or newer legacy reader migration.",
+      "postimages": [
+        {
+          "pr": 5777,
+          "path": "crates/engine/src/cmd/fileio/tests_aiimport.rs",
+          "head": "6dd86b337a31ba40938734ffe06d829cd0cf7c9d",
+          "blob": "f1daa7b57f8c908cb8264955424ac7460b805d78",
+          "sha256": "59593f7542f618f131de53b9543fff4d3beaec0f6d9b45b7a7b9d0de80e4d30c"
+        },
+        {
+          "pr": 5777,
+          "path": "crates/eps/src/import/ate.rs",
+          "head": "6dd86b337a31ba40938734ffe06d829cd0cf7c9d",
+          "blob": "ac5f38d6b8164a5325420a85b7052db3162f9e62",
+          "sha256": "0aaf04376c9629a90f9b9c335399d4ccc3c16a4a1395f945c3663cdaa1d33c59"
+        },
+        {
+          "pr": 5777,
+          "path": "crates/eps/src/import/tests_native.rs",
+          "head": "6dd86b337a31ba40938734ffe06d829cd0cf7c9d",
+          "blob": "cb1529edb0a2a91a319bb481277a82648dbf8e71",
+          "sha256": "e1afbac0ae1f5bf5392adc40a5a35d11af2f7cf4ba151352c4748e6ab458b18e"
+        }
+      ]
+    },
+    {
+      "number": 4458,
+      "title": "Transparency: pattern editing mode and opacity mask editing can't be entered from each other", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "dotCooCoo",
+      "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+      "url": "https://github.com/storytold/vectorcraft/pull/4458",
+      "merged_at": "2026-10-29T13:18:09Z",
+      "diff_sha256": "b3295f22b8cae5a9db5c7d1d5ee71f5dfe0c41a04c43893b0db58b006d302f01",
+      "scope": "Prevent cross-entry between pattern and opacity-mask editing at command enablement and mutation boundaries, including Make Opacity Mask paths that directly enter editing. Refused commands preserve document/history and succeed after leaving the other mode. Fit to existing isolation and pattern/mask state. Newer generic exitIsolation/Done routing and broader UI migrations are excluded.",
+      "postimages": [
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/cmd/maskedit.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "83c7abf7c69c3401a81ceeb81595a097110c3138",
+          "sha256": "4961bd0033fe9542df256f41119c19167d87b6699db695b2e3fa091132a92099"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/cmd/object/arrange.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "2be0c06a8b65d3d958f85bbf14e47dbcf428f552",
+          "sha256": "a43324e140e5c99cbfb9a1e42d16a29a24da67d62938c630f320178a7c608bce"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/cmd/opacitymask.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "50fcc349a2192420cac212558863df500ce2a517",
+          "sha256": "b130f79a7b59f71ab783ffd5c13cf912a1469002250761cbc79e25a6096e63cc"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/cmd/patterncmds.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "aea1aeb58a7455f777f1c97933e39ed787bd59f1",
+          "sha256": "65c974aa1784ddd17908bdf3d53b1c1c0584544c39da370d5f49f5ff2ac8a6ff"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/tests/opacitymask.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "2a8cbf4ca80d43388f8ffee31e575d1a1633a558",
+          "sha256": "53e21b94875158c84a9416207f803be1dbeaac896608cca891136dfdef011ead"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/tests/pattern.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "17bb0071bf1229848135f482fa677ed4c8c2b69a",
+          "sha256": "88e428572d7ded89f195717fdf1d36a5bd7f04e20b66ad3ad712f9270aeb6f4e"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/engine/src/tooling.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "b5c3f53f8e5b1142773c4ebf37e801aa4f1e7026",
+          "sha256": "c230ef7d4776c2fc56b0d399a05091ce945711c2a98aa248583ccb92e79a154b"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/ui-egui/src/panels/tests_maskview.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "cf71e0cba9102e9154bced4e56963b635380c82a",
+          "sha256": "e759095e3b8c6d22fe21eb72bda87bfb501bc23fb839f0836dc685c523b18660"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/ui-egui/src/panels/transparency.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "5747ef82dbfc83e872ccd9376f0b4240edca89ea",
+          "sha256": "c092d179e7217af3ef91745270a94d538e40ab86ada1b0ea8d72ac57b8b8c917"
+        },
+        {
+          "pr": 4458,
+          "path": "crates/ui-egui/src/shortcuts/tests.rs",
+          "head": "3cfdb58b903f6225553e4ef9d76b789573b885d7",
+          "blob": "4d13e07d55147baff19133d21937cbb9a2ca19aa",
+          "sha256": "4e43fb9925d229a712563ce2b63c86c470cbed456fa5e6c0c9c299cd9bbd8111"
+        }
+      ]
+    }
+  ],
+  "pattern_provenance": [
+    {
+      "asset": "hyph-as.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-as.tex",
+      "sha256": "c0d23a0364983038ee73fdc9ee54dc8faa23d38111991b7c5c2b31833f22a050",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-bn.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-bn.tex",
+      "sha256": "b44ca65373a702020d5ffbf1acdffa78f5b4d3259b4f18a12a88b2a71ae2445d",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-gu.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-gu.tex",
+      "sha256": "7b9f11a5fb0ab27bad7ed3a0b9dbb1ef33d67050069610cc7630de35d2a34cda",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-hi.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-hi.tex",
+      "sha256": "a55a2766d7e1c2d36991f4fccfef639016721b41593029043c2d13bc340ef632",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-kn.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-kn.tex",
+      "sha256": "2f88ea093e99239f7c22a2b26455fcebec7a9dbcbfbfd73683582ea3af5fc99c",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-ml.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ml.tex",
+      "sha256": "b37b1446d79587003d85887731df822aa01afea2f6d8cc5728d55e00a92edb8d",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-mr.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-mr.tex",
+      "sha256": "dd033b789f381081fbf05a976e34790b566f40ddcd276790f581b15b62eca844",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-or.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-or.tex",
+      "sha256": "a028fb9f5554f709cbc3f073873e5771b2b669e3725c9888d917c38152d8ea0b",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-pa.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-pa.tex",
+      "sha256": "7582a5ac2e6959d64c13b3f2cee41222c810f1e0ed6b29c870da657fee09442a",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-ta.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-ta.tex",
+      "sha256": "7154ee4519ae5fcebbb2c1d05fd7f19820b53db8b84dbaea34e6a6f6a8fd4642",
+      "license": "MIT selected option; complete notices retained"
+    },
+    {
+      "asset": "hyph-te.tex",
+      "source_commit": "5684c0f51c0b81133db2efbe60a408b4155a3ff5",
+      "source_path": "hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-te.tex",
+      "sha256": "101a8f1664ea5a7520e06f07f0275c9bdf6ad3de63d6f74c4f44fd1369396ccd",
+      "license": "MIT selected option; complete notices retained"
+    }
+  ],
+  "remaining_deferred": [
+    {
+      "number": 4952,
+      "reason": "The newer DocSetup::keep_in_range API and its normalization entry points are absent; no isolated method/test was imported."
+    },
+    {
+      "number": 4791,
+      "reason": "Local original-frame recovery already retains verified first baselines and source geometry; the newer planner would require compatibility work rather than replacing this path."
+    },
+    {
+      "number": 5811,
+      "reason": "Legacy AI tab-stop import depends on the newer legacy-type reader and paragraph-tab representation; defer together with the later deduplication/layout fixes."
+    },
+    {
+      "number": 5885,
+      "reason": "Tab-stop style deduplication depends on the newer legacy AI reader and paragraph structures absent here."
+    },
+    {
+      "number": 6148,
+      "reason": "Tab-stop import and right-aligned tab layout span the newer legacy reader, model and layout. Defer as a coordinated chain."
+    },
+    {
+      "number": 6240,
+      "reason": "The unicode_char/type.insert code API was introduced by newer work absent here; no matching API changed."
+    },
+    {
+      "number": 6032,
+      "reason": "Filled clipping-path import spans the newer style, clipping and mask reader; retain current conservative native-first recovery."
+    },
+    {
+      "number": 5122,
+      "reason": "Smooth/corner anchor import spans a newer AI path reader and representation; defer rather than replacing current reader paths."
+    },
+    {
+      "number": 4888,
+      "reason": "Pixelated images require the newer node extras and renderer option absent here; no no-op SVG flag was introduced."
+    },
+    {
+      "number": 5268,
+      "reason": "Stylus pose and multi-sample frame filtering uses a newer canvas input pipeline absent here; the compatible release-position behavior is adapted separately from #5195."
+    }
+  ],
+  "compatibility": "English interface; existing Indic editing and original AI frame/story recovery retained. No new Rust dependency or font. Optional language field omitted at default for old native data. Preserve fixed paragraph limits. Complete pattern author/MIT notices and asset gate coverage added; local bundle notices refreshed. Version/scores unchanged; no source/build upload. Owner instruction-file edits retained.",
+  "verification": {
+    "status": "passed",
+    "ci": {
+      "gates": 8,
+      "passed": 5354,
+      "failed": 0,
+      "ignored_existing": 4,
+      "ui_tests": 947,
+      "assets_attributed": 351
+    },
+    "build": "Optimized-development 0.9.0 native/CLI build and actual vectnor-web wasm32-unknown-unknown check pass. Existing unused ask_update_changed warning in unchanged missing_links.rs remains.",
+    "bundle_sha256": {
+      "Vectnor": "872ef82622d51519cc6c0d283fca848ffa50803bc88f0c978331136d225bddeb",
+      "vectnor-cli": "60bee9b7c4051a3cda2c29a08e7043683588e84ec95a9356fe775aaa74a82440"
+    },
+    "bundle_licenses_sha256": {
+      "NOTICE": "c8f04aac88af9d38d7f91f3f67a2f3abbba0b5459169b982d613ed5a04e8128e",
+      "ASSETS.md": "d87a608eec3e13794f9d75b542218110fb4b545d001241fe305ed142b78a6ee9",
+      "Indic-hyphenation-LICENSE-MIT.txt": "f34c6cbbc99ddd63cd3ce96c7cee736fb858a7f5229cc4e2738bfc81b1da5b9d"
+    },
+    "cli": {
+      "2nd Announcement.ai": {
+        "text_objects": 10,
+        "source_characters_frame_geometry_exact": true,
+        "linked_threads_exact": true,
+        "summary_exact": true,
+        "full_json_exact": true,
+        "changed_summary_keys": [],
+        "text_styles_changed": 0
+      },
+      "3lines_02.ai": {
+        "text_objects": 4,
+        "source_characters_frame_geometry_exact": true,
+        "linked_threads_exact": true,
+        "summary_exact": true,
+        "full_json_exact": true,
+        "changed_summary_keys": [],
+        "text_styles_changed": 0
+      }
+    },
+    "native": [
+      "Both AI files open directly and match previous complete CLI summaries and command/layer JSON; ten original announcement text boxes/two linked pairs and four point-text objects retained.",
+      "Whole-paragraph Type selection, Telugu/ZWNJ insert, neighboring-frame isolation and exact undo/redo pass. Native save/reopen preserves node/thread JSON and both artboard PNG hashes.",
+      "Telugu document default reaches new text; per-range Hindi setting and undo retain exact source; Telugu language and characters survive native save/reopen. Character Language menu inspected in the English UI.",
+      "Current-font overflow queries match three reported announcement frames; missing fonts remain missing.",
+      "Isolated app on port 18009 quit cleanly."
+    ],
+    "pattern_bytes_match_original_source": true,
+    "original_files_unchanged": true,
+    "owner_instruction_files_unchanged": true,
+    "packaging_shell_syntax": "bash -n packaging/env.sh packaging/macos/package.sh passes; no release/package publication run",
+    "source_or_build_uploaded": false,
+    "evidence_directory": "/tmp/vectnor-deferred-2026-11-11"
+  }
+}

@@ -2,6 +2,68 @@
 
 > **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed AI style, parsing and release-position fixes; scores unchanged)
 
+## 2026-11-11 deferred follow-up — M0.deferred-indic-styles
+
+Applied **four previously deferred merged PR scopes**, using the immutable heads from the
+November 11 review. No fresh PR discovery or metadata recount. The
+[follow-up snapshot](upstream-audit-2026-11-11-deferred.json) pins source authors, heads, raw diff
+SHA-256, 50 verified source/asset postimages (including excluded newer code/docs), adaptation
+boundaries and the remaining deferred chains. Eleven pattern files were independently byte-checked
+against their original tex-hyphen commit `5684c0f51c0b81133db2efbe60a408b4155a3ff5`.
+
+| PR | Source author / immutable head | Local scope |
+|---|---|---|
+| [#4959](https://github.com/storytold/vectorcraft/pull/4959) | @bflatastic / `214fca7ca706` | Document/character language names and canonical BCP47 tags; persistent optional character language, new-type document default, range/whole-text/panel commands and character style capture/reset. Pass validated tags to Harfrust and retain existing equality-based shaping spans, original source-run attribution, joiners and fallback. Add the English-labelled Character language menu; omit translation catalogs and newer digits/font-axis APIs. |
+| [#5946](https://github.com/storytold/vectorcraft/pull/5946) | @ruchirguitar / `5bb21cdddf50` | Eleven independently verified, unmodified MIT-option Indic pattern files with preserved notices. Route both composers by source-run language, retain graphemes/viramas/joiners, protect explicit exceptions too, and refuse automatic mixed-language word breaks. Retain existing fixed 6/3/3 limits and paragraph model; no configurable Hyphen Limit/Zone or new preference/language detection. Sanskrit/unknown languages use exceptions only. Bound tag inspection; no new fonts/dependencies. |
+| [#5777](https://github.com/storytold/vectorcraft/pull/5777) | @dotCooCoo / `6dd86b337a31` | AI editing data inherits Normal Character/Paragraph Style before base defaults when no style is named or runs are absent. Add bounded paragraph sheet inheritance beside existing character sheets. Keep local original text-frame recovery, first baselines, linked stories and source-overwrite protection. Regression uses the existing unscaled EPS planner; no Large Canvas or newer legacy reader migration. |
+| [#4458](https://github.com/storytold/vectorcraft/pull/4458) | @dotCooCoo / `3cfdb58b903f` | Prevent cross-entry between pattern and opacity-mask editing at command enablement and mutation boundaries, including Make Opacity Mask paths that directly enter editing. Refused commands preserve document/history and succeed after leaving the other mode. Fit to existing isolation and pattern/mask state. Newer generic exitIsolation/Done routing and broader UI migrations are excluded. |
+
+Document and character languages affect document text, while the interface remains English.
+Language travels through new-type defaults, range edits, character styles, undo and native
+serialization. Existing files omit the default-valued field and retain their prior English behavior.
+Fonts choose localized forms through Harfrust; the existing Indic shaping, run attribution and
+joiner handling remain. Hindi, Marathi, Gujarati, Bengali, Punjabi, Tamil, Telugu, Kannada, Malayalam,
+Odia and Assamese use the bundled patterns. Sanskrit is selectable for shaping and uses explicit
+exceptions for hyphenation. Unknown languages do not fall back to English/Hindi automatic rules.
+
+Both composers use the current fixed automatic word-length/margin limits (6/3/3 Unicode characters) and
+use only grapheme/shaping boundaries. Conjuncts, vowel signs, viramas and joiners stay whole, even
+when a font subdivides a cluster. User exceptions are also filtered to complete graphemes. Automatic
+mixed-language word breaks are refused conservatively. This does not add language detection,
+translations, new fonts, configurable Hyphen Limit/Zone or an Indic visual-fidelity guarantee.
+Full author/MIT notices remain in the eleven unmodified pattern files, ASSETS.md and NOTICE; a
+standalone copy accompanies the local bundle and package notices. The asset gate now covers `.tex`.
+
+AI Normal-style inheritance is bounded and retains the local frame/linked-story recovery path.
+The mode-guard adaptation protects temporary layers and history; the newer generic mode-exit/UI
+routing is not copied. Remaining deferred work still includes the newer legacy AI tab-stop chain,
+clipping/anchor reader changes, pixelated-image rendering and stylus-sample pipelines, and APIs
+absent in this branch. The previous snapshots retain their historical decisions unchanged.
+
+Owner instruction-file edits, Contributors/Models, source-overwrite protection and `.vcnr` identity
+remain. No Pagenor messages. Version, scores and estimates unchanged. No source/build upload.
+
+Verification: **all eight CI gates pass — 5,354 tests passed, zero failed, four existing ignored**;
+UI suite: 947; 351 attributed assets. Focused tests establish language-specific font forms, canonical
+style/range language persistence and undo/native serialization, both composers' pattern routing
+across eleven languages with deliberately subdivided marks, protected exceptions, bounded sheet
+cycles, Normal-style fallback and unchanged data/history after refused mode entry.
+
+Optimized-development 0.9.0 native/CLI build and actual browser WASM check pass, with the existing
+unused `ask_update_changed` warning in unchanged `missing_links.rs`. Local binaries and refreshed
+NOTICE/ASSETS/standalone pattern permission notices are SHA-256 checked in `dist/Vectnor.app`.
+Package-helper shell syntax passes; no package/publication run. Both supplied AI files retain exact
+previous CLI summaries and full command/layer JSON. Native File Open retains ten original
+announcement text boxes, two linked pairs and four point-text objects in the three-lines file.
+Whole-paragraph Type selection, Telugu/ZWNJ editing, neighboring-frame isolation, exact undo/redo,
+node/thread JSON and both artboard PNG hashes after native save/reopen pass. Current-font overflow
+queries match the three reported frames; missing fonts remain missing. Telugu defaults reach new
+type; a per-range Hindi change and undo work; language and source characters survive native
+save/reopen. The Character Language menu is inspected in the English interface. All eleven pattern
+files still match original pinned bytes, and original AI sources/owner instruction-file edits are
+SHA-256 unchanged. Screenshots inspected; isolated app on port 18009 quit. Evidence:
+`/tmp/vectnor-deferred-2026-11-11/`. Version/scores unchanged; nothing uploaded.
+
 ## 2026-11-11 local update — M0.upstream-import-robustness
 
 Screened **1,501 PRs updated since the previous capture** (2026-10-31 11:43:55 UTC):

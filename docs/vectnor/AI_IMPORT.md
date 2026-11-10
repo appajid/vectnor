@@ -270,3 +270,12 @@ containers are refused. An AI/AI-template with editing-data keys opens directly 
 picker; ordinary PDFs, protected files, Place and AI files containing only PDF pages retain the dialog.
 The query reads only metadata through the existing bounded PDF dictionary walk. This does not make
 native artwork dependent on its PDF drawing. [Scope and evidence](UPSTREAM_AUDIT.md).
+
+## 2026-11-11 deferred Normal-style follow-up
+
+Stories with no character/paragraph runs, and runs naming no style, now use the Normal Character
+and Normal Paragraph styles before the text document's base defaults. Explicit run values win;
+based-on character and paragraph sheet walks remain bounded. Original frames, first baselines,
+linked stories and source-overwrite protection remain. This does not infer a document-text language
+from an AI file; explicit language settings apply through the document/Character controls.
+[Scope and verification](UPSTREAM_AUDIT.md).

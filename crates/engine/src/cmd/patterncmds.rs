@@ -29,7 +29,7 @@ pub fn specs() -> Vec<CommandSpec> {
             ["Object", "Pattern"],
             None,
             "{ids?, name?, tileType?: grid|brickByRow|brickByColumn|hexByColumn|hexByRow, brickOffset?: 0..1 (0.5), width?, height?, edit?: bool (true)} make a pattern swatch from the selection and enter pattern editing mode → {name}",
-            has_selection,
+            can_make_pattern,
             pattern_make
         ),
         cmd!(
@@ -157,7 +157,13 @@ fn in_pattern_edit(s: &Session) -> std::result::Result<(), String> {
     editing(s).map(|_| ()).ok_or_else(|| "not in pattern editing mode".into())
 }
 
+fn can_make_pattern(s: &Session) -> std::result::Result<(), String> {
+    super::maskedit::outside_mask_editing(s)?;
+    has_selection(s)
+}
+
 fn can_edit_pattern(s: &Session) -> std::result::Result<(), String> {
+    super::maskedit::outside_mask_editing(s)?;
     has_doc(s)?;
     if editing(s).is_some() {
         return Err("already editing a pattern".into());
@@ -279,6 +285,7 @@ fn tile_type_param(p: &Value, cmd: &str, current: TileType) -> Result<TileType> 
 // ---------- Pattern commands ----------
 
 fn pattern_make(s: &mut Session, p: &Value) -> Result<Value> {
+    super::maskedit::outside_mask_editing(s).map_err(EngineError::Other)?;
     const C: &str = "object.pattern.make";
     if editing(s).is_some() {
         return Err(bad(C, "already in pattern editing mode"));
@@ -319,6 +326,7 @@ fn pattern_make(s: &mut Session, p: &Value) -> Result<Value> {
 }
 
 fn pattern_edit(s: &mut Session, p: &Value) -> Result<Value> {
+    super::maskedit::outside_mask_editing(s).map_err(EngineError::Other)?;
     const C: &str = "object.pattern.edit";
     let name = match str_param(p, "name") {
         Some(n) => n.to_string(),

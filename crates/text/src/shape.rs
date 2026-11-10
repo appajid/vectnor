@@ -55,6 +55,7 @@ pub(crate) struct SGlyph {
     pub level: Level,
     /// An inline graphic ([`vectnor_doc::TextRun::inline`]) standing in for a glyph.
     pub inline: Option<InlineBox>,
+    pub hyphen_language: crate::hyphen::Language,
 }
 
 /// Placement of an inline graphic's art, glyph space being points with the pen at the origin on
@@ -96,7 +97,7 @@ impl SGlyph {
     }
     /// Part of a word that may be hyphenated (letters and apostrophes).
     pub fn is_letter(&self) -> bool {
-        self.ch.is_alphabetic() || matches!(self.ch, '\'' | '’')
+        crate::hyphen::is_word_char(self.ch)
     }
     /// Vertical type: a tate-chu-yoko glyph after its block's first, sharing that glyph's cell.
     pub fn continues_tcy(&self) -> bool {
@@ -452,6 +453,7 @@ fn inline_glyph(face: &Arc<FontFace>, st: &CharStyle, art: &InlineArt, run: usiz
         // RTL text like any other glyph once the line is reordered.
         level,
         inline: Some(InlineBox { art: drawn, xf }),
+        hyphen_language: crate::hyphen::Language::None,
     }
 }
 
@@ -511,6 +513,14 @@ fn shape_segment(text: &str, context: &Range<usize>, seg: &Segment, feats: &OtFe
         }
         buf.set_direction(if level.is_rtl() { Direction::RightToLeft } else { Direction::LeftToRight });
         buf.guess_segment_properties();
+        if let Some(language) = st
+            .language
+            .as_deref()
+            .filter(|l| l.len() <= 35 && l.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-'))
+            .and_then(|l| l.parse::<harfrust::Language>().ok())
+        {
+            buf.set_language(language);
+        }
         // Harfrust keeps this Unicode context for joining/positional shaping, but does not emit
         // glyphs for it. This retains context at real style/font segmentation boundaries without
         // shaping across those boundaries or claiming cross-style ligatures/mark attachment.
@@ -581,6 +591,7 @@ fn shape_segment(text: &str, context: &Range<usize>, seg: &Segment, feats: &OtFe
             lead: 0.0,
             level: *level,
             inline: None,
+            hyphen_language: crate::hyphen::Language::from_tag(st.language.as_deref()),
         });
     }
 }

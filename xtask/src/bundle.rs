@@ -23,6 +23,17 @@ pub fn run(root: &Path) -> Result<(), String> {
     std::fs::copy(root.join("assets/app-icon/vectnor.icns"), app.join("Resources/Vectnor.icns")).map_err(|e| format!("copy icon: {e}"))?;
     std::fs::copy(root.join("assets/brand/document.icns"), app.join("Resources/VectnorDocument.icns"))
         .map_err(|e| format!("copy document icon: {e}"))?;
+    let licenses = app.join("Resources/Licenses");
+    std::fs::create_dir_all(&licenses).map_err(|e| e.to_string())?;
+    for (source, name) in [
+        ("LICENSE-MIT", "LICENSE-MIT"),
+        ("LICENSE-APACHE", "LICENSE-APACHE"),
+        ("NOTICE", "NOTICE"),
+        ("ASSETS.md", "ASSETS.md"),
+        ("crates/text/patterns/LICENSE-MIT.txt", "Indic-hyphenation-LICENSE-MIT.txt"),
+    ] {
+        std::fs::copy(root.join(source), licenses.join(name)).map_err(|e| format!("copy licence: {e}"))?;
+    }
     let sha = std::env::var("VECTNOR_BUILD_SHA").unwrap_or_else(|_| "unknown".into());
     std::fs::write(app.join("Info.plist"), info_plist(env!("CARGO_PKG_VERSION"), &sha)).map_err(|e| e.to_string())?;
     println!("built {}", root.join("dist/Vectnor.app").display());
