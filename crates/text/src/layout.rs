@@ -1604,7 +1604,10 @@ fn flow(cx: &mut Ctx<'_>, paras: &[Range<usize>], t: &TextObject, regions: Optio
                     }
                 }
             }
-            let start_x = if justify {
+            let last_tab = (para.justify == Justify::Right && !justify && !rtl && regions.is_some())
+                .then(|| (i..end).rev().find(|&j| sg.get(j).is_some_and(|g| g.ch == '\t')))
+                .flatten();
+            let start_x = if justify || last_tab.is_some() {
                 ax0
             } else if regions.is_none() {
                 match align {
@@ -1643,6 +1646,15 @@ fn flow(cx: &mut Ctx<'_>, paras: &[Range<usize>], t: &TextObject, regions: Optio
                 }
                 if g.ch == '\t' {
                     adv = tab_advance(&para.tabs, tab_origin, x, &sg[j + 1..trimmed.max(j + 1)]);
+                    if last_tab == Some(j) {
+                        let after = sg.get(j + 1..trimmed).unwrap_or_default();
+                        let rest = if after.is_empty() {
+                            0.0
+                        } else {
+                            after.iter().map(|g| g.adv).sum::<f64>() - end_trim + hyphen.as_ref().map_or(0.0, |g| g.adv)
+                        };
+                        adv = (ax1 - rest - x).max(0.0);
+                    }
                 } else if j < body {
                     if g.is_space() {
                         adv += per_space;

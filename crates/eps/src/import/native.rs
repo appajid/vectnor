@@ -872,6 +872,9 @@ fn build_structure(
     let template = template.map(|t| ((t[0] + t[2]) / 2.0, (t[1] + t[3]) / 2.0));
     let mut notes = warnings;
     let content = plan(&infos, &stories, template, to_doc, [&shown, &hidden], &mut notes);
+    if stories.iter().flatten().any(|s| s.tabs_left_out()) {
+        notes.push(super::ate::TABS_LEFT_OUT.into());
+    }
     let mut empty = 0;
     let mut layers = std::mem::take(&mut doc.layers);
     let mut made = vec![];

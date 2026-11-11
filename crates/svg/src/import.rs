@@ -468,7 +468,10 @@ impl Edits {
 fn prepass<'s>(svg: &'s str, opts: &ImportOptions) -> (Cow<'s, str>, Found) {
     let mut found = Found::default();
     // (`:` for prefixed elements such as `<svg:image>`.)
-    if !["<a", "display", "<use", ":use", "<image", ":image", vector_effect::NON_SCALING, "data-", "groupmode"].iter().any(|t| svg.contains(t)) {
+    if !["<a", "display", "<use", ":use", "<image", ":image", vector_effect::NON_SCALING, "data-", "groupmode", "image-rendering"]
+        .iter()
+        .any(|t| svg.contains(t))
+    {
         return (svg.into(), found);
     }
     let Ok(xml) = roxmltree::Document::parse_with_options(svg, roxmltree::ParsingOptions { allow_dtd: true, ..Default::default() }) else {
@@ -488,6 +491,12 @@ fn prepass<'s>(svg: &'s str, opts: &ImportOptions) -> (Cow<'s, str>, Found) {
                 found.data.insert(edits.id(svg, e), data);
             }
         }
+    }
+    // usvg 0.45 accepts SVG2 sampling values in CSS, but skips those presentation
+    // attributes. A legacy nearest-sampling value preserves attribute inheritance and
+    // lets usvg resolve stylesheet/inline overrides with their normal precedence.
+    for e in elements().filter(|e| e.attribute("image-rendering").is_some_and(|v| matches!(v.trim(), "pixelated" | "crisp-edges"))) {
+        edits.set(svg, e, "image-rendering", "optimizeSpeed");
     }
     found.sublayers = elements().filter(|g| marked_layer(*g)).filter_map(|g| g.attribute("id")).map(str::to_string).collect();
     let symbols: HashSet<&str> = elements().filter(|n| n.tag_name().name() == "symbol").filter_map(|n| n.attribute("id")).collect();
@@ -1228,7 +1237,10 @@ impl Importer {
             if link.is_some() && !missing { blob.with_proxy() } else { blob }
         });
         let xf = acc * Affine::scale_non_uniform(size.width() as f64 / pw as f64, size.height() as f64 / ph as f64);
-        Some(self.named(i.id(), NodeKind::Image(ImageObject { key, width: pw, height: ph, xf, link, placement: Default::default() })))
+        let mut node = self.named(i.id(), NodeKind::Image(ImageObject { key, width: pw, height: ph, xf, link, placement: Default::default() }));
+        node.pixelated =
+            matches!(i.rendering_mode(), usvg::ImageRendering::Pixelated | usvg::ImageRendering::CrispEdges | usvg::ImageRendering::OptimizeSpeed);
+        Some(node)
     }
 
     /// An SVG shown as an image (a data URL or a linked file) → its art, `acc` mapping its size.

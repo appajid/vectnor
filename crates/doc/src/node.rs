@@ -508,6 +508,9 @@ pub struct Node {
     pub visible: bool,
     #[serde(default, skip_serializing_if = "crate::skip::is_default")]
     pub locked: bool,
+    /// Image pixels use nearest-neighbour sampling when true.
+    #[serde(default, skip_serializing_if = "crate::skip::is_default")]
+    pub pixelated: bool,
     #[serde(default = "one", skip_serializing_if = "crate::skip::is_one")]
     pub opacity: f32,
     #[serde(default, skip_serializing_if = "crate::skip::is_default")]
@@ -597,6 +600,7 @@ impl Node {
             name: None,
             visible: true,
             locked: false,
+            pixelated: false,
             opacity: 1.0,
             blend: BlendMode::Normal,
             isolate: false,

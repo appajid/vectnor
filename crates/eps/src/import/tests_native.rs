@@ -116,7 +116,7 @@ fn sublayers_groups_compounds_clip_groups_and_hidden_objects_come_in() {
         // A clipping group: its objects, then its clip path.
         "q".into(),
         square(40, 10),
-        "50 10 m 60 10 L 60 20 L 50 20 L h W f".into(),
+        "50 10 m 60 10 L 60 20 L 50 20 L h W n".into(),
         "Q".into(),
         // Hidden until the next `Xw`.
         "1 Xw".into(),
@@ -920,4 +920,15 @@ fn a_story_without_runs_takes_the_normal_styles() {
         assert_eq!(style.fill, vectnor_color::Paint::solid(vectnor_color::Color::rgb(0.0, 0.0, 1.0)), "{}", t.plain_text());
         assert!((t.para.first_line_indent - 6.0).abs() < 1e-9 && !t.para.hyphenate, "{}: {:?}", t.plain_text(), t.para);
     }
+}
+
+#[test]
+fn a_painted_clipping_path_keeps_the_editing_structure_when_it_matches_the_page() {
+    let body = format!("q\n{}\n50 10 m 60 10 L 60 20 L 50 20 L h W f\nQ", square(40, 10));
+    let art = native(&layer("Painted Clip", true, &body));
+    let page = "0 0 1 0 setcmykcolor 50 10 moveto 60 10 lineto 60 20 lineto 50 20 lineto closepath fill";
+    let r = import(&eps(page, &art)).unwrap();
+    assert_eq!(names(&r.document), ["Painted Clip"], "{:?}", r.warnings);
+    assert_eq!(kinds(&r.document.layers[0]), ["clip[2]"]);
+    assert!(r.document.layers[0].children().unwrap()[0].children().unwrap()[0].appearance.fill().is_some());
 }

@@ -774,3 +774,71 @@ fn a_gutter_too_huge_to_step_past_has_no_room_for_lines() {
     let l = layout(db(), &t);
     assert!(l.lines.is_empty() && l.overflow);
 }
+
+#[test]
+fn right_aligned_area_tabs_keep_labels_left_and_values_at_the_right_edge() {
+    for composer in [Composer::EveryLine, Composer::SingleLine] {
+        for text in ["Item\t12.00", "Item\t12.00  ", "Item\t"] {
+            let mut t = area(text, style(12.0), Rect::new(10.0, 0.0, 210.0, 100.0), Justify::Right);
+            t.para.composer = composer;
+            let l = layout(db(), &t);
+            assert_eq!(l.lines.len(), 1);
+            assert!((l.glyphs[0].origin.x - 10.0).abs() < 1e-6, "{composer:?}: {text:?}");
+            let last = l.glyphs.iter().rev().find(|g| !text.get(g.byte..g.byte + g.len).is_some_and(|s| s == " ")).unwrap();
+            assert!((last.origin.x + last.advance - 210.0).abs() < 1e-6, "{composer:?}: {text:?}: {last:?}");
+        }
+        let mut t = area("12.00", style(12.0), Rect::new(10.0, 0.0, 210.0, 100.0), Justify::Right);
+        t.para.composer = composer;
+        let l = layout(db(), &t);
+        assert!(l.glyphs[0].origin.x > 100.0);
+        assert!((l.lines[0].x1 - 210.0).abs() < 1e-6);
+    }
+}
+
+#[test]
+fn right_aligned_area_type_sets_the_text_after_its_last_tab_against_the_edge() {
+    use vectnor_doc::{TabAlign, TabStop};
+    let stop = |position: f64, align: TabAlign| TabStop { position, align, leader: String::new(), align_on: '.' };
+    let frame = Rect::new(0.0, 0.0, 336.0, 100.0);
+    let mut t = area("Item\t12.50\t24.00", style(13.0), frame, Justify::Right);
+    t.para.tabs = vec![stop(269.29, TabAlign::Right), stop(272.13, TabAlign::Left)];
+    let lay = layout(db(), &t);
+    let glyph = |byte: usize| lay.glyphs.iter().find(|g| g.byte == byte).unwrap();
+    let end = |byte: usize| glyph(byte).origin.x + glyph(byte).advance;
+    assert!(glyph(0).origin.x.abs() < 1e-6, "the item starts at the left edge: {}", glyph(0).origin.x);
+    let first_price_end = "Item\t12.50".len() - 1;
+    assert!((end(first_price_end) - 269.29).abs() < 1e-6, "the first price ends on its right stop: {}", end(first_price_end));
+    let last = t.plain_text().len() - 1;
+    assert!((end(last) - 336.0).abs() < 1e-6, "the last price ends on the edge: {}", end(last));
+    // One tab: the text after it is against the edge, whatever its stop.
+    let mut one = area("Another item\t8.00", style(13.0), frame, Justify::Right);
+    one.para.tabs = t.para.tabs.clone();
+    let lay = layout(db(), &one);
+    let first = lay.glyphs.first().unwrap();
+    let last = lay.glyphs.last().unwrap();
+    assert!(
+        first.origin.x.abs() < 1e-6 && (last.origin.x + last.advance - 336.0).abs() < 1e-6,
+        "{} {}",
+        first.origin.x,
+        last.origin.x + last.advance
+    );
+    // A tab ending the line (a heading in the user's file): the text before it at the left edge,
+    // the tab to the right edge.
+    let lay = layout(db(), &area("Heading\t\nNext", style(13.0), frame, Justify::Right));
+    assert!(lay.glyphs.first().unwrap().origin.x.abs() < 1e-6, "{}", lay.glyphs.first().unwrap().origin.x);
+    let tab = lay.glyphs.iter().find(|g| g.byte == 7).unwrap();
+    assert!((tab.origin.x + tab.advance - 336.0).abs() < 1e-6, "the tab ends at {}", tab.origin.x + tab.advance);
+    // Text after the last tab that breaks with a hyphen: the hyphen ends on the edge too.
+    let text = "A\tinternationalization";
+    let mut hyphenated = area(text, style(13.0), Rect::new(0.0, 0.0, 100.0, 200.0), Justify::Right);
+    hyphenated.para.hyphenate = true;
+    hyphenated.para.composer = vectnor_doc::Composer::SingleLine;
+    let lay = layout(db(), &hyphenated);
+    let line = &lay.lines[0];
+    assert!(line.end > 2 && line.end < text.len(), "the first line breaks inside the word: {line:?}");
+    let last = lay.glyphs.get(line.glyph_end - 1).unwrap();
+    assert!((last.origin.x + last.advance - 100.0).abs() < 1e-6, "the hyphen ends at {}", last.origin.x + last.advance);
+    // Without a tab, the line is right aligned as a whole.
+    let lay = layout(db(), &area("Name", style(13.0), frame, Justify::Right));
+    assert!(lay.glyphs.first().unwrap().origin.x > 200.0);
+}

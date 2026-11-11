@@ -22,7 +22,10 @@ use std::collections::BTreeMap;
 
 use kurbo::{BezPath, CubicBez, ParamCurve, ParamCurveArclen};
 use vectnor_color::{Color, Paint};
-use vectnor_doc::{CharPosition, CharStyle, FirstBaseline, Justify, Node, NodeId, NodeKind, ParaStyle, ScriptMetrics, TextKind, TextObject, TextRun};
+use vectnor_doc::{
+    CharPosition, CharStyle, FirstBaseline, Justify, Node, NodeId, NodeKind, ParaStyle, ScriptMetrics, TabAlign, TabStop, TextKind, TextObject,
+    TextRun,
+};
 use vectnor_geom::{Affine, PathData, Point, Rect};
 
 /// Longest story read (bytes).
@@ -238,6 +241,10 @@ fn read(bytes: &[u8]) -> Option<Val> {
 const MAX_SHEETS: usize = 4096;
 const MAX_SHEETS_BASED_ON: usize = 16;
 
+const MAX_TABS: usize = 1024;
+const MAX_STORY_TABS: usize = 1 << 20;
+pub(crate) const TABS_LEFT_OUT: &str = "tab stops past Vectnor's limits were left out";
+
 /// Most frames read of one story, and most path segments of a frame.
 const MAX_FRAMES: usize = 4096;
 const MAX_SEGMENTS: usize = 1 << 16;
@@ -264,6 +271,8 @@ struct Para {
     space_before: f64,
     space_after: f64,
     hyphenate: bool,
+    tabs: Vec<TabStop>,
+    tabs_truncated: bool,
 }
 
 /// The text of one story, in the units of the text document.
@@ -283,6 +292,7 @@ pub(super) struct Story {
     paras: Vec<(usize, Para)>,
     /// `(characters, style)` in order.
     runs: Vec<(usize, Style)>,
+    tabs_left_out: std::sync::atomic::AtomicBool,
 }
 
 #[derive(Clone, Debug)]
@@ -482,13 +492,26 @@ impl Texts {
                 Some((anchor.first()? + off.first()? + so.first()?, anchor.get(1)? + off.get(1)?))
             })
             .collect();
+        let mut budget = MAX_STORY_TABS;
+        let mut left_out = false;
+        let mut bounded_para = |run| {
+            let mut para = self.para(run);
+            left_out |= para.tabs_truncated;
+            if para.tabs.len() > budget {
+                para.tabs.clear();
+                left_out = true;
+            } else {
+                budget -= para.tabs.len();
+            }
+            para
+        };
         let mut paras = vec![];
         for run in s.get("0")?.get("5").map(|p| p.get("0").map(Val::list).unwrap_or_default()).unwrap_or_default() {
             let n = run.get("1").and_then(Val::num)? as usize;
-            paras.push((n, self.para(run.get("0").and_then(|r| r.get("0")))));
+            paras.push((n, bounded_para(run.get("0").and_then(|r| r.get("0")))));
         }
         if paras.is_empty() {
-            paras.push((text.chars().count(), self.para(None)));
+            paras.push((text.chars().count(), bounded_para(None)));
         }
         let mut runs = vec![];
         for run in s.get("0")?.get("6").map(|p| p.get("0").map(Val::list).unwrap_or_default()).unwrap_or_default() {
@@ -498,7 +521,7 @@ impl Texts {
         if runs.is_empty() {
             runs.push((text.chars().count(), self.style(None)));
         }
-        Some(Story { text, anchor, lines, frame_starts, frames, paras, runs })
+        Some(Story { text, anchor, lines, frame_starts, frames, paras, runs, tabs_left_out: left_out.into() })
     }
 
     /// Run overrides, based-on paragraph sheets, Normal Paragraph Style, then document defaults.
@@ -521,6 +544,28 @@ impl Texts {
             space_before: num("4"),
             space_after: num("5"),
             hyphenate: !matches!(pick("9"), Some(Val::Bool(false))),
+            tabs_truncated: pick("30").and_then(|t| t.get("0")).map(Val::list).is_some_and(|list| list.len() > MAX_TABS),
+            tabs: {
+                let list = pick("30").and_then(|t| t.get("0")).map(Val::list).unwrap_or_default();
+                let mut tabs: Vec<TabStop> = list
+                    .iter()
+                    .take(MAX_TABS)
+                    .filter_map(|t| {
+                        let position = t.get("0").and_then(Val::num).filter(|p| (0.0..=100_000.0).contains(p))?;
+                        let align = match t.get("1").map(Val::num) {
+                            None | Some(Some(0.0)) => TabAlign::Left,
+                            Some(Some(1.0)) => TabAlign::Center,
+                            Some(Some(2.0)) => TabAlign::Right,
+                            Some(Some(3.0)) => TabAlign::Decimal,
+                            _ => return None,
+                        };
+                        Some(TabStop { position, align, leader: String::new(), align_on: '.' })
+                    })
+                    .collect();
+                tabs.sort_by(|a, b| a.position.total_cmp(&b.position));
+                tabs.dedup_by(|a, b| (a.position - b.position).abs() < 1e-6);
+                tabs
+            },
         }
     }
 
@@ -653,6 +698,10 @@ fn length_fraction(segments: &[[f64; 8]], t: f64) -> f64 {
 }
 
 impl Story {
+    pub(crate) fn tabs_left_out(&self) -> bool {
+        self.tabs_left_out.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
     /// How many bytes of text the story has.
     pub(super) fn len(&self) -> usize {
         self.text.len()
@@ -795,14 +844,30 @@ impl Story {
 
     /// The style of each paragraph of `text` (paragraphs split at `\n`).
     fn paragraph_styles(&self, text: &str, scale: f64) -> Vec<ParaStyle> {
+        // A common paragraph style is already represented once by TextObject::para. Avoid
+        // copying the same large tab vector for each source paragraph before collapsing it.
+        if let Some((_, first)) = self.paras.first()
+            && self.paras.iter().all(|(_, p)| p == first)
+            && self.paras.iter().fold(0usize, |n, (count, _)| n.saturating_add(*count)) >= text.chars().count()
+        {
+            return vec![para_style(first, scale)];
+        }
+        let mut budget = MAX_STORY_TABS;
         let count = text.split('\n').count();
         let mut out = Vec::with_capacity(count);
         let mut runs = self.paras.iter();
         let mut current = runs.next();
         let mut left = current.map_or(usize::MAX, |r| r.0);
         for p in text.split('\n') {
-            let para = current.map(|r| r.1.clone()).unwrap_or_default();
-            out.push(para_style(&para, scale));
+            let default = Para::default();
+            let para = current.map(|r| &r.1).unwrap_or(&default);
+            let keep_tabs = para.tabs.len() <= budget;
+            if keep_tabs {
+                budget -= para.tabs.len();
+            } else {
+                self.tabs_left_out.store(true, std::sync::atomic::Ordering::Relaxed);
+            }
+            out.push(para_style_with_tabs(para, scale, keep_tabs));
             // Each paragraph and its ending `\r` count.
             let mut used = p.chars().count() + 1;
             while used > 0 {
@@ -824,6 +889,10 @@ impl Story {
 }
 
 fn para_style(p: &Para, scale: f64) -> ParaStyle {
+    para_style_with_tabs(p, scale, true)
+}
+
+fn para_style_with_tabs(p: &Para, scale: f64, keep_tabs: bool) -> ParaStyle {
     ParaStyle {
         justify: match p.justify {
             1 => Justify::Right,
@@ -840,6 +909,7 @@ fn para_style(p: &Para, scale: f64) -> ParaStyle {
         space_before: p.space_before * scale,
         space_after: p.space_after * scale,
         hyphenate: p.hyphenate,
+        tabs: if keep_tabs { p.tabs.iter().map(|t| TabStop { position: t.position * scale, ..t.clone() }).collect() } else { vec![] },
         ..ParaStyle::default()
     }
 }
@@ -930,6 +1000,7 @@ mod tests {
             frames: vec![frame],
             paras: vec![],
             runs: vec![(text.chars().count(), reader.style(None))],
+            tabs_left_out: false.into(),
         };
         let node = st.node(NodeId(1), 0, (0.0, 0.0), Affine::IDENTITY).unwrap();
         let NodeKind::Text(t) = node.kind else { panic!("not type") };
@@ -1080,5 +1151,69 @@ mod tests {
         let own = read(b"/6 0 /5 << /1 8 >>").unwrap();
         assert_eq!((t.para(Some(&own)).first_indent, t.para(Some(&own)).hyphenate), (8.0, false));
         assert_eq!((t.para(None).first_indent, t.para(None).hyphenate), (6.0, false));
+    }
+
+    #[test]
+    fn paragraph_tabs_inherit_sort_deduplicate_and_scale_without_changing_other_styles() {
+        let mut t = frame_reader(b"/0 []");
+        t.para_sheets = vec![read(b"/5 << /1 6 /30 << /0 [<< /0 80 /1 2 >> << /0 20 /1 1 >> << /0 80.0000001 /1 0 >> << /0 -2 >> << /0 100001 >> << /0 60 /1 7 >> << /0 40 /1 3 >>] >> >>").unwrap()];
+        let p = t.para(None);
+        assert_eq!(
+            p.tabs.iter().map(|t| (t.position, t.align)).collect::<Vec<_>>(),
+            [(20.0, TabAlign::Center), (40.0, TabAlign::Decimal), (80.0, TabAlign::Right)]
+        );
+        let scaled = para_style(&p, 2.0);
+        assert_eq!(scaled.tabs.iter().map(|t| t.position).collect::<Vec<_>>(), [40.0, 80.0, 160.0]);
+        assert_eq!(scaled.first_line_indent, 12.0);
+        let own = read(b"/5 << /30 << /0 [] >> >>").unwrap();
+        assert!(t.para(Some(&own)).tabs.is_empty());
+    }
+
+    #[test]
+    fn paragraph_tab_limits_report_truncation_and_common_styles_do_not_expand_per_paragraph() {
+        let t = frame_reader(b"/0 []");
+        let list = (0..MAX_TABS + 1).map(|i| format!("<< /0 {i} >>")).collect::<Vec<_>>().join(" ");
+        let value = read(format!("/5 << /30 << /0 [{list}] >> >>").as_bytes()).unwrap();
+        let p = t.para(Some(&value));
+        assert_eq!(p.tabs.len(), MAX_TABS);
+        assert!(p.tabs_truncated);
+        let text = "row\n".repeat(20_000);
+        let st = Story {
+            text: text.clone(),
+            anchor: (0.0, 0.0),
+            lines: vec![],
+            frame_starts: vec![],
+            frames: vec![],
+            paras: vec![(text.chars().count(), p)],
+            runs: vec![],
+            tabs_left_out: true.into(),
+        };
+        let styles = st.paragraph_styles(&text, 1.0);
+        assert_eq!(styles.len(), 1);
+        assert_eq!(styles[0].tabs.len(), MAX_TABS);
+        assert!(st.tabs_left_out());
+    }
+
+    #[test]
+    fn mixed_paragraph_styles_bound_expanded_tab_storage_and_report_omissions() {
+        let count = MAX_STORY_TABS / MAX_TABS + 2;
+        let p =
+            Para { tabs: vec![TabStop { position: 10.0, align: TabAlign::Left, leader: String::new(), align_on: '.' }; MAX_TABS], ..Para::default() };
+        let q = Para { space_after: 1.0, ..p.clone() };
+        let text = "a\n".repeat(count);
+        let st = Story {
+            text: text.clone(),
+            anchor: (0.0, 0.0),
+            lines: vec![],
+            frame_starts: vec![],
+            frames: vec![],
+            paras: vec![(2, p), (text.chars().count() - 2, q)],
+            runs: vec![],
+            tabs_left_out: false.into(),
+        };
+        let styles = st.paragraph_styles(&text, 1.0);
+        assert!(st.tabs_left_out());
+        assert_eq!(styles.iter().map(|p| p.tabs.len()).sum::<usize>(), MAX_STORY_TABS);
+        assert!(styles.last().unwrap().tabs.is_empty());
     }
 }

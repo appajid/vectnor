@@ -82,6 +82,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-11 | minor | Modern AI ATE paragraph tab stops retain inherited alignments/positions with bounded storage; right-aligned LTR area tabs keep labels left and final values right. Original frames/first baselines/leading remain; no legacy AI type claim. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged. |
 | 2026-11-11 | minor | Deferred follow-up: language-aware shaping, eleven licensed Indic hyphenation pattern sets using current 6/3/3 limits, AI Normal-style inheritance and mutual mask/pattern guards. English UI; no new fonts/dependencies; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-11-11 | minor | Fifteen reviewed upstream scopes: inherited AI character styles, editing-data opening/decoding, bounded font/layout parsing, Unicode/colour input and canvas release position. Existing Indic text and original-frame recovery retained; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-31 | minor | Reviewed whole-grapheme fallback and available font-style selection. Synthetic Indic tests check common-face selection for base/vowel signs; existing shaping/editing tests retained. AI All Caps and Small Caps preserve original characters; custom source Small Caps size remains unread. No new font files; see docs/vectnor/UPSTREAM_AUDIT.md. |

@@ -585,12 +585,13 @@ impl Writer<'_> {
         match styling {
             Styling::PresentationAttributes => {
                 // CSS-only properties go in a style attribute (SVG Tiny has none: left out).
-                let (style, attrs): (Vec<_>, Vec<_>) =
-                    props.iter().partition(|(k, _)| matches!(*k, "mix-blend-mode" | "isolation" | "font-feature-settings" | "font-kerning"));
+                let (style, attrs): (Vec<_>, Vec<_>) = props
+                    .iter()
+                    .partition(|(k, _)| matches!(*k, "mix-blend-mode" | "isolation" | "font-feature-settings" | "font-kerning" | "image-rendering"));
                 let mut s: String = attrs.iter().map(|(k, v)| format!(" {k}=\"{}\"", xml_escape(v))).collect();
                 if !style.is_empty() {
                     if self.tiny() {
-                        self.warn("SVG Tiny 1.2 has no style sheets: blend modes, isolation and font features are left out");
+                        self.warn("SVG Tiny 1.2 has no style sheets: blend modes, isolation, font features and image sampling are left out");
                     } else {
                         s.push_str(&format!(" style=\"{}\"", xml_escape(&css::declarations(style))));
                     }
@@ -1318,7 +1319,11 @@ impl Writer<'_> {
             NodeKind::Image(im) => {
                 let id = self.id_attr(n);
                 let m = self.matrix(self.xf * im.xf);
-                let a = self.attrs(&css::transparency(n));
+                let mut props = css::transparency(n);
+                if n.pixelated {
+                    props.push(("image-rendering", "pixelated".into()));
+                }
+                let a = self.attrs(&props);
                 if let Some(shared) = self.shared_images.get(&(im.key.clone(), im.width, im.height)) {
                     let shared = shared.clone();
                     self.line(&format!("<use{id} transform=\"{m}\"{a} xlink:href=\"#{shared}\"/>"));

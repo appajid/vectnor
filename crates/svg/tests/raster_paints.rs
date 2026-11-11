@@ -104,3 +104,64 @@ fn linked_images_write_the_gradient_next_to_the_svg_and_characters_stay_linear()
     assert!(o.svg.contains("linearGradient") && !o.svg.contains("<image"), "{}", o.svg);
     assert!(o.warnings.iter().any(|w| w.contains("characters")), "{:?}", o.warnings);
 }
+
+#[test]
+fn pixelated_images_keep_sharp_pixels_and_per_instance_sampling_through_roundtrips() {
+    use vectnor_testkit::format::{base64_encode, load, save};
+    let pixels = image::RgbaImage::from_raw(2, 1, vec![0, 0, 0, 255, 255, 255, 255, 255]).unwrap();
+    let mut png = std::io::Cursor::new(Vec::new());
+    pixels.write_to(&mut png, image::ImageFormat::Png).unwrap();
+    let uri = format!("data:image/png;base64,{}", base64_encode(png.get_ref()));
+    let svg = format!(
+        r#"<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><image width="40" height="20" image-rendering="pixelated" href="{uri}"/><image y="20" width="40" height="20" href="{uri}"/></svg>"#
+    );
+    let doc = import(&svg).unwrap();
+    let native = load(&save(&doc, false)).unwrap();
+    for styling in [
+        vectnor_svg::Styling::PresentationAttributes,
+        vectnor_svg::Styling::InlineStyle,
+        vectnor_svg::Styling::InternalCss,
+        vectnor_svg::Styling::StyleEntities,
+    ] {
+        let exported = export_full(&native, &ExportOptions { styling, ..Default::default() }, None).svg;
+        assert!(exported.contains("image-rendering:pixelated"), "{exported}");
+        let back = import(&exported).unwrap();
+        for d in [&doc, &native, &back] {
+            let mut modes = vec![];
+            d.walk(|n| {
+                if matches!(n.kind, NodeKind::Image(_)) {
+                    modes.push(n.pixelated);
+                }
+            });
+            assert_eq!(modes, [true, false]);
+            let raster = render_artboard(d);
+            assert_eq!(raster.pixel(19, 10), [0, 0, 0, 255]);
+            assert_eq!(raster.pixel(20, 10), [255, 255, 255, 255]);
+            let smooth = raster.pixel(19, 30)[0];
+            assert!((40..215).contains(&smooth), "smooth sibling: {smooth}");
+        }
+    }
+}
+
+#[test]
+fn inherited_pixelated_sampling_allows_css_override_and_survives_image_clipping() {
+    let pixels = image::RgbaImage::from_raw(2, 1, vec![0, 0, 0, 255, 255, 255, 255, 255]).unwrap();
+    let mut png = std::io::Cursor::new(Vec::new());
+    pixels.write_to(&mut png, image::ImageFormat::Png).unwrap();
+    let data = vectnor_testkit::format::base64_encode(png.get_ref());
+    let svg = format!(
+        r##"<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><style>.smooth {{ image-rendering:smooth }}</style><defs><clipPath id="clip"><rect width="40" height="20"/></clipPath><image id="pixels" width="40" height="20" href="data:image/png;base64,{data}"/></defs><g image-rendering="pixelated"><use href="#pixels" clip-path="url(#clip)"/><use href="#pixels" y="20" class="smooth"/></g></svg>"##
+    );
+    let doc = import(&svg).unwrap();
+    let mut modes = vec![];
+    doc.walk(|n| {
+        if matches!(n.kind, NodeKind::Image(_)) {
+            modes.push(n.pixelated);
+        }
+    });
+    assert_eq!(modes, [true, false]);
+    let raster = render_artboard(&doc);
+    assert_eq!(raster.pixel(19, 10), [0, 0, 0, 255]);
+    assert_eq!(raster.pixel(20, 10), [255, 255, 255, 255]);
+    assert!((40..215).contains(&raster.pixel(19, 30)[0]));
+}

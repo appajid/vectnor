@@ -43,7 +43,7 @@ use vectnor_doc::{
     Appearance, AppearanceItem, Artboard, ColorMode, Dash, Document, FillLayer, ImageBlob, ImageObject, Knockout, LayerColor, LineCap, LineJoin,
     Node, NodeId, NodeKind, PatternDef, StrokeLayer,
 };
-use vectnor_geom::{FillRule, PathData};
+use vectnor_geom::{AnchorKind, FillRule, PathData};
 
 use super::lex::{Lexer, Tok};
 use super::obj::{self, Obj, V};
@@ -248,6 +248,7 @@ struct Reader<'a> {
     gs: GState,
     frames: Vec<Frame>,
     path: BezPath,
+    path_kinds: Vec<AnchorKind>,
     points: usize,
     /// The path is a clipping path (`W`).
     clip_next: bool,
@@ -389,6 +390,7 @@ impl<'a> Reader<'a> {
             gs: GState::default(),
             frames: Vec::new(),
             path: BezPath::new(),
+            path_kinds: Vec::new(),
             points: 0,
             clip_next: false,
             doc,
@@ -691,6 +693,13 @@ impl<'a> Reader<'a> {
         let clipping = matches!(kind, Kind::Compound) && !clips.is_empty();
         let node = match kind {
             Kind::Compound => {
+                if clipping
+                    && kids
+                        .windows(2)
+                        .any(|pair| pair[0].appearance != pair[1].appearance || pair[0].opacity != pair[1].opacity || pair[0].blend != pair[1].blend)
+                {
+                    return Err("compound clipping subpaths with different paints need the page artwork".into());
+                }
                 let Some(first) = kids.first() else { return Ok(()) };
                 let (appearance, opacity, blend, rule) = (first.appearance.clone(), first.opacity, first.blend, path_rule(first));
                 for k in &mut kids {
@@ -707,7 +716,7 @@ impl<'a> Reader<'a> {
             }
             // A group with a clipping path (`q` … `Q`, or a `W` path in a group) is a clipping group.
             _ => {
-                let (children, clip) = self.clip_first(kids, &clips);
+                let (children, clip) = self.clip_first(kids, &clips)?;
                 self.new_node(NodeKind::Group { children, clip }, &gs)
             }
         };
@@ -719,7 +728,10 @@ impl<'a> Reader<'a> {
 
     /// `kids` with the clipping paths among them (indexes `clips`) first, several as one compound
     /// path → the children and whether they clip.
-    fn clip_first(&mut self, kids: Vec<Node>, clips: &[usize]) -> (Vec<Arc<Node>>, bool) {
+    fn clip_first(&mut self, kids: Vec<Node>, clips: &[usize]) -> Result<(Vec<Arc<Node>>, bool), String> {
+        if clips.len() > 1 && clips.iter().filter_map(|&i| kids.get(i)).any(|n| !n.appearance.items.is_empty()) {
+            return Err("multiple painted clipping paths need the page artwork".into());
+        }
         let (mut clip, rest): (Vec<Indexed>, Vec<Indexed>) = kids.into_iter().enumerate().partition(|(i, _)| clips.contains(i));
         let clip_node = match clip.len() {
             0 => None,
@@ -732,13 +744,13 @@ impl<'a> Reader<'a> {
         };
         let clips = clip_node.is_some();
         let children = clip_node.into_iter().chain(rest.into_iter().map(|(_, n)| n)).map(Arc::new).collect();
-        (children, clips)
+        Ok((children, clips))
     }
 
     fn end_layer(&mut self) -> Result<(), String> {
         let f = self.close("LB", |k| matches!(k, Kind::Layer(_)))?;
         let Kind::Layer(a) = f.kind else { return Ok(()) };
-        let (children, clip) = self.clip_first(f.children, &f.clips);
+        let (children, clip) = self.clip_first(f.children, &f.clips)?;
         let color = a.color.unwrap_or(LayerColor::Preset(0));
         let mut layer = Node::new(
             self.doc.alloc_id(),
@@ -1296,32 +1308,45 @@ impl<'a> Reader<'a> {
             return Err("a path has too many points".into());
         }
         let current = self.path.elements().last().and_then(|e| e.end_point());
-        match w {
+        let kind = if w.starts_with(|c: char| c.is_ascii_lowercase()) { AnchorKind::Smooth } else { AnchorKind::Corner };
+        let added = match w {
             "m" => {
                 let Some(a) = p(2) else { return Ok(()) };
                 self.path.move_to(a);
+                return Ok(());
             }
-            _ if current.is_none() => {}
-            "l" | "L" => {
-                if let Some(a) = p(2) {
+            _ if current.is_none() => false,
+            "l" | "L" => match p(2) {
+                Some(a) => {
                     self.path.line_to(a);
+                    true
                 }
-            }
-            "c" | "C" => {
-                if let (Some(a), Some(b), Some(c)) = (p(6), p(4), p(2)) {
+                None => false,
+            },
+            "c" | "C" => match (p(6), p(4), p(2)) {
+                (Some(a), Some(b), Some(c)) => {
                     self.path.curve_to(a, b, c);
+                    true
                 }
-            }
-            "v" | "V" => {
-                if let (Some(cur), Some(b), Some(c)) = (current, p(4), p(2)) {
+                _ => false,
+            },
+            "v" | "V" => match (current, p(4), p(2)) {
+                (Some(cur), Some(b), Some(c)) => {
                     self.path.curve_to(cur, b, c);
+                    true
                 }
-            }
-            _ => {
-                if let (Some(a), Some(c)) = (p(4), p(2)) {
+                _ => false,
+            },
+            _ => match (p(4), p(2)) {
+                (Some(a), Some(c)) => {
                     self.path.curve_to(a, c, c);
+                    true
                 }
-            }
+                _ => false,
+            },
+        };
+        if added {
+            self.path_kinds.push(kind);
         }
         Ok(())
     }
@@ -1329,6 +1354,7 @@ impl<'a> Reader<'a> {
     /// A path left unpainted before a container opens.
     fn end_path_quietly(&mut self) {
         self.path = BezPath::new();
+        self.path_kinds.clear();
         self.points = 0;
         self.clip_next = false;
     }
@@ -1336,6 +1362,7 @@ impl<'a> Reader<'a> {
     /// Paint the current path (`op`), as a guide when `guide`.
     fn paint(&mut self, op: &str, hidden: bool, guide: bool) -> Result<(), String> {
         let mut bp = std::mem::take(&mut self.path);
+        let kinds = std::mem::take(&mut self.path_kinds);
         self.points = 0;
         let clip = std::mem::take(&mut self.clip_next);
         if let Some(i) = self.instance.take() {
@@ -1349,7 +1376,7 @@ impl<'a> Reader<'a> {
             close(&mut bp);
         }
         let to_doc = self.space();
-        let path = PathData::from_bezpath(&(to_doc * bp));
+        let path = path_data(&(to_doc * bp), &kinds);
         let gs = self.gs.clone();
         let (fill, stroke) = match op.to_ascii_lowercase().as_str() {
             "f" => (true, false),
@@ -1358,10 +1385,10 @@ impl<'a> Reader<'a> {
             _ => (false, false),
         };
         let mut items = Vec::new();
-        if fill && !clip {
+        if fill {
             items.push(AppearanceItem::Fill(FillLayer { overprint: gs.overprint_fill, ..FillLayer::new(fill_paint.unwrap_or(gs.fill.clone())) }));
         }
-        if stroke && !clip {
+        if stroke {
             let mut st = StrokeLayer::new(stroke_paint.unwrap_or(gs.stroke.clone()), gs.width);
             st.cap = gs.cap;
             st.join = gs.join;
@@ -1756,4 +1783,58 @@ fn undefined_number(v: &V) -> bool {
         }
     }
     false
+}
+
+/// `bp` as a path whose anchors take the kinds in `kinds`, one for each segment of `bp` in order,
+/// for the anchor the segment ends on. A closed subpath's last segment ends on its first anchor
+/// when it returns to the start point, and that anchor takes its kind. Anchors no segment ends on
+/// (a subpath's start) keep the kind [`PathData::from_bezpath`] gives them, and so does a subpath
+/// whose anchors don't match its segments.
+fn path_data(bp: &BezPath, kinds: &[AnchorKind]) -> PathData {
+    let mut path = PathData::from_bezpath(bp);
+    // Each subpath's anchors as `from_bezpath` starts them: one for its start, one for each segment.
+    let mut subpaths: Vec<Vec<Option<AnchorKind>>> = Vec::new();
+    let mut kinds = kinds.iter().copied();
+    let mut open = false;
+    for el in bp.elements() {
+        match el {
+            PathEl::MoveTo(_) => {
+                subpaths.push(vec![None]);
+                open = true;
+            }
+            PathEl::ClosePath => open = false,
+            _ => {
+                let kind = kinds.next();
+                match subpaths.last_mut() {
+                    Some(s) if open => s.push(kind),
+                    _ => {
+                        subpaths.push(vec![None, kind]);
+                        open = true;
+                    }
+                }
+            }
+        }
+    }
+    if subpaths.len() != path.subpaths.len() {
+        return path;
+    }
+    for (sp, mut set) in path.subpaths.iter_mut().zip(subpaths) {
+        // The closing anchor merged into the first: its kind goes to the first.
+        if sp.closed
+            && set.len() == sp.anchors.len() + 1
+            && let Some(last) = set.pop()
+            && let Some(first) = set.first_mut()
+        {
+            *first = last;
+        }
+        if set.len() != sp.anchors.len() {
+            continue;
+        }
+        for (a, kind) in sp.anchors.iter_mut().zip(set) {
+            if let Some(kind) = kind {
+                a.kind = kind;
+            }
+        }
+    }
+    path
 }

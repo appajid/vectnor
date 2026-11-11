@@ -1,12 +1,21 @@
 # Vectnor upstream provenance
 
-> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed import and editing fixes; scores unchanged)
+> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (remaining deferred import/tab/image scopes and source upload; scores unchanged)
 
 Vectnor derives from [storytold/vectorcraft](https://github.com/storytold/vectorcraft), under MIT OR Apache-2.0. Original copyright and third-party notices remain in LICENSE-MIT, LICENSE-APACHE, NOTICE and ASSETS.md. Upstream names here identify source provenance.
 
 The supplied source was initially committed as `d8d143e72223590ca4b451b792ca4e52cf68d23d`. Its original upstream revision was not preserved as verified Git ancestry. Subsequent ports compare the actual source and tests instead of assuming that history. The review baseline is `cdca9f872becb0c1b7baef107a2a9dda3035ddbf`.
 
 Developer and maintainer: **Appaji Ambarisha** (`appajid`). Vectnor keeps its own branding, `.vcnr` extension and `vectnor` format header. The GitHub repository is public following the owner's explicit authorization on 2026-10-22. Local source uploads and build/site publication still require an explicit request.
+
+## Remaining deferred scopes — 2026-11-11
+
+Four compatible scopes now cover AI anchor types (#5122), painted clipping paths (#6032),
+SVG per-image pixelated sampling (#4888) and modern AI tab stops/right-aligned area tabs (#6148).
+[Source authors, immutable heads, hashes and compatibility decisions](docs/vectnor/upstream-audit-2026-11-11-final.json)
+resolve the prior ten deferred items. The [review](docs/vectnor/UPSTREAM_AUDIT.md) distinguishes already
+covered fixes from absent newer APIs/legacy type prerequisites. Source upload to `main` is explicitly
+requested by the owner; private documents and local build/test output are excluded.
 
 ## Reviewed adaptations — M0.upstream, 2026-10-12
 

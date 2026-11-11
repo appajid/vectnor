@@ -279,3 +279,18 @@ based-on character and paragraph sheet walks remain bounded. Original frames, fi
 linked stories and source-overwrite protection remain. This does not infer a document-text language
 from an AI file; explicit language settings apply through the document/Character controls.
 [Scope and verification](UPSTREAM_AUDIT.md).
+
+## Anchor, clipping paint and tab follow-up — 2026-11-11
+
+Modern AI editing-data paths retain smooth/corner anchor kinds from segment operator case,
+with original points and handles. Single painted clipping paths and uniform compound clips
+retain their fill/stroke; multiple painted clips and heterogeneous compound appearances decline
+native art for the existing artwork fallback instead of silently dropping paint.
+
+Modern ATE paragraph tabs inherit from paragraph sheets/defaults, retain left/center/right/decimal
+alignment and scaled positions, and sort/deduplicate. Import keeps at most 1,024 stops per style
+and 1,048,576 stops in the parsed story styles and each paragraph-style expansion, reporting omissions. A common paragraph style
+is stored once. Right-aligned LTR area lines keep the label on the left and the segment after
+the final tab on the right. Source frame dimensions, first baselines, leading and linked-story
+recovery remain; imported frames are not grown to fit lines. Legacy AI type/tab readers are absent.
+[Review and verification](UPSTREAM_AUDIT.md). Scores unchanged.

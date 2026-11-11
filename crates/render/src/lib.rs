@@ -1049,7 +1049,7 @@ impl Renderer {
                         && let NodeKind::Image(im) = &image.kind
                         && plain_image(image, im, &region.0)
                     {
-                        self.draw_image_in(ctx, f, im, Some(&region));
+                        self.draw_image_in(ctx, f, im, Some(&region), image.pixelated);
                         self.stats.drawn += 1;
                         return;
                     }
@@ -1085,7 +1085,7 @@ impl Renderer {
                 self.draw_shape(ctx, f, n, &bp, *rule);
             }
             NodeKind::Text(t) => self.draw_text(ctx, f, n, t),
-            NodeKind::Image(im) => self.draw_image(ctx, f, im),
+            NodeKind::Image(im) => self.draw_image(ctx, f, im, n.pixelated),
             NodeKind::SymbolInstance { symbol, xf } => {
                 if let Some(sym) = f.doc.symbols.iter().find(|s| &s.name == symbol) {
                     let mut art = brush_fx::instance_art(&sym.art, n);
@@ -1552,13 +1552,20 @@ impl Renderer {
         }
     }
 
-    fn draw_image(&mut self, ctx: &mut RenderContext, f: &Frame, im: &vectnor_doc::ImageObject) {
-        self.draw_image_in(ctx, f, im, None);
+    fn draw_image(&mut self, ctx: &mut RenderContext, f: &Frame, im: &vectnor_doc::ImageObject, pixelated: bool) {
+        self.draw_image_in(ctx, f, im, None, pixelated);
     }
 
     /// Draw an image, or with `area` (a region in the document inside the image's frame, see
     /// [`plain_image`]) the image painted into that region.
-    fn draw_image_in(&mut self, ctx: &mut RenderContext, f: &Frame, im: &vectnor_doc::ImageObject, area: Option<&(BezPath, FillRule)>) {
+    fn draw_image_in(
+        &mut self,
+        ctx: &mut RenderContext,
+        f: &Frame,
+        im: &vectnor_doc::ImageObject,
+        area: Option<&(BezPath, FillRule)>,
+        pixelated: bool,
+    ) {
         let rect = Rect::new(0.0, 0.0, im.width as f64, im.height as f64);
         // Outline mode draws the image's frame, and with Document Setup → Show Images in Outline
         // Mode its pixels in greyscale under the frame.
@@ -1573,7 +1580,7 @@ impl Renderer {
             let pm = if outline { pm } else { self.ink_image(&cache_key, &pm, f.ink, f.doc.images.get(&im.key)) };
             let sx = im.width as f64 / pm.width().max(1) as f64;
             let sy = im.height as f64 / pm.height().max(1) as f64;
-            let quality = if f.opts.smooth_images { peniko::ImageQuality::Medium } else { peniko::ImageQuality::Low };
+            let quality = if f.opts.smooth_images && !pixelated { peniko::ImageQuality::Medium } else { peniko::ImageQuality::Low };
             let sampler = peniko::ImageSampler { quality, ..Default::default() };
             ctx.set_paint(vello_cpu::Image { image: vello_cpu::ImageSource::Pixmap(pm), sampler });
             match area {

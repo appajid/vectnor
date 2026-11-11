@@ -147,6 +147,7 @@ and native payload restores avoid spurious notes; bounded checks report incomple
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-11 | minor | AI paths retain segment-case anchor kinds and explicit clipping paint with conservative fallback for unsupported combinations. Modern ATE tabs retain positions/alignment. SVG pixelated images retain per-instance sampling through native/SVG roundtrips. [Pinned audit](vectnor/UPSTREAM_AUDIT.md). Scores unchanged. |
 | 2026-11-11 | minor | Deferred follow-up: language-aware shaping, eleven licensed Indic hyphenation pattern sets using current 6/3/3 limits, AI Normal-style inheritance and mutual mask/pattern guards. English UI; no new fonts/dependencies; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-11-11 | minor | Fifteen reviewed upstream scopes: inherited AI character styles, editing-data opening/decoding, bounded font/layout parsing, Unicode/colour input and canvas release position. Existing Indic text and original-frame recovery retained; scores unchanged. [Audit](vectnor/UPSTREAM_AUDIT.md). |
 | 2026-10-31 | minor | Reviewed upstream AI capitalization and undefined-gradient highlights; SVG CSS quotes, semicolons and comment markers; EPS radix/glyph-name and DXF integer validation. Native-first AI opening, original frames and source protection retained. See docs/vectnor/UPSTREAM_AUDIT.md; no new format or image-capacity claim. |

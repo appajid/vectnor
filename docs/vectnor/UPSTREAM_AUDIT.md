@@ -1,6 +1,37 @@
 # Upstream review
 
-> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (reviewed AI style, parsing and release-position fixes; scores unchanged)
+> **Last reviewed:** 2026-11-11 · **Last updated:** 2026-11-11 · **Change:** minor (remaining deferred AI anchor/clip/tab and SVG sampling fixes; scores unchanged)
+
+## 2026-11-11 remaining deferred review — M0.deferred-import-tabs
+
+Applied compatible scopes from four previously deferred merged PRs at their pinned heads:
+
+| PR | Adaptation and limits |
+|---|---|
+| [#5122](https://github.com/storytold/vectorcraft/pull/5122) | AI segment case retains smooth/corner editing semantics without moving points or handles. Modern editing-data reader only. |
+| [#6032](https://github.com/storytold/vectorcraft/pull/6032) | Painted clipping paths and uniform compounds retain fill/stroke. Mixed-paint compounds and multiple painted clips use the existing artwork fallback. |
+| [#4888](https://github.com/storytold/vectorcraft/pull/4888) | SVG pixelated images use nearest sampling per instance, retain it in `.vcnr`, and export it for images/shared uses. Smooth siblings keep their filtering; CSS precedence is preserved. SVG Tiny omits this CSS hint with a warning. |
+| [#6148](https://github.com/storytold/vectorcraft/pull/6148) | Modern ATE tab-stop inheritance, alignment, sorting/deduplication, scaled positions and bounded storage; right-aligned area tabs place labels left and their final value right. Original frames and baseline/leading behavior remain. |
+
+The [immutable snapshot](upstream-audit-2026-11-11-final.json) records authors, raw diff hashes,
+26 verified Rust postimages and all ten dispositions. No fresh upstream discovery or head-update claim.
+#4791's source first baseline is already covered by original-frame recovery. #5268's compatible release
+position is already covered by #5195; its newer stylus/multi-sample queue is absent. #4952 and #6240
+refer to absent normalization/hex-input APIs. #5811/#5885 require the absent legacy AI type reader;
+modern ATE tab support does not add legacy type support. Newer multi-mask machinery, frame auto-growth
+and paragraph-model replacements remain excluded because their prerequisites are absent.
+
+No source artwork, fonts or dependencies added. English UI, Indic text, `.vcnr`, developer identity,
+Contributors/Models and existing branding remain. No parity-score, version or performance claim.
+The owner requested upload to the public GitHub repository in this turn; reviewed source history is
+prepared for a fast-forward update of `main`. Private AI files and local test/build artifacts stay outside Git.
+
+All eight CI gates pass: **5,370 tests passed, zero failed, 4 existing ignored**,
+including 16 new regressions. Actual browser WASM and native app/CLI builds pass. Both supplied AI
+files retain 10/4 original text objects, source characters/frame geometry and linked stories;
+whole-paragraph selection, Telugu/ZWNJ edit/Undo/Redo and exact `.vcnr` JSON/thread/PNG roundtrips
+pass. Native screenshots were inspected. The local app bundle is refreshed; hashes and local-only
+evidence paths are in the snapshot. Original AI documents and owner instruction edits are unchanged.
 
 ## 2026-11-11 deferred follow-up — M0.deferred-indic-styles
 

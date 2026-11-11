@@ -1,0 +1,337 @@
+{
+  "review_date": "2026-11-11",
+  "task": "M0.deferred-import-tabs",
+  "baseline": "3daa0ee",
+  "followup_to": "upstream-audit-2026-11-11-deferred.json",
+  "upstream": "https://github.com/storytold/vectorcraft",
+  "review_scope": "Resolve the ten remaining deferred items from the prior pinned review: adapt four compatible scopes and explicitly classify six covered/absent-prerequisite scopes. No fresh PR discovery, metadata recount or updated-head claim. Twenty-six immutable Rust postimages verified, including excluded newer code.",
+  "selected_count": 4,
+  "verified_postimages_count": 26,
+  "selected": [
+    {
+      "number": 5122,
+      "title": ".ai import: anchors are smooth or corners by the case of their segment operators", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "dotCooCoo",
+      "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+      "url": "https://github.com/storytold/vectorcraft/pull/5122",
+      "merged_at": "2026-11-02T05:31:56Z",
+      "diff_sha256": "e40caa98e9f048fde5d42bbf0f8995fcfad0da055447f90b13466aa059acb666",
+      "scope": "Modern editing-data path segment operator case sets smooth/corner anchor kinds, including closed starts, subpaths, clipping and guide paths. Retain exact points/handles and native serialization. The newer legacy-text reader is not imported.",
+      "postimages": [
+        {
+          "pr": 5122,
+          "path": "crates/engine/tests/import_fuzz.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "54b5a6f138b265569d57978bd0f13e8870fe26ff",
+          "sha256": "9dd6384763710f45a47f6701707a4ef0d0805f44598c885f30b1e86fb7913696"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/import/ai/legacy_text.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "2f312133e926c1799eea95a81b49af6b1f14f44a",
+          "sha256": "bd8a8efddec7586c46eabd302af019009696d2cef9e786234ab82e618cf47295"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/import/ai/read.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "9a0c3b5d25b7e175d2d946ddcd398d2be2c7cf39",
+          "sha256": "01eaee9c74ed97cf04d27d261ae8c28a9983216c255b837bdc155c49775635a8"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/import/ai/read/art.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "2a0e4d2afacb231f6f3dfe473921d11483febfdc",
+          "sha256": "aa0f2511196fa1178777b5d56eb56c418398e5b29d55b2428e6f0928437ee529"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/import/ai/tests.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "5139ea4eb663e7d3a4d0d7e88543de167b89dde0",
+          "sha256": "251b7689a9bafe7c2bb668e4e0a4e8cc66399daa8e53a033992e240864d986b1"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/import/tests_illustrator.rs", "provenance_marker": "brand-ok: pinned upstream file path",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "f642e33b22838c82bbb48984796ee9b3d576cbe8",
+          "sha256": "a9835accf902cbe264b8cb2fb639af5a659a71ae430451cce19c2206fd97c400"
+        },
+        {
+          "pr": 5122,
+          "path": "crates/eps/src/legacy_ai/tests.rs",
+          "head": "4f6358ac7440d02bef63c5b295b95dcbc037e815",
+          "blob": "617aa5455242005e83baea322ab230dc94cff43b",
+          "sha256": "f109b1551dcb545fab4e22353135e32fc0f9b54eaaa1bb07de6a6878c84df49f"
+        }
+      ]
+    },
+    {
+      "number": 6032,
+      "title": ".ai import: a filled clipping path keeps its fill", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "dotCooCoo",
+      "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+      "url": "https://github.com/storytold/vectorcraft/pull/6032",
+      "merged_at": "2026-11-08T04:34:55Z",
+      "diff_sha256": "94b261d8ecf342fd18fcc4f1e33cf816aff00a30b2bae4466696755eee43f527",
+      "scope": "Retain explicit fill/stroke on a single clipping path and uniform compound clipping paths; existing renderer paints fill below clipped art and stroke above. Multiple painted clipping paths and mixed-paint compounds decline the native candidate for the existing artwork fallback. Newer multi-mask/intersection machinery is not imported.",
+      "postimages": [
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/ai_editing/tests.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "e4a1edff5aa9f103f658c3d4a1638ebee3c0a98b",
+          "sha256": "426076c51de79163df71bdefb14b355cb91ec331c284d16f02963f5942eae244"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "4dbf31a24f8a7aee02959a7747d231564ec43f63",
+          "sha256": "ea4846fe801ccae179fa6adda7e4d366afb66e99f4006fe4ed7c1c35e0485126"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read/art.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "bc7b88155a6721ac027c6216da736bc36f7088aa",
+          "sha256": "4e70e9bc187cd36515ff3e88cff71ac8cb6cc14da904537af6ca96fd674868fe"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read/containers.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "a08f2ea1c9b149196de3b0967c4b02a5cc5748cc",
+          "sha256": "dfb84c41c27f6698de7430f986b58d44aac9ba639f78bebc07b57180d604d213"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read/directives.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "307105f954d64b68fed9421c39bd64a1ff04fb6f",
+          "sha256": "e01f4adb365da28538cfbf7f376aea37d9f7c69fdce6f87d6b2a86dc7358cb59"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read/masks.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "a7e8356bd4b15f29fff93d2013cf76718dd99c14",
+          "sha256": "ce94a526e704c4762fdca6a579a8f498bba8012f42f1d236187adf91d64ac484"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/read/ops.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "b8c6daf6c8556ae1969180ca8e5b93ca98252501",
+          "sha256": "db1613a0cbf6d0f8c8052471d74da605168d9962025845fba97cc731019093e1"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/ai/tests.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "fd1e2ece395d7d661e098cdbfced216ff38c88fa",
+          "sha256": "064905c3744e19a410d59d76d3c9eae384c899275c84a9cc8aa2754d78414d4d"
+        },
+        {
+          "pr": 6032,
+          "path": "crates/eps/src/import/tests_native.rs",
+          "head": "bbf4834f12013429418feff3adcd99ee89cb30b7",
+          "blob": "6f21d060baf6478b228d90436129ca9031d74f0c",
+          "sha256": "2d5a543981ea53c375f6892e950079f5e2e0ea2b02fa4a98f4bc71b2499a2c63"
+        }
+      ]
+    },
+    {
+      "number": 4888,
+      "title": "Respect SVG image-rendering pixelated attribute", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "yssy1982",
+      "head": "aaeb1b2b35c43d10c92cbb99a604f97821e57854",
+      "url": "https://github.com/storytold/vectorcraft/pull/4888",
+      "merged_at": "2026-10-31T14:02:51Z",
+      "diff_sha256": "bc237a93f7fef6b57d1589c615a369e5c7923da48d682d67f6183db27d6d0b2f",
+      "scope": "Import SVG image-rendering=pixelated into an optional persistent node flag; honor it in normal and clipped-image raster paths, and export it on images/shared uses. Smooth sibling instances retain filtering. Newer node extras API is not required. Bridge SVG2 presentation hints to the bundled parser while preserving CSS precedence. Export through all four styling modes; SVG Tiny omits the CSS hint with a warning.",
+      "postimages": [
+        {
+          "pr": 4888,
+          "path": "crates/svg/src/import/importer.rs",
+          "head": "aaeb1b2b35c43d10c92cbb99a604f97821e57854",
+          "blob": "c2220f9d8fb6a250a3843d65f4077986a4cbe741",
+          "sha256": "4a5b41b8af06a4475b5c90a6e20695a39f9c09d6971c021ae57ba67e9727fb7c"
+        }
+      ]
+    },
+    {
+      "number": 6148,
+      "title": ".ai/EPS import: type keeps its tab stops, and right-aligned lines with tabs lay out as the file's page", "provenance_marker": "brand-ok: pinned upstream PR title",
+      "author": "magyarb",
+      "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+      "url": "https://github.com/storytold/vectorcraft/pull/6148",
+      "merged_at": "2026-11-09T05:18:23Z",
+      "diff_sha256": "afa1bc37866f4f012eb59defad12ebaa88fc657c421d8588edf6a7627847194d",
+      "scope": "Read modern ATE inherited paragraph tab stops (left/center/right/decimal), sort/deduplicate, scale and bound storage with an import note for omitted stops. Right-aligned LTR area lines start labels at the left and place the segment after the last tab at the right. Preserve original frame geometry, linked stories, first baselines, existing paragraph spacing and leading. Omit newer source-line frame auto-growth, paragraph justification/hyphenation models and legacy type reader.",
+      "postimages": [
+        {
+          "pr": 6148,
+          "path": "crates/engine/tests/import_fuzz.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "bfb8b4e7576244d63df2fedc84b16482d755650e",
+          "sha256": "428da27fcb09f7cd7bb4119d93cc69bfa3c63bbe9f6e875041c6c0b0054dd7a4"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/eps/src/import/ate.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "2250dea96e9d578e90aec9426aea4d7546474076",
+          "sha256": "18cc4d9bf6c7fc19cd0baff6ae95fbc8cd21268e4bc27ed92a788682dd2450e4"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/eps/src/import/native/plan.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "5dd918fb51261b129e95d63814025595ae94f963",
+          "sha256": "dc119b3ebcab961e2f54da714548ede4a79f657c1945d3bd8f13e50f1f9dca30"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/layout.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "9d96dca049911fcd9852f603c4bad18a2439c091",
+          "sha256": "920df7fde4dabda74faef9e42b29ad0753edaa00acdc8aa079a1124602ce5fcb"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/layout/driver.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "805c4dead4893ff639a70978a990480398929bdc",
+          "sha256": "39a9688436502f954d99a8e17eb586c6af54ccd33f4f50c3dd55f5c561cc3f0a"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/layout/flow.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "e1d55eece64ee76d04c63e4c6f82db4759a97b1d",
+          "sha256": "4d84d28aa04e4406a6082de582d565e4c2c5fc6ed2c436d90e476615c7200d42"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/lib.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "27d35c1703312a48ab34f3aecd98dfcb5ac730f1",
+          "sha256": "fe71e12e01110dc14c71272033a62a46304bd71d1d1012acfd0423371f869d2d"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/tests.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "68fe655280445ba8df7d7252f2f3cc00a68e049c",
+          "sha256": "5ec405540e46054298db0b4955fcccc6d754055ae862c68a59d83e0c6e9781b2"
+        },
+        {
+          "pr": 6148,
+          "path": "crates/text/src/tests/typo.rs",
+          "head": "68133cc7316320e5fc8055fdce6f897b33d8a89b",
+          "blob": "4b8bdbc09e15b28d51bcdfd8e7d579c927f70293",
+          "sha256": "798549b14fee143e1737550a745766a13698dd7d32c384372ebbfc167d8969f5"
+        }
+      ]
+    }
+  ],
+  "remaining_dispositions": [
+    {
+      "number": 4791,
+      "disposition": "covered locally",
+      "evidence": "crates/eps/src/import/ate.rs retains identity-matched frame_starts and FirstBaseline::Fixed; area_first_baseline_comes_from_its_layout_after_frame_translation plus original-frame/linked-story regressions cover this branch. Do not replace the earlier planner."
+    },
+    {
+      "number": 5268,
+      "disposition": "newer pipeline absent; compatible behavior already covered",
+      "evidence": "crates/ui-egui/src/canvas.rs uses its existing per-frame pointer state, without the upstream stylus pose/multi-sample queue. #5195 already passes the actual release position to tools before commit, with a drag-release regression."
+    },
+    {
+      "number": 4952,
+      "disposition": "newer API absent",
+      "evidence": "DocSetup::keep_in_range is absent. Existing document.setup apply/parameter validation and document finite-value checks remain; adding an unused method would not fix a reachable entry point."
+    },
+    {
+      "number": 6240,
+      "disposition": "newer API absent",
+      "evidence": "The unicode_char/type.insert hex-code API is absent; existing Unicode text entry and command validation remain. No validation-only stub was introduced."
+    },
+    {
+      "number": 5811,
+      "disposition": "requires absent legacy type reader",
+      "evidence": "crates/eps/src/import/ai/legacy_text.rs is absent. Current ai/read.rs explicitly declines legacy To/Tp/Tx/Tj/Tk type operators for the artwork fallback. Modern ATE tabs are adapted from #6148; this is not legacy tab-stop support."
+    },
+    {
+      "number": 5885,
+      "disposition": "requires absent legacy type reader",
+      "evidence": "Legacy paragraph tab-style deduplication is not reachable without the missing legacy type reader. Modern ATE tab sorting/deduplication and bounded common-style storage are implemented in the existing reader."
+    }
+  ],
+  "compatibility": "English UI; Indic document text; Vectnor identity and .vcnr; source text/frame geometry/threads preserved. No fonts, artwork, translation catalogs, community controls, new dependencies, parity score or version changes.",
+  "publication": {
+    "authorization": "Owner explicitly requested GitHub upload in this turn.",
+    "destination": "https://github.com/appajid/vectnor",
+    "branch": "main",
+    "method": "Fast-forward push of reviewed source history; no force push.",
+    "previous_main": "501a9079f92e1116a121569a1e14a73da6c609d7",
+    "private_documents_included": false,
+    "builds_or_test_artifacts_included": false,
+    "owner_instruction_edits_included": false
+  },
+  "verification": {
+    "status": "passed",
+    "ci": {
+      "gates": [
+        "fmt",
+        "clippy",
+        "test",
+        "assets",
+        "brands",
+        "cleanroom",
+        "layers",
+        "wasm"
+      ],
+      "passed": 5370,
+      "failed": 0,
+      "ignored": 4,
+      "new_regressions": 16
+    },
+    "build": "Optimized-development native app and CLI; actual vectnor-web wasm32-unknown-unknown target checked.",
+    "bundle_sha256": {
+      "Vectnor": "99488bfebe4924fd85207c517080b075ec1579fd5c640ea359f96f396717f6df",
+      "vectnor-cli": "efe2ab8abd82dd3ea68e08f8a30a3e6a90dbfc5d774e501b38a7222a0ea883b9"
+    },
+    "bundle_licenses_sha256": {
+      "NOTICE": "c8f04aac88af9d38d7f91f3f67a2f3abbba0b5459169b982d613ed5a04e8128e",
+      "ASSETS.md": "d87a608eec3e13794f9d75b542218110fb4b545d001241fe305ed142b78a6ee9",
+      "Indic-hyphenation-LICENSE-MIT.txt": "f34c6cbbc99ddd63cd3ce96c7cee736fb858a7f5229cc4e2738bfc81b1da5b9d"
+    },
+    "cli": {
+      "supplied_ai_files": 2,
+      "original_text_objects": [
+        10,
+        4
+      ],
+      "source_characters_and_frame_geometry_exact": true,
+      "linked_threads_exact": true,
+      "only_anchor_kind_and_paragraph_tab_metadata_changed": true,
+      "changed_anchor_kinds": 367,
+      "paragraphs_with_newly_preserved_tabs": 2,
+      "all_other_json_exact": true
+    },
+    "native": "Both supplied AI files open without a PDF-selection dialog; 10/4 original text objects and two linked pairs retained. Whole-paragraph Type selection, Telugu/ZWNJ edit/undo/redo, exact .vcnr object/thread/two-artboard PNG roundtrip, document/range language persistence and English Character panel checked.",
+    "original_files_unchanged": true,
+    "owner_instruction_files_unchanged": true,
+    "outgoing_review": {
+      "pending_commits_before_this_change": 16,
+      "unique_changed_source_versions_scanned": 486,
+      "issues": [],
+      "excludes_owner_instruction_edits": true
+    },
+    "evidence_directory": "/tmp/vectnor-final-deferred-2026-11-11"
+  }
+}
